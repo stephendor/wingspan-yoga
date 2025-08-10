@@ -66,7 +66,7 @@
             "description": "Create a protected API endpoint (e.g., `POST /api/auth/logout`) to invalidate a user's current session.",
             "dependencies": [],
             "details": "This endpoint must be protected by the authentication middleware. It should identify the session token from the request and invalidate it in the database, for example, by deleting the corresponding record from the `sessions` table. This ensures the token can no longer be used.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Write an integration test: 1. Log in to get a token. 2. Use the token to call the logout endpoint. 3. Attempt to use the same token again on a protected route and verify that access is denied with a 401 Unauthorized status."
           }
         ]
@@ -550,7 +550,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-10T06:00:04.783Z",
+      "updated": "2025-08-10T06:34:47.719Z",
       "description": "Tasks for master context"
     }
   }
