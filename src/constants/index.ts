@@ -126,8 +126,8 @@ export const MAIN_NAV = [
     href: '/',
   },
   {
-    title: 'Classes',
-    href: '/classes',
+    title: 'Schedule',
+    href: '/schedule',
   },
   {
     title: 'Videos',
@@ -160,7 +160,7 @@ export const FOOTER_LINKS = {
     { name: 'Blog', href: '/blog' },
   ],
   practice: [
-    { name: 'Class Schedule', href: '/classes' },
+    { name: 'Class Schedule', href: '/schedule' },
     { name: 'Video Library', href: '/videos' },
     { name: 'Membership', href: '/pricing' },
     { name: 'Gift Cards', href: '/gift-cards' },

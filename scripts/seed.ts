@@ -104,7 +104,10 @@ async function main() {
   })
 
   // Create sample classes
-  const tomorrow = new Date()
+  const today = new Date()
+  
+  // Tomorrow classes
+  const tomorrow = new Date(today)
   tomorrow.setDate(tomorrow.getDate() + 1)
   tomorrow.setHours(9, 0, 0, 0) // 9 AM tomorrow
 
@@ -123,7 +126,67 @@ async function main() {
     },
   })
 
-  const nextWeek = new Date()
+  // Tomorrow evening class
+  const tomorrowEvening = new Date(tomorrow)
+  tomorrowEvening.setHours(18, 0, 0, 0)
+
+  await prisma.class.create({
+    data: {
+      title: 'Gentle Hatha Yoga',
+      description: 'Slow-paced practice perfect for beginners',
+      startTime: tomorrowEvening,
+      endTime: new Date(tomorrowEvening.getTime() + 60 * 60 * 1000),
+      capacity: 15,
+      price: 2000, // $20.00
+      difficulty: 'BEGINNER',
+      category: 'HATHA',
+      location: 'STUDIO',
+      instructorId: instructor2.id,
+    },
+  })
+
+  // Day after tomorrow
+  const dayAfter = new Date(today)
+  dayAfter.setDate(dayAfter.getDate() + 2)
+  dayAfter.setHours(7, 0, 0, 0) // 7 AM
+
+  await prisma.class.create({
+    data: {
+      title: 'Early Bird Meditation',
+      description: 'Start your day with mindfulness and breathwork',
+      startTime: dayAfter,
+      endTime: new Date(dayAfter.getTime() + 30 * 60 * 1000), // 30 minutes
+      capacity: 25,
+      price: 1500, // $15.00
+      difficulty: 'ALL_LEVELS',
+      category: 'MEDITATION',
+      location: 'ONLINE',
+      meetingUrl: 'https://zoom.us/j/meditation123',
+      instructorId: instructor1.id,
+    },
+  })
+
+  // Day after tomorrow - Yin class
+  const dayAfterYin = new Date(dayAfter)
+  dayAfterYin.setHours(19, 30, 0, 0) // 7:30 PM
+
+  await prisma.class.create({
+    data: {
+      title: 'Deep Yin & Restore',
+      description: 'Passive poses held for longer periods to release deep tension',
+      startTime: dayAfterYin,
+      endTime: new Date(dayAfterYin.getTime() + 90 * 60 * 1000), // 90 minutes
+      capacity: 12,
+      price: 3000, // $30.00
+      difficulty: 'INTERMEDIATE',
+      category: 'YIN',
+      location: 'STUDIO',
+      instructorId: instructor2.id,
+    },
+  })
+
+  // Next week - various classes
+  const nextWeek = new Date(today)
   nextWeek.setDate(nextWeek.getDate() + 7)
   nextWeek.setHours(18, 30, 0, 0) // 6:30 PM next week
 
@@ -140,6 +203,47 @@ async function main() {
       location: 'ONLINE',
       meetingUrl: 'https://zoom.us/j/123456789',
       instructorId: instructor2.id,
+    },
+  })
+
+  // Next week - Power class
+  const nextWeekPower = new Date(nextWeek)
+  nextWeekPower.setDate(nextWeekPower.getDate() + 1)
+  nextWeekPower.setHours(12, 0, 0, 0) // Noon
+
+  await prisma.class.create({
+    data: {
+      title: 'Power Flow Challenge',
+      description: 'High-intensity vinyasa for experienced practitioners',
+      startTime: nextWeekPower,
+      endTime: new Date(nextWeekPower.getTime() + 75 * 60 * 1000),
+      capacity: 18,
+      price: 3500, // $35.00
+      difficulty: 'ADVANCED',
+      category: 'POWER',
+      location: 'STUDIO',
+      instructorId: instructor1.id,
+    },
+  })
+
+  // Hybrid class
+  const hybridClass = new Date(nextWeek)
+  hybridClass.setDate(hybridClass.getDate() + 2)
+  hybridClass.setHours(16, 0, 0, 0) // 4 PM
+
+  await prisma.class.create({
+    data: {
+      title: 'Breathwork & Flow (Hybrid)',
+      description: 'Join in-studio or online for pranayama and gentle movement',
+      startTime: hybridClass,
+      endTime: new Date(hybridClass.getTime() + 60 * 60 * 1000),
+      capacity: 30, // 15 in-studio, 15 online
+      price: 2200, // $22.00
+      difficulty: 'ALL_LEVELS',
+      category: 'BREATHWORK',
+      location: 'HYBRID',
+      meetingUrl: 'https://zoom.us/j/hybrid123',
+      instructorId: instructor1.id,
     },
   })
 
@@ -255,7 +359,7 @@ async function main() {
 - 2 instructors
 - 2 users
 - 2 videos
-- 2 classes
+- 7 classes (various styles, levels, and locations)
 - 1 booking
 - 2 video progress records
 - 1 review
