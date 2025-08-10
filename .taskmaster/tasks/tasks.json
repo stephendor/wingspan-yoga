@@ -19,8 +19,10 @@
         "details": "Use Prisma schema language (`schema.prisma`) to define models for User, Class, Booking, Subscription, Video, Retreat, etc. Establish relations (one-to-many, many-to-many). Use a provider like Supabase or Neon. Generate and run the initial database migration using `prisma migrate dev`.",
         "testStrategy": "Review the generated ERD for correctness. Inspect the database tables and columns directly in the PostgreSQL instance to ensure they match the Prisma schema. Run a test script to create and retrieve a record from each table.",
         "priority": "high",
-        "dependencies": [1],
-        "status": "todo",
+        "dependencies": [
+          1
+        ],
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -45,8 +47,8 @@
             "title": "Develop the User Login API Endpoint",
             "description": "Create an API endpoint (e.g., `POST /api/auth/login`) for authenticating existing users and issuing a session token.",
             "dependencies": [],
-            "details": "The endpoint should accept user credentials (email and password). It must retrieve the user from the database, compare the provided password with the stored hash, and if they match, generate a session token (e.g., JWT). Store the session and return the token to the client.",
-            "status": "pending",
+            "details": "The endpoint should accept user credentials (email and password). It must retrieve the user from the database, compare the provided password with the stored hash, and if they match, generate a session token (e.g., JWT). Store the session and return the token to the client.\n<info added on 2025-08-10T05:28:58.956Z>\n**Implementation Summary:**\nThe `POST /api/auth/login` endpoint has been successfully implemented. It includes input validation for email and password, secure password verification using bcrypt, and JWT generation with a 7-day expiration. The implementation features comprehensive error handling, including checks for active membership status and detection of accounts created via OAuth to provide appropriate messaging. A corresponding `POST /api/auth/logout` endpoint was also created for session invalidation. Supporting code includes authentication utilities in `lib/auth/utils.ts`, type definitions in `lib/auth/types.ts`, documentation in `docs/authentication.md`, and test scenarios documented in `tests/auth/login.test.ts`.\n</info added on 2025-08-10T05:28:58.956Z>",
+            "status": "done",
             "testStrategy": "Write unit tests for the credential validation logic. Write integration tests for successful login (verifying a valid token is returned) and failed login attempts (wrong password, non-existent user), ensuring correct HTTP status codes are returned."
           },
           {
@@ -55,7 +57,7 @@
             "description": "Create a middleware component that intercepts requests to protected API endpoints, validates the session token, and attaches user information to the request.",
             "dependencies": [],
             "details": "The middleware should extract the token from the `Authorization` header. It will then validate the token's signature and expiration. If valid, it will fetch the corresponding user from the database and make it available for downstream handlers. If invalid, it should return a 401 Unauthorized error.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Write unit tests for token extraction and validation logic. Write integration tests by making requests to a dummy protected endpoint with a valid token, an invalid token, an expired token, and no token, verifying the correct HTTP response in each case."
           },
           {
@@ -76,8 +78,10 @@
         "details": "Configure `tailwind.config.js` with the brand's color palette (sage green, soft blues, terracotta), typography (Montserrat, Open Sans), and spacing scale. Create a library of core, accessible components: Button, Input, Card, Modal, and Navigation Bar using Framer Motion for subtle animations.",
         "testStrategy": "Use Storybook or a dedicated style guide page to visually inspect all components in different states (hover, focus, disabled). Run accessibility checks (e.g., Axe) on each component to ensure proper ARIA attributes and color contrast.",
         "priority": "high",
-        "dependencies": [1],
-        "status": "todo",
+        "dependencies": [
+          1
+        ],
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -142,8 +146,10 @@
         "details": "Integrate NextAuth.js with the Prisma adapter. Set up email/password and social login providers. Implement password hashing with bcrypt. Create protected API routes and server components. Configure JWT session strategy with a 24-hour expiry.",
         "testStrategy": "Unit test authentication endpoints. Perform manual testing: register a new user, log in, verify session persistence on refresh, log out, and test password reset flow. Check for secure cookie flags (HttpOnly, Secure).",
         "priority": "high",
-        "dependencies": [2],
-        "status": "todo",
+        "dependencies": [
+          2
+        ],
+        "status": "in-progress",
         "subtasks": []
       },
       {
@@ -165,7 +171,9 @@
         "details": "Develop the Homepage with a hero section (video/image), featured offerings, testimonials, and a newsletter signup form stub. Create the 'About/Philosophy' and instructor bio pages. Ensure all pages are fully responsive and use Next.js Image for optimized images.",
         "testStrategy": "Visually inspect pages on multiple devices (desktop, tablet, mobile). Verify all links and CTAs work. Check for content accuracy against the PRD. Run a Lighthouse audit to check initial performance and SEO scores.",
         "priority": "medium",
-        "dependencies": [3],
+        "dependencies": [
+          3
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -176,7 +184,10 @@
         "details": "Create a Next.js page with server-side rendering to fetch initial class data from the PostgreSQL database via Prisma. Implement client-side state management (Zustand/React Context) for interactive filters (by type, level, instructor). Ensure the calendar/list view loads in under 2 seconds.",
         "testStrategy": "Verify that the schedule displays correct class information. Test all filter combinations to ensure the list updates correctly and quickly. Use browser dev tools to confirm initial data is server-rendered and subsequent filtering is done on the client.",
         "priority": "high",
-        "dependencies": [2, 3],
+        "dependencies": [
+          2,
+          3
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -187,7 +198,10 @@
         "details": "Use React Hook Form with Zod for client-side and server-side validation of the booking form. Integrate the Stripe Payment Intents API for one-time payments. Create a Next.js API route to handle the booking logic (update class capacity, create booking record). Use SendGrid/Resend to send a confirmation email upon successful payment.",
         "testStrategy": "Test the booking flow with valid and invalid form data. Use Stripe's test card numbers to simulate successful and failed payments. Verify that a booking record is created in the database and class availability is updated. Check that a confirmation email is received within 2 minutes.",
         "priority": "high",
-        "dependencies": [4, 7],
+        "dependencies": [
+          4,
+          7
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -198,7 +212,10 @@
         "details": "Set up subscription products and prices in the Stripe dashboard. Use Stripe Checkout or Payment Links for the subscription signup flow. Create a webhook endpoint to listen for Stripe events (e.g., `checkout.session.completed`, `customer.subscription.deleted`) and update the user's membership status in the database.",
         "testStrategy": "Test the full subscription lifecycle: sign up for a plan, verify membership status is active in the app, use the Stripe dashboard to cancel, and confirm the webhook correctly updates the user's status to inactive.",
         "priority": "high",
-        "dependencies": [4, 8],
+        "dependencies": [
+          4,
+          8
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -209,7 +226,9 @@
         "details": "Set up video hosting on Mux or Vimeo. Create an API route that, for authenticated members, generates a signed URL or private playback token for a requested video. On the frontend, build a grid layout for the video library with search and category filters. Use a responsive video player (e.g., Plyr.io) to play the content from the secure URL.",
         "testStrategy": "Verify that only authenticated, subscribed members can access the video library page. Attempt to access a video's direct URL without a valid token/signature to ensure it fails. Test video playback on various devices and network speeds to check adaptive streaming.",
         "priority": "high",
-        "dependencies": [9],
+        "dependencies": [
+          9
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -220,7 +239,9 @@
         "details": "Create a `VideoProgress` table in the database linked to `User` and `Video` models. On the client, use the video player's API to periodically send the current timestamp to a backend endpoint, which updates the database. Display a progress bar overlay on video thumbnails in the library.",
         "testStrategy": "Watch a portion of a video, navigate away, and return to verify the video resumes from the correct timestamp. Check the library view to confirm the progress bar accurately reflects the watched percentage.",
         "priority": "medium",
-        "dependencies": [10],
+        "dependencies": [
+          10
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -231,7 +252,10 @@
         "details": "Create a protected route group for `/admin`. Build a UI with a table or calendar view of all classes. Implement forms (using React Hook Form) within modals or on separate pages for creating, updating, and deleting classes. Use Prisma mutations for database operations and revalidate data to update the UI.",
         "testStrategy": "Log in as a non-admin user and verify access to `/admin` is denied. Log in as an admin and perform all CRUD operations. Verify that changes made in the admin dashboard are immediately reflected on the public-facing class schedule page.",
         "priority": "high",
-        "dependencies": [4, 7],
+        "dependencies": [
+          4,
+          7
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -242,7 +266,9 @@
         "details": "Implement role-based access control (RBAC) to differentiate between admin, instructor, and member roles. Create a protected route for instructors. On this page, query the database for classes assigned to the logged-in instructor's ID. Display the schedule and a list of booked students for each class.",
         "testStrategy": "Log in as an instructor and verify access only to their own schedule. Log in as a different instructor and confirm they cannot see the first instructor's data. Check that the student list for a class is accurate.",
         "priority": "medium",
-        "dependencies": [12],
+        "dependencies": [
+          12
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -253,7 +279,9 @@
         "details": "Develop dynamic pages for each retreat, pulling content from the database. For booking, use the Stripe Payment Intents API to create a charge for the deposit amount. Store the total price and amount paid in the booking record. Set up a scheduled job (cron/serverless scheduler) to trigger reminder emails for the remaining balance.",
         "testStrategy": "Book a retreat and pay the deposit using a test card. Verify the booking is recorded with the correct partial payment status. Manually trigger the scheduled job to ensure a reminder email is sent. Test the flow for paying the remaining balance.",
         "priority": "medium",
-        "dependencies": [8],
+        "dependencies": [
+          8
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -264,7 +292,9 @@
         "details": "Create a `Post` model in the Prisma schema. Build an interface in the admin dashboard for creating and editing blog posts using a rich text editor like Tiptap or TinyMCE. Implement dynamic routing in Next.js to render individual blog posts. Add tagging and category functionality.",
         "testStrategy": "As an admin, create a new blog post with text, images, and tags. Publish it and verify it appears on the main blog page and is accessible via its unique URL. Test the tag filtering functionality.",
         "priority": "low",
-        "dependencies": [12],
+        "dependencies": [
+          12
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -275,7 +305,10 @@
         "details": "Create an API route that takes an email from the newsletter signup form. Use the Mailchimp/ConvertKit Node.js SDK to add the email to a specific audience list. Add a checkbox to the registration form to allow users to opt-in to the newsletter upon signup.",
         "testStrategy": "Submit an email via the newsletter form and verify the contact appears in the Mailchimp/ConvertKit list. Register a new user with the opt-in box checked and confirm they are also added to the list.",
         "priority": "medium",
-        "dependencies": [4, 6],
+        "dependencies": [
+          4,
+          6
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -286,7 +319,9 @@
         "details": "For Google Calendar, provide an 'Add to Calendar' link on booking confirmations using an iCal/.ics file generator. For Zoom, store meeting links in the `Class` model for online classes, accessible to booked users. For Instagram, use a lightweight third-party library or a serverless function to fetch and display the feed to avoid client-side performance hits.",
         "testStrategy": "Book a class and click the 'Add to Calendar' link; verify it opens correctly in Google Calendar/iCal. Book an online class and check that the Zoom link is visible and correct. Verify the Instagram feed loads correctly on the homepage.",
         "priority": "low",
-        "dependencies": [8],
+        "dependencies": [
+          8
+        ],
         "status": "todo",
         "subtasks": []
       },
@@ -297,7 +332,10 @@
         "details": "Configure SSL/TLS (handled by Netlify/Vercel). Add security headers (CSP, HSTS, X-Frame-Options) via `next.config.js`. Implement rate limiting on sensitive API endpoints (login, password reset) using a library like `upstash/ratelimit`. Ensure all payment processing is PCI compliant by using Stripe's hosted elements.",
         "testStrategy": "Use a security scanner like Mozilla Observatory to check for proper header implementation. Write a script to hit the login endpoint repeatedly and verify that rate limiting blocks requests after a certain threshold. Review Stripe integration to confirm no raw card data touches the server.",
         "priority": "high",
-        "dependencies": [4, 8],
+        "dependencies": [
+          4,
+          8
+        ],
         "status": "todo",
         "subtasks": [
           {
@@ -345,7 +383,12 @@
         "details": "Use tools like Axe, WAVE, and Lighthouse to scan all pages. Manually test with a screen reader (VoiceOver/NVDA). Ensure all images have alt text, forms have labels, color contrast is >= 4.5:1, and keyboard navigation is logical. Add 'skip navigation' links. Provide captions/transcripts for all video content.",
         "testStrategy": "Run automated scans and ensure zero critical errors. Navigate the entire site using only a keyboard. Use a screen reader to complete a key user flow (e.g., booking a class) and verify it is understandable and operable. Check video content for accurate captions.",
         "priority": "medium",
-        "dependencies": [6, 7, 8, 10],
+        "dependencies": [
+          6,
+          7,
+          8,
+          10
+        ],
         "status": "todo",
         "subtasks": [
           {
@@ -402,7 +445,9 @@
         "details": "Analyze bundle sizes with `@next/bundle-analyzer`. Implement dynamic imports for large components. Optimize images and ensure they are served in modern formats (WebP/AVIF). Conduct cross-browser and cross-device testing. Perform a final round of regression testing on all user stories.",
         "testStrategy": "Run Lighthouse reports on key pages and ensure all scores (Performance, Accessibility, Best Practices, SEO) are >90. Measure FCP, TTI, and CLS to ensure they meet the PRD targets. Test all major features on Chrome, Firefox, Safari, and Edge on both desktop and mobile.",
         "priority": "high",
-        "dependencies": [19],
+        "dependencies": [
+          19
+        ],
         "status": "todo",
         "subtasks": [
           {
@@ -459,7 +504,9 @@
         "details": "Connect the GitHub repository to Netlify or Vercel. Configure the build settings and environment variables (database URL, API keys for Stripe, SendGrid, etc.). Set up production, staging, and preview deployment environments. Configure weekly database backups via the hosting provider's tools (e.g., Supabase backups).",
         "testStrategy": "Push a small change to a feature branch and verify a preview deployment is created. Merge the branch to `main` and confirm the production site is automatically updated. Check that all environment variables are correctly loaded in production. Manually trigger and restore a database backup to verify the process works.",
         "priority": "high",
-        "dependencies": [20],
+        "dependencies": [
+          20
+        ],
         "status": "todo",
         "subtasks": [
           {
@@ -503,7 +550,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-10T04:45:30.301Z",
+      "updated": "2025-08-10T06:00:04.783Z",
       "description": "Tasks for master context"
     }
   }

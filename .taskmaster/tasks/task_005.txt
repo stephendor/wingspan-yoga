@@ -1,11 +1,11 @@
 # Task ID: 5
-# Title: 
+# Title: Develop the User Logout API Endpoint
 # Status: pending
 # Dependencies: None
 # Priority: medium
-# Description: 
-# Details:
+# Description: Create a protected API endpoint (e.g., `POST /api/auth/logout`) to invalidate a user's current session.
+# Details:This endpoint must be protected by the authentication middleware. It should identify the session token from the request and invalidate it in the database, for example, by deleting the corresponding record from the `sessions` table. This ensures the token can no longer be used.
 
 
-# Test Strategy:
+# Test Strategy:Write an integration test: 1. Log in to get a token. 2. Use the token to call the logout endpoint. 3. Attempt to use the same token again on a protected route and verify that access is denied with a 401 Unauthorized status.
 

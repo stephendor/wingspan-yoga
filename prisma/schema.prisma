@@ -1,0 +1,354 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Authentication
+  password     String?
+  emailVerified DateTime?
+  
+  // Profile Information
+  bio          String?
+  phone        String?
+  dateOfBirth  DateTime?
+  emergencyContact String?
+  
+  // Subscription & Membership
+  membershipType   MembershipType   @default(FREE)
+  membershipStatus MembershipStatus @default(ACTIVE)
+  subscriptionId   String?          @unique
+  
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  subscription  Subscription? @relation(fields: [subscriptionId], references: [id])
+  bookings      Booking[]
+  videoProgress VideoProgress[]
+  reviews       Review[]
+  payments      Payment[]
+  
+  @@map("users")
+}
+
+// Authentication Models (NextAuth.js compatible)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// Subscription & Payment Models
+model Subscription {
+  id                    String             @id @default(cuid())
+  stripeSubscriptionId  String             @unique
+  stripePriceId         String
+  stripeCustomerId      String
+  plan                  MembershipType
+  status                MembershipStatus
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelAtPeriodEnd     Boolean            @default(false)
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  // Relations
+  user     User?
+  payments Payment[]
+
+  @@map("subscriptions")
+}
+
+model Payment {
+  id                  String        @id @default(cuid())
+  stripePaymentId     String        @unique
+  amount              Int           // Amount in cents
+  currency            String        @default("usd")
+  status              PaymentStatus
+  description         String?
+  paymentMethod       String?       // card, bank_transfer, etc.
+  createdAt           DateTime      @default(now())
+
+  // Relations
+  userId         String
+  subscriptionId String?
+  classId        String?
+  
+  user         User          @relation(fields: [userId], references: [id])
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
+  class        Class?        @relation(fields: [classId], references: [id])
+
+  @@map("payments")
+}
+
+// Instructor Model
+model Instructor {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  bio          String?
+  avatar       String?
+  specialties  String[] // Array of specialties
+  isActive     Boolean  @default(true)
+  yearsExp     Int?     // Years of experience
+  certification String?
+  socialLinks  Json?    // JSON object for social media links
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  classes Class[]
+  videos  Video[]
+
+  @@map("instructors")
+}
+
+// Video Library Models
+model Video {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  duration    Int           // Duration in seconds
+  thumbnailUrl String?
+  videoUrl    String
+  streamingUrl String?      // For streaming services like Vimeo/Mux
+  category    VideoCategory
+  difficulty  DifficultyLevel
+  tags        String[]
+  isPublic    Boolean       @default(false)
+  membershipRequired MembershipType @default(FREE)
+  viewCount   Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  instructorId String
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  progress     VideoProgress[]
+  reviews      Review[]
+
+  @@map("videos")
+}
+
+model VideoProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  videoId     String
+  progress    Float    @default(0) // Percentage completed (0-100)
+  completed   Boolean  @default(false)
+  lastWatched DateTime @default(now())
+
+  // Relations
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, videoId])
+  @@map("video_progress")
+}
+
+// Class Booking Models
+model Class {
+  id          String      @id @default(cuid())
+  title       String
+  description String?
+  startTime   DateTime
+  endTime     DateTime
+  capacity    Int
+  price       Int         // Price in cents
+  difficulty  DifficultyLevel
+  category    VideoCategory
+  location    ClassLocation
+  status      ClassStatus @default(SCHEDULED)
+  meetingUrl  String?     // For online classes
+  notes       String?     // Special instructions
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  instructorId String
+  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  bookings     Booking[]
+  payments     Payment[]
+
+  @@map("classes")
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  status    BookingStatus @default(CONFIRMED)
+  bookedAt  DateTime      @default(now())
+  cancelledAt DateTime?
+  notes     String?       // Special requests or notes
+
+  // Relations
+  userId  String
+  classId String
+  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classId])
+  @@map("bookings")
+}
+
+// Review & Rating Models
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1-5 stars
+  title     String?
+  content   String?
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations - can review either videos or classes
+  userId  String
+  videoId String?
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video   Video? @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@map("reviews")
+}
+
+// Content Management
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String?
+  content     String
+  featured    Boolean  @default(false)
+  published   Boolean  @default(false)
+  publishedAt DateTime?
+  tags        String[]
+  authorName  String
+  authorAvatar String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("blog_posts")
+}
+
+// System Settings
+model SiteSettings {
+  id                String   @id @default(cuid())
+  key               String   @unique
+  value             Json
+  description       String?
+  updatedAt         DateTime @updatedAt
+
+  @@map("site_settings")
+}
+
+// Enums
+enum MembershipType {
+  FREE
+  BASIC
+  PREMIUM
+  UNLIMITED
+}
+
+enum MembershipStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  TRIALING
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  UNPAID
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum VideoCategory {
+  VINYASA
+  HATHA
+  YIN
+  RESTORATIVE
+  MEDITATION
+  BREATHWORK
+  POWER
+  GENTLE
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ALL_LEVELS
+}
+
+enum ClassLocation {
+  STUDIO
+  ONLINE
+  HYBRID
+}
+
+enum ClassStatus {
+  SCHEDULED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+  WAITLIST
+}
