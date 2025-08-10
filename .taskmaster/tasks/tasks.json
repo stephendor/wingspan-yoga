@@ -9,7 +9,7 @@
         "testStrategy": "Verify that the Next.js development server runs without errors. Confirm that Tailwind CSS utility classes are correctly applied to a sample component. Check that Prettier and ESLint format and lint the code on commit.",
         "priority": "high",
         "dependencies": [],
-        "status": "todo",
+        "status": "done",
         "subtasks": []
       },
       {
