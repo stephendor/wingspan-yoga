@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/nextauth'
 import { prisma } from '@/lib/prisma'
 import { createPaymentIntent, getOrCreateCustomer } from '@/lib/stripe'
+import { randomUUID } from 'crypto'
 import { createPaymentIntentSchema } from '@/lib/validation/booking'
 import { ClassStatus } from '@prisma/client'
 
@@ -103,8 +104,11 @@ export async function POST(request: NextRequest) {
       userId: session.user.id
     })
 
-    // Create payment intent
-    const paymentIntent = await createPaymentIntent({
+  // Generate idempotency key (used client-side only if needed for retries)
+  const idempotencyKey = randomUUID()
+
+  // Create payment intent
+  const paymentIntent = await createPaymentIntent({
       amount,
       currency,
       description: `Booking for ${classData.title} on ${classData.startTime.toLocaleDateString()}`,
@@ -115,6 +119,7 @@ export async function POST(request: NextRequest) {
         userEmail: session.user.email!,
         instructorName: classData.instructor.name,
         startTime: classData.startTime.toISOString(),
+    idempotencyKey,
       },
       customerId: customer.id
     })
@@ -139,7 +144,9 @@ export async function POST(request: NextRequest) {
       paymentIntentId: paymentIntent.id
     }
 
-    return NextResponse.json(response)
+    // Include idempotency key as header (optional consumption)
+    return NextResponse.json(response, { headers: { 'x-idempotency-key': idempotencyKey } })
+    
   } catch (error) {
     console.error('Error creating payment intent:', error)
     

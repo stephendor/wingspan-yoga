@@ -2,9 +2,9 @@
  * @jest-environment node
  */
 
-import { POST } from '@/app/api/auth/logout/route'
 import { getServerSession } from 'next-auth'
-import { prisma } from '@/lib/prisma'
+import { prismaMock, resetPrismaMock } from '../utils/prismaMock'
+import { importPost } from '../utils/importPost'
 
 // Mock NextAuth
 jest.mock('next-auth', () => ({
@@ -16,20 +16,15 @@ jest.mock('@/lib/auth/nextauth', () => ({
   authOptions: {},
 }))
 
-// Mock Prisma
-jest.mock('@/lib/prisma', () => ({
-  prisma: {
-    session: {
-      deleteMany: jest.fn(),
-    },
-  },
-}))
+// Mock Prisma via shared mock utility
+jest.mock('@/lib/prisma', () => ({ prisma: prismaMock }))
 
 const mockGetServerSession = getServerSession as jest.MockedFunction<typeof getServerSession>
-const mockDeleteMany = jest.mocked(prisma.session.deleteMany)
+const mockDeleteMany = prismaMock.session.deleteMany as jest.Mock
 
 describe('POST /api/auth/logout', () => {
   beforeEach(() => {
+    resetPrismaMock()
     jest.clearAllMocks()
   })
 
@@ -47,7 +42,8 @@ describe('POST /api/auth/logout', () => {
     // Mock successful session deletion
     mockDeleteMany.mockResolvedValue({ count: 1 })
 
-    const response = await POST()
+  const POST = await importPost<() => Promise<Response>>('@/app/api/auth/logout/route')
+  const response = await POST()
     const data = await response.json()
 
     expect(response.status).toBe(200)
@@ -67,7 +63,8 @@ describe('POST /api/auth/logout', () => {
     // Mock no session
     mockGetServerSession.mockResolvedValue(null)
 
-    const response = await POST()
+  const POST = await importPost<() => Promise<Response>>('@/app/api/auth/logout/route')
+  const response = await POST()
     const data = await response.json()
 
     expect(response.status).toBe(401)
@@ -86,7 +83,8 @@ describe('POST /api/auth/logout', () => {
       expires: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
     })
 
-    const response = await POST()
+  const POST = await importPost<() => Promise<Response>>('@/app/api/auth/logout/route')
+  const response = await POST()
     const data = await response.json()
 
     expect(response.status).toBe(401)
@@ -112,28 +110,34 @@ describe('POST /api/auth/logout', () => {
     // Mock database error
     mockDeleteMany.mockRejectedValue(new Error('Database error'))
 
-    const response = await POST()
+  const POST = await importPost<() => Promise<Response>>('@/app/api/auth/logout/route')
+  const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+  const response = await POST()
     const data = await response.json()
 
     // Should still return success since client-side logout should proceed
     expect(response.status).toBe(200)
-    expect(data).toEqual({
+  expect(data).toEqual({
       success: true,
       message: 'Successfully logged out',
     })
+  warnSpy.mockRestore()
   })
 
   it('should handle auth function errors', async () => {
     // Mock auth function error
     mockGetServerSession.mockRejectedValue(new Error('Auth error'))
 
-    const response = await POST()
+  const POST = await importPost<() => Promise<Response>>('@/app/api/auth/logout/route')
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+  const response = await POST()
     const data = await response.json()
 
     expect(response.status).toBe(500)
-    expect(data).toEqual({
+  expect(data).toEqual({
       success: false,
       message: 'An unexpected error occurred',
     })
+  errorSpy.mockRestore()
   })
 })

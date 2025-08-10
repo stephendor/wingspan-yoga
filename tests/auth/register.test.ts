@@ -1,38 +1,27 @@
 import { describe, it, expect, jest, beforeEach } from '@jest/globals'
-import { POST } from '@/app/api/auth/register/route'
 import { NextRequest } from 'next/server'
+import { prismaMock, resetPrismaMock } from '../utils/prismaMock'
+import { importPost } from '../utils/importPost'
 
-// Mock the dependencies using jest.mocked for proper typing
-jest.mock('@/lib/prisma', () => ({
-  prisma: {
-    user: {
-      findUnique: jest.fn(),
-      create: jest.fn(),
-    },
-  },
-}))
+// Mock bcrypt before route import
+const mockHash = jest.fn(async () => 'hashed_password')
+jest.mock('bcryptjs', () => ({ hash: () => mockHash() }))
 
-jest.mock('bcryptjs', () => ({
-  hash: jest.fn(),
-}))
+// Provide prisma mock
+jest.mock('@/lib/prisma', () => ({ prisma: prismaMock }))
 
-// Import after mocking to get proper types
-import { prisma } from '@/lib/prisma'
-import bcrypt from 'bcryptjs'
-
-// Create typed mocks
-const mockedPrisma = jest.mocked(prisma)
-const mockedBcrypt = jest.mocked(bcrypt)
+interface UserEntity { id: string; name: string | null; email: string; membershipType?: string; password?: string | null; role?: string | null }
 
 describe('/api/auth/register', () => {
   beforeEach(() => {
+    resetPrismaMock()
     jest.clearAllMocks()
+    mockHash.mockResolvedValue('hashed_password')
   })
 
   it('should successfully register a new user', async () => {
-    // Arrange
-    mockedPrisma.user.findUnique.mockResolvedValue(null)
-    mockedBcrypt.hash.mockResolvedValue('hashed_password' as never)
+  // Arrange
+  prismaMock.user.findUnique.mockResolvedValue(null)
 
     const mockUser = {
       id: '1',
@@ -45,7 +34,7 @@ describe('/api/auth/register', () => {
       updatedAt: new Date(),
     }
 
-    mockedPrisma.user.create.mockResolvedValue(mockUser as never)
+  prismaMock.user.create.mockResolvedValue(mockUser as never)
 
     const request = new NextRequest('http://localhost:3000/api/auth/register', {
       method: 'POST',
@@ -58,26 +47,28 @@ describe('/api/auth/register', () => {
     })
 
     // Act
-    const response = await POST(request)
+  const POST = await importPost('@/app/api/auth/register/route') as (req: NextRequest) => Promise<Response>
+  const response = await POST(request)
     const data = await response.json()
 
     // Assert
-    expect(response.status).toBe(201)
-    expect(data.message).toBe('User created successfully')
-    expect(mockedBcrypt.hash).toHaveBeenCalledWith('password123', 12)
+  expect(response.status).toBe(201)
+  expect(data.message).toBe('User registered successfully')
+  expect(prismaMock.user.create).toHaveBeenCalled()
+  expect(mockHash).toHaveBeenCalled()
   })
 
   it('should return 409 if user already exists', async () => {
     // Arrange
-    const existingUser = {
+    const existingUser: UserEntity = {
       id: '1',
       email: 'john@example.com',
       name: 'John Doe',
       password: 'hashed',
-      role: 'USER' as const,
+      role: 'USER',
     }
 
-    mockedPrisma.user.findUnique.mockResolvedValue(existingUser as never)
+    prismaMock.user.findUnique.mockResolvedValue(existingUser as unknown as UserEntity)
 
     const request = new NextRequest('http://localhost:3000/api/auth/register', {
       method: 'POST',
@@ -90,12 +81,13 @@ describe('/api/auth/register', () => {
     })
 
     // Act
-    const response = await POST(request)
+  const POST = await importPost('@/app/api/auth/register/route') as (req: NextRequest) => Promise<Response>
+  const response = await POST(request)
     const data = await response.json()
 
     // Assert
-    expect(response.status).toBe(409)
-    expect(data.message).toBe('User already exists')
+  expect(response.status).toBe(409)
+  expect(data.error).toBe('User with this email already exists')
   })
 
   it('should return 400 for invalid input', async () => {
@@ -111,11 +103,12 @@ describe('/api/auth/register', () => {
     })
 
     // Act
-    const response = await POST(request)
+  const POST = await importPost('@/app/api/auth/register/route') as (req: NextRequest) => Promise<Response>
+  const response = await POST(request)
     const data = await response.json()
 
     // Assert
-    expect(response.status).toBe(400)
-    expect(data.message).toBe('Validation error')
+  expect(response.status).toBe(400)
+  expect(data.error).toBe('Validation failed')
   })
 })

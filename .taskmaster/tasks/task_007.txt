@@ -1,6 +1,6 @@
 # Task ID: 7
 # Title: Class Schedule Display and Filtering (ST-101)
-# Status: todo
+# Status: done
 # Dependencies: 2, 3
 # Priority: high
 # Description: Create the interactive class schedule page that fetches and displays class data with real-time filtering capabilities.

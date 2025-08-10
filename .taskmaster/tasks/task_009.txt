@@ -1,6 +1,6 @@
 # Task ID: 9
 # Title: Membership Subscription System (ST-109)
-# Status: todo
+# Status: in-progress
 # Dependencies: 4, 8
 # Priority: high
 # Description: Integrate Stripe Subscriptions to allow users to sign up for tiered membership plans.
@@ -9,3 +9,59 @@ Set up subscription products and prices in the Stripe dashboard. Use Stripe Chec
 
 # Test Strategy:
 Test the full subscription lifecycle: sign up for a plan, verify membership status is active in the app, use the Stripe dashboard to cancel, and confirm the webhook correctly updates the user's status to inactive.
+
+# Subtasks:
+## 1. Prisma schema & migration for subscription models [pending]
+### Dependencies: None
+### Description: Add SubscriptionPlan (id, stripePriceId, interval, amount, currency, active), UserSubscription (id, userId, planId, status, currentPeriodEnd, cancelAtPeriodEnd, rawStripeData JSON). Run migration.
+### Details:
+Deliverables: schema.prisma additions, prisma migrate dev, update DATABASE.md ERD. Status mapping: active|trialing|past_due|canceled|incomplete.
+
+## 2. Stripe product & price configuration layer [pending]
+### Dependencies: None
+### Description: Create config util to load required price/product IDs from env or Stripe API; script to verify existence.
+### Details:
+Add lib/stripe/plans.ts to map internal plan keys to stripePriceId. Add validation at server startup (lazy) with descriptive error if missing.
+
+## 3. Create subscription checkout session endpoint [pending]
+### Dependencies: None
+### Description: POST /api/subscriptions/create: auth required; validate plan, create Stripe Checkout Session (mode=subscription), return session URL.
+### Details:
+Include success & cancel URLs, metadata (userId, planKey). Error codes: plan_not_found, stripe_error.
+
+## 4. Implement Stripe webhook handler [pending]
+### Dependencies: None
+### Description: /api/webhooks/stripe: verify signature, handle checkout.session.completed, customer.subscription.updated|deleted|trial_will_end.
+### Details:
+Persist raw event id for idempotency. Update UserSubscription row & user membership flags. Map statuses. Log transitions.
+
+## 5. Membership status propagation [pending]
+### Dependencies: None
+### Description: Augment session/auth utilities to expose active membership & plan tier from DB.
+### Details:
+Extend next-auth callbacks (session, jwt) or custom hook to include membership fields. Cache briefly (60s) if needed.
+
+## 6. Plans UI & purchase flow [pending]
+### Dependencies: None
+### Description: Membership plans page listing tiers, benefits, CTA to create checkout session; success route handles redirect post-session.
+### Details:
+Add /app/membership/page.tsx. Reuse UI components. Loading & error states for session creation.
+
+## 7. Billing portal & cancellation handling [pending]
+### Dependencies: None
+### Description: Endpoint/UI to generate Stripe billing portal session for self-service cancellations & payment method updates.
+### Details:
+POST /api/subscriptions/portal returns URL; handle cancelAtPeriodEnd updates on webhook events.
+
+## 8. Test suite & idempotency validation [pending]
+### Dependencies: None
+### Description: Unit + integration tests: plan validation, checkout creation, webhook event processing (idempotent), membership gating to video endpoint stub.
+### Details:
+Add mocks for Stripe SDK. Store processed event IDs table or in-memory for test. Simulate event replay.
+
+## 9. Documentation & operational runbook [pending]
+### Dependencies: None
+### Description: Compose docs/subscriptions.md: architecture, model diagram, event mapping, failure modes, test strategy, extension points.
+### Details:
+Include status mapping table (Stripe→internal), sequence diagram (text-based), operational checklist (rotating keys, handling failed payments).
+

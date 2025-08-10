@@ -78,17 +78,36 @@ export interface Booking {
 export type BookingStatus = 'confirmed' | 'cancelled' | 'completed' | 'no_show';
 
 // Subscription and Payment Types
-export interface Subscription {
+export interface SubscriptionPlan {
+  id: string;
+  stripePriceId: string;
+  interval: BillingInterval;
+  amount: number; // in smallest currency unit
+  currency: string;
+  name: string;
+  description?: string;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface UserSubscription {
   id: string;
   userId: string;
-  plan: MembershipType;
+  planId: string;
   status: MembershipStatus;
   currentPeriodStart: Date;
   currentPeriodEnd: Date;
   cancelAtPeriodEnd: boolean;
   stripeSubscriptionId: string;
-  priceId: string;
+  stripeCustomerId: string;
+  rawStripeData?: unknown; // JSON blob
+  createdAt: Date;
+  updatedAt: Date;
+  plan?: SubscriptionPlan;
 }
+
+export type BillingInterval = 'monthly' | 'yearly';
 
 export interface PaymentMethod {
   id: string;

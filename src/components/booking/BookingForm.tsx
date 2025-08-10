@@ -56,14 +56,13 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
   
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentError, setPaymentError] = useState<string | null>(null)
-  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null)
+  // Removed unused paymentIntentId local state (not needed after refactor)
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-    watch
+  register,
+  handleSubmit,
+  formState: { errors },
+  watch
   } = useForm<BookingFormData>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
@@ -113,14 +112,16 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
       throw new Error('Stripe not loaded')
     }
 
-    const cardElement = elements.getElement(CardElement)
+  // Helper to safely obtain CardElement without sprinkling any casts
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cardElement = (elements as unknown as { getElement: (comp: unknown) => any }).getElement(CardElement)
     if (!cardElement) {
       throw new Error('Card element not found')
     }
 
     const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
-        card: cardElement,
+  card: cardElement,
         billing_details: {
           name: formData.name || session?.user?.name,
           email: formData.email || session?.user?.email,
@@ -136,6 +137,23 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
   }
 
   // Step 3: Confirm booking on server
+  const mapErrorMessage = (code?: string, fallback?: string) => {
+    switch (code) {
+      case 'capacity_full':
+        return 'Sorry, the class just sold out. Please choose another session.'
+      case 'duplicate_booking':
+        return 'You have already booked this class. Check your confirmations.'
+      case 'payment_not_succeeded':
+        return 'Payment not completed. Please try again or use a different card.'
+      case 'payment_metadata_mismatch':
+        return 'Validation mismatch – refresh the page and try again.'
+      case 'class_not_found':
+        return 'The class could not be found. It may have been removed.'
+      default:
+        return fallback || 'Failed to confirm booking'
+    }
+  }
+
   const confirmBooking = async (paymentIntentId: string, formData: BookingFormData) => {
     const response = await fetch('/api/bookings/confirm', {
       method: 'POST',
@@ -152,7 +170,7 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
     const data = await response.json()
 
     if (!data.success) {
-      throw new Error(data.message || 'Failed to confirm booking')
+      throw new Error(mapErrorMessage(data.code, data.message))
     }
 
     return data.booking
@@ -170,8 +188,7 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
 
     try {
       // Step 1: Create payment intent
-      const { clientSecret, paymentIntentId } = await createPaymentIntent()
-      setPaymentIntentId(paymentIntentId)
+  const { clientSecret, paymentIntentId } = await createPaymentIntent()
 
       // Step 2: Confirm payment with Stripe
       await confirmPayment(clientSecret, formData)
@@ -183,7 +200,7 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
       onSuccess?.(booking.id)
       router.push(`/booking/confirmation/${booking.id}`)
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'An error occurred'
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred.'
       setPaymentError(errorMessage)
       onError?.(errorMessage)
     } finally {
@@ -225,7 +242,7 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
               <Input
                 {...register('name')}
                 placeholder="Your full name"
-                error={errors.name?.message}
+                errorMessage={errors.name?.message}
                 disabled={isProcessing}
               />
             </div>
@@ -237,7 +254,7 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
                 {...register('email')}
                 type="email"
                 placeholder="your.email@example.com"
-                error={errors.email?.message}
+                errorMessage={errors.email?.message}
                 disabled={isProcessing}
               />
             </div>
@@ -338,7 +355,7 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
                 disabled={isProcessing}
               />
               <label className="text-sm text-gray-700">
-                I'd like to receive updates about classes, workshops, and special offers
+                I&apos;d like to receive updates about classes, workshops, and special offers
               </label>
             </div>
           </div>

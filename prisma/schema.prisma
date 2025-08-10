@@ -20,29 +20,29 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Authentication
-  password     String?
+  password      String?
   emailVerified DateTime?
-  
+
   // Profile Information
-  bio          String?
-  phone        String?
-  dateOfBirth  DateTime?
+  bio              String?
+  phone            String?
+  dateOfBirth      DateTime?
   emergencyContact String?
-  
+
   // Subscription & Membership
   membershipType   MembershipType   @default(FREE)
   membershipStatus MembershipStatus @default(ACTIVE)
   subscriptionId   String?          @unique
-  
+
   // Relations
-  accounts      Account[]
-  sessions      Session[]
-  subscription  Subscription? @relation(fields: [subscriptionId], references: [id])
-  bookings      Booking[]
-  videoProgress VideoProgress[]
-  reviews       Review[]
-  payments      Payment[]
-  
+  accounts           Account[]
+  sessions           Session[]
+  activeSubscription UserSubscription? @relation(fields: [subscriptionId], references: [id])
+  bookings           Booking[]
+  videoProgress      VideoProgress[]
+  reviews            Review[]
+  payments           Payment[]
+
   @@map("users")
 }
 
@@ -86,63 +86,82 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// Subscription & Payment Models
-model Subscription {
-  id                    String             @id @default(cuid())
-  stripeSubscriptionId  String             @unique
-  stripePriceId         String
-  stripeCustomerId      String
-  plan                  MembershipType
-  status                MembershipStatus
-  currentPeriodStart    DateTime
-  currentPeriodEnd      DateTime
-  cancelAtPeriodEnd     Boolean            @default(false)
-  createdAt             DateTime           @default(now())
-  updatedAt             DateTime           @updatedAt
+// Subscription & Payment Models (refactored)
+model SubscriptionPlan {
+  id            String          @id @default(cuid())
+  stripePriceId String          @unique
+  interval      BillingInterval
+  amount        Int // stored in smallest currency unit (e.g. cents)
+  currency      String          @default("usd")
+  name          String // display name (e.g. Basic, Premium)
+  description   String?
+  active        Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   // Relations
+  userSubscriptions UserSubscription[]
+
+  @@map("subscription_plans")
+}
+
+model UserSubscription {
+  id                   String           @id @default(cuid())
+  stripeSubscriptionId String           @unique
+  stripeCustomerId     String
+  planId               String
+  status               MembershipStatus
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean          @default(false)
+  rawStripeData        Json?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  // Relations
+  plan     SubscriptionPlan @relation(fields: [planId], references: [id])
   user     User?
   payments Payment[]
 
-  @@map("subscriptions")
+  @@map("subscriptions") // Preserve existing table name
 }
 
 model Payment {
-  id                  String        @id @default(cuid())
-  stripePaymentId     String        @unique
-  amount              Int           // Amount in cents
-  currency            String        @default("usd")
-  status              PaymentStatus
-  description         String?
-  paymentMethod       String?       // card, bank_transfer, etc.
-  createdAt           DateTime      @default(now())
+  id              String        @id @default(cuid())
+  stripePaymentId String        @unique
+  amount          Int // Amount in cents
+  currency        String        @default("usd")
+  status          PaymentStatus
+  description     String?
+  paymentMethod   String? // card, bank_transfer, etc.
+  createdAt       DateTime      @default(now())
 
   // Relations
-  userId         String
-  subscriptionId String?
-  classId        String?
-  
-  user         User          @relation(fields: [userId], references: [id])
-  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
-  class        Class?        @relation(fields: [classId], references: [id])
+  userId             String
+  userSubscriptionId String? @map("subscriptionId") // keep underlying column for now
+  classId            String?
+
+  user             User              @relation(fields: [userId], references: [id])
+  userSubscription UserSubscription? @relation(fields: [userSubscriptionId], references: [id])
+  class            Class?            @relation(fields: [classId], references: [id])
 
   @@map("payments")
 }
 
 // Instructor Model
 model Instructor {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  bio          String?
-  avatar       String?
-  specialties  String[] // Array of specialties
-  isActive     Boolean  @default(true)
-  yearsExp     Int?     // Years of experience
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  bio           String?
+  avatar        String?
+  specialties   String[] // Array of specialties
+  isActive      Boolean  @default(true)
+  yearsExp      Int? // Years of experience
   certification String?
-  socialLinks  Json?    // JSON object for social media links
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  socialLinks   Json? // JSON object for social media links
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   // Relations
   classes Class[]
@@ -153,25 +172,25 @@ model Instructor {
 
 // Video Library Models
 model Video {
-  id          String        @id @default(cuid())
-  title       String
-  description String?
-  duration    Int           // Duration in seconds
-  thumbnailUrl String?
-  videoUrl    String
-  streamingUrl String?      // For streaming services like Vimeo/Mux
-  category    VideoCategory
-  difficulty  DifficultyLevel
-  tags        String[]
-  isPublic    Boolean       @default(false)
-  membershipRequired MembershipType @default(FREE)
-  viewCount   Int           @default(0)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id                 String          @id @default(cuid())
+  title              String
+  description        String?
+  duration           Int // Duration in seconds
+  thumbnailUrl       String?
+  videoUrl           String
+  streamingUrl       String? // For streaming services like Vimeo/Mux
+  category           VideoCategory
+  difficulty         DifficultyLevel
+  tags               String[]
+  isPublic           Boolean         @default(false)
+  membershipRequired MembershipType  @default(FREE)
+  viewCount          Int             @default(0)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
 
   // Relations
   instructorId String
-  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  instructor   Instructor      @relation(fields: [instructorId], references: [id])
   progress     VideoProgress[]
   reviews      Review[]
 
@@ -196,21 +215,21 @@ model VideoProgress {
 
 // Class Booking Models
 model Class {
-  id          String      @id @default(cuid())
+  id          String          @id @default(cuid())
   title       String
   description String?
   startTime   DateTime
   endTime     DateTime
   capacity    Int
-  price       Int         // Price in cents
+  price       Int // Price in cents
   difficulty  DifficultyLevel
   category    VideoCategory
   location    ClassLocation
-  status      ClassStatus @default(SCHEDULED)
-  meetingUrl  String?     // For online classes
-  notes       String?     // Special instructions
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  status      ClassStatus     @default(SCHEDULED)
+  meetingUrl  String? // For online classes
+  notes       String? // Special instructions
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 
   // Relations
   instructorId String
@@ -222,17 +241,17 @@ model Class {
 }
 
 model Booking {
-  id        String        @id @default(cuid())
-  status    BookingStatus @default(CONFIRMED)
-  bookedAt  DateTime      @default(now())
+  id          String        @id @default(cuid())
+  status      BookingStatus @default(CONFIRMED)
+  bookedAt    DateTime      @default(now())
   cancelledAt DateTime?
-  notes     String?       // Special requests or notes
+  notes       String? // Special requests or notes
 
   // Relations
   userId  String
   classId String
-  user    User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  class   Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
 
   @@unique([userId, classId])
   @@map("bookings")
@@ -241,7 +260,7 @@ model Booking {
 // Review & Rating Models
 model Review {
   id        String   @id @default(cuid())
-  rating    Int      // 1-5 stars
+  rating    Int // 1-5 stars
   title     String?
   content   String?
   isPublic  Boolean  @default(true)
@@ -251,39 +270,39 @@ model Review {
   // Relations - can review either videos or classes
   userId  String
   videoId String?
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video   Video? @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video   Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
 }
 
 // Content Management
 model BlogPost {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  excerpt     String?
-  content     String
-  featured    Boolean  @default(false)
-  published   Boolean  @default(false)
-  publishedAt DateTime?
-  tags        String[]
-  authorName  String
+  id           String    @id @default(cuid())
+  title        String
+  slug         String    @unique
+  excerpt      String?
+  content      String
+  featured     Boolean   @default(false)
+  published    Boolean   @default(false)
+  publishedAt  DateTime?
+  tags         String[]
+  authorName   String
   authorAvatar String?
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  imageUrl     String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   @@map("blog_posts")
 }
 
 // System Settings
 model SiteSettings {
-  id                String   @id @default(cuid())
-  key               String   @unique
-  value             Json
-  description       String?
-  updatedAt         DateTime @updatedAt
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       Json
+  description String?
+  updatedAt   DateTime @updatedAt
 
   @@map("site_settings")
 }
@@ -304,6 +323,11 @@ enum MembershipStatus {
   INCOMPLETE
   INCOMPLETE_EXPIRED
   UNPAID
+}
+
+enum BillingInterval {
+  MONTHLY
+  YEARLY
 }
 
 enum PaymentStatus {

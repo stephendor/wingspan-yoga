@@ -1,11 +1,12 @@
 # Task ID: 5
-# Title: Develop the User Logout API Endpoint
-# Status: pending
-# Dependencies: None
-# Priority: medium
-# Description: Create a protected API endpoint (e.g., `POST /api/auth/logout`) to invalidate a user's current session.
-# Details:This endpoint must be protected by the authentication middleware. It should identify the session token from the request and invalidate it in the database, for example, by deleting the corresponding record from the `sessions` table. This ensures the token can no longer be used.
+# Title: User Logout API Endpoint (ST-103)
+# Status: done
+# Dependencies: 4
+# Priority: high
+# Description: Implement protected logout endpoint and client utilities to terminate user sessions.
+# Details:
+Implemented POST /api/auth/logout plus client helpers in `src/lib/auth/logout.ts` and UI component `LogoutButton`. Removes server-side session artifacts and signs user out via NextAuth. Robust error handling and graceful degradation.
+<info added on 2025-08-10T07:05:00Z>See TASK5_COMPLETION.md for comprehensive implementation summary and tests.</info>
 
-
-# Test Strategy:Write an integration test: 1. Log in to get a token. 2. Use the token to call the logout endpoint. 3. Attempt to use the same token again on a protected route and verify that access is denied with a 401 Unauthorized status.
-
+# Test Strategy:
+Integration tests in tests/auth/logout.test.ts validate success, unauthenticated, malformed session, DB error resilience, and auth failure handling.

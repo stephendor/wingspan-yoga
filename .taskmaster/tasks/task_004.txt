@@ -1,6 +1,6 @@
 # Task ID: 4
 # Title: User Authentication and Session Management (ST-103)
-# Status: todo
+# Status: done
 # Dependencies: 2
 # Priority: high
 # Description: Implement secure user registration, login, and session management using NextAuth.js or Clerk.

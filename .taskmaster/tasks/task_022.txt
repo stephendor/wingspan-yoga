@@ -1,0 +1,13 @@
+# Task ID: 22
+# Title: Refactor Auth Tests for Maintainability and Clarity
+# Status: pending
+# Dependencies: 18
+# Priority: medium
+# Description: Improve the authentication test suite by centralizing the Prisma mock, creating a reusable API request helper, and reducing console noise to create a cleaner, more efficient development workflow.
+# Details:
+1. **Centralize Prisma Mock:** Create a single, mock-extended Prisma client instance in a dedicated test setup file (e.g., `tests/singleton.ts`). Use `jest-mock-extended` to create a deep mock. Configure Jest (`setupFilesAfterEnv`) to use this setup file, ensuring all tests use the same mock instance without re-declaration. Refactor all existing auth tests to remove local mock setups.
+2. **Create API Request Helper:** The user request mentioned an `importPost` helper; this will be implemented as a generic API request helper. Create a function like `testApiHandler(handler, { method, body, query, headers })` that uses `node-mocks-http` to simulate API requests. This helper will encapsulate the creation of mock `NextApiRequest` and `NextApiResponse` objects, executing the handler, and returning the result for assertions. Replace manual mock object creation in tests with this helper.
+3. **Suppress Warnings & Reduce Console Noise:** For tests that are expected to trigger console output (e.g., testing a 401 error which logs an error message), use `jest.spyOn(console, 'error').mockImplementation(() => {})` to temporarily silence the output for that specific test case. Use `afterEach(() => { jest.restoreAllMocks(); })` to ensure spies are reset between tests and do not affect other parts of the suite.
+
+# Test Strategy:
+Run the entire test suite (`npm test`) and confirm all authentication-related tests still pass. Review the test runner's console output to verify that it is free of benign warnings and expected error logs. Manually inspect the pull request to confirm the shared `prismaMock` and the new API request helper are used correctly, reducing code duplication. Temporarily break an auth endpoint and verify that the corresponding test fails with a clear, actionable error message, ensuring the console suppression logic doesn't hide real failures.
