@@ -10,7 +10,7 @@ Initialize taskmaster-ai in my project
 
 _**Assistant**_
 
-The package `taskmaster-ai` could not be found in the npm registry. Please verify the package name or provide installation instructions if it is hosted elsewhere (e.g., GitHub, private registry, or a tarball). 
+The package `taskmaster-ai` could not be found in the npm registry. Please verify the package name or provide installation instructions if it is hosted elsewhere (e.g., GitHub, private registry, or a tarball).
 
 If you have a specific source or installation method, let me know and I can proceed accordingly.
 
@@ -40,7 +40,14 @@ I have Claude Code but not an API key and also copilot
 
 _**Assistant**_
 
+Task Master AI is now initialized in your project. To use Gemini 2.5 Pro, Flash, and Flash Lite:
 
+1. Your `.env` file is set up with your Gemini API key.
+2. The interactive setup and rule profiles for Gemini, Claude Code, and VS Code are installed.
+3. You can run `npx task-master models --setup` to select Gemini models (e.g., `gemini-2.5-pro`, `gemini-2.0-flash`, `gemini-2.0-flash-lite`) as your main or research models.
+
+If you want to change models later, rerun the setup command. Claude Code is available, but you need an Anthropic API key to use it.
+
+You are ready to use Gemini and Copilot with Task Master AI. Let me know if you need help with specific commands or further configuration.
 
 ---
-

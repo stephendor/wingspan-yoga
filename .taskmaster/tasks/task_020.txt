@@ -23,3 +23,21 @@ Install and configure @next/bundle-analyzer, identify large components and depen
 ### Details:
 Convert images to modern formats (WebP/AVIF), implement lazy loading, optimize image sizes and compression, use Next.js Image component with responsive sizing and CDN optimization
 
+## 3. Lighthouse Performance Optimization [pending]
+### Dependencies: None
+### Description: Optimize pages to achieve Lighthouse scores above 90
+### Details:
+Run Lighthouse audits on all key pages, address performance bottlenecks, optimize Core Web Vitals (FCP <1.5s, TTI <3.5s, CLS <0.1), and ensure all Lighthouse categories score >90
+
+## 4. Cross-Browser and Device Testing [pending]
+### Dependencies: None
+### Description: Perform cross-browser and cross-device compatibility testing
+### Details:
+Test the application on Chrome, Firefox, Safari, and Edge browsers on both desktop and mobile devices. Verify all functionality works correctly across different platforms and screen sizes
+
+## 5. Final Regression Testing [pending]
+### Dependencies: None
+### Description: Conduct final regression testing of all user stories
+### Details:
+Execute comprehensive testing of all critical user flows including class booking, user registration/login, video streaming, payment processing, and admin functionality. Document and resolve any issues found
+
