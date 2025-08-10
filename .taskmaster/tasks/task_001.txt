@@ -1,0 +1,11 @@
+# Task ID: 1
+# Title: Project Initialization and Scaffolding
+# Status: todo
+# Dependencies: None
+# Priority: high
+# Description: Set up the foundational structure of the project, including version control, Next.js application, and essential development tools.
+# Details:
+Initialize a GitHub repository. Create a new Next.js 14+ project using `create-next-app`. Configure Tailwind CSS, Prettier, and ESLint for consistent code style. Set up the basic folder structure (e.g., /components, /lib, /app, /styles).
+
+# Test Strategy:
+Verify that the Next.js development server runs without errors. Confirm that Tailwind CSS utility classes are correctly applied to a sample component. Check that Prettier and ESLint format and lint the code on commit.

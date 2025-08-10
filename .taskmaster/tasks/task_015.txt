@@ -1,0 +1,11 @@
+# Task ID: 15
+# Title: Blog and Content Management
+# Status: todo
+# Dependencies: 12
+# Priority: low
+# Description: Create a blog/resources section with basic CMS functionality for content creation and management.
+# Details:
+Create a `Post` model in the Prisma schema. Build an interface in the admin dashboard for creating and editing blog posts using a rich text editor like Tiptap or TinyMCE. Implement dynamic routing in Next.js to render individual blog posts. Add tagging and category functionality.
+
+# Test Strategy:
+As an admin, create a new blog post with text, images, and tags. Publish it and verify it appears on the main blog page and is accessible via its unique URL. Test the tag filtering functionality.

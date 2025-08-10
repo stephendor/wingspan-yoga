@@ -1,0 +1,11 @@
+# Task ID: 4
+# Title: User Authentication and Session Management (ST-103)
+# Status: todo
+# Dependencies: 2
+# Priority: high
+# Description: Implement secure user registration, login, and session management using NextAuth.js or Clerk.
+# Details:
+Integrate NextAuth.js with the Prisma adapter. Set up email/password and social login providers. Implement password hashing with bcrypt. Create protected API routes and server components. Configure JWT session strategy with a 24-hour expiry.
+
+# Test Strategy:
+Unit test authentication endpoints. Perform manual testing: register a new user, log in, verify session persistence on refresh, log out, and test password reset flow. Check for secure cookie flags (HttpOnly, Secure).

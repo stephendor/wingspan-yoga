@@ -1,0 +1,11 @@
+# Task ID: 12
+# Title: Admin Dashboard for Class Management (ST-105)
+# Status: todo
+# Dependencies: 4, 7
+# Priority: high
+# Description: Create a secure admin-only dashboard for performing CRUD operations on the class schedule.
+# Details:
+Create a protected route group for `/admin`. Build a UI with a table or calendar view of all classes. Implement forms (using React Hook Form) within modals or on separate pages for creating, updating, and deleting classes. Use Prisma mutations for database operations and revalidate data to update the UI.
+
+# Test Strategy:
+Log in as a non-admin user and verify access to `/admin` is denied. Log in as an admin and perform all CRUD operations. Verify that changes made in the admin dashboard are immediately reflected on the public-facing class schedule page.

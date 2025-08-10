@@ -1,0 +1,456 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Project Initialization and Scaffolding",
+        "description": "Set up the foundational structure of the project, including version control, Next.js application, and essential development tools.",
+        "details": "Initialize a GitHub repository. Create a new Next.js 14+ project using `create-next-app`. Configure Tailwind CSS, Prettier, and ESLint for consistent code style. Set up the basic folder structure (e.g., /components, /lib, /app, /styles).",
+        "testStrategy": "Verify that the Next.js development server runs without errors. Confirm that Tailwind CSS utility classes are correctly applied to a sample component. Check that Prettier and ESLint format and lint the code on commit.",
+        "priority": "high",
+        "dependencies": [],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 2,
+        "title": "Database Schema Design and Migration Setup (ST-110)",
+        "description": "Define the complete database schema using Prisma ORM and set up the initial migration for the PostgreSQL database.",
+        "details": "Use Prisma schema language (`schema.prisma`) to define models for User, Class, Booking, Subscription, Video, Retreat, etc. Establish relations (one-to-many, many-to-many). Use a provider like Supabase or Neon. Generate and run the initial database migration using `prisma migrate dev`.",
+        "testStrategy": "Review the generated ERD for correctness. Inspect the database tables and columns directly in the PostgreSQL instance to ensure they match the Prisma schema. Run a test script to create and retrieve a record from each table.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Design and Implement User Authentication Database Schema",
+            "description": "Create the necessary database tables to store user information, including credentials, profiles, and session tokens.",
+            "dependencies": [],
+            "details": "Define a `users` table with columns like `id`, `username`, `email`, `password_hash`, `created_at`, and `updated_at`. Also, define a `sessions` table for managing user login states with `id`, `user_id`, `token`, and `expires_at`. Use a migration tool like Alembic or Flyway to apply the schema.",
+            "status": "pending",
+            "testStrategy": "Verify the schema by connecting to the database and inspecting table structures. Write a test script to ensure all columns, types, and constraints (e.g., unique email) are correctly defined."
+          },
+          {
+            "id": 2,
+            "title": "Develop the User Registration API Endpoint",
+            "description": "Create a public API endpoint (e.g., `POST /api/auth/register`) that allows new users to create an account.",
+            "dependencies": [],
+            "details": "The endpoint should accept user data (e.g., email, password). It must validate the input, check for existing users, and hash the password using a strong algorithm like bcrypt before storing it in the `users` table. Return a success message or appropriate error codes.",
+            "status": "pending",
+            "testStrategy": "Write unit tests to validate input handling (valid, invalid, duplicate email). Write an integration test to simulate a registration request and verify that a new user record is created in the database with a properly hashed password."
+          },
+          {
+            "id": 3,
+            "title": "Develop the User Login API Endpoint",
+            "description": "Create an API endpoint (e.g., `POST /api/auth/login`) for authenticating existing users and issuing a session token.",
+            "dependencies": [],
+            "details": "The endpoint should accept user credentials (email and password). It must retrieve the user from the database, compare the provided password with the stored hash, and if they match, generate a session token (e.g., JWT). Store the session and return the token to the client.",
+            "status": "pending",
+            "testStrategy": "Write unit tests for the credential validation logic. Write integration tests for successful login (verifying a valid token is returned) and failed login attempts (wrong password, non-existent user), ensuring correct HTTP status codes are returned."
+          },
+          {
+            "id": 4,
+            "title": "Implement Authentication Middleware for Protected Routes",
+            "description": "Create a middleware component that intercepts requests to protected API endpoints, validates the session token, and attaches user information to the request.",
+            "dependencies": [],
+            "details": "The middleware should extract the token from the `Authorization` header. It will then validate the token's signature and expiration. If valid, it will fetch the corresponding user from the database and make it available for downstream handlers. If invalid, it should return a 401 Unauthorized error.",
+            "status": "pending",
+            "testStrategy": "Write unit tests for token extraction and validation logic. Write integration tests by making requests to a dummy protected endpoint with a valid token, an invalid token, an expired token, and no token, verifying the correct HTTP response in each case."
+          },
+          {
+            "id": 5,
+            "title": "Develop the User Logout API Endpoint",
+            "description": "Create a protected API endpoint (e.g., `POST /api/auth/logout`) to invalidate a user's current session.",
+            "dependencies": [],
+            "details": "This endpoint must be protected by the authentication middleware. It should identify the session token from the request and invalidate it in the database, for example, by deleting the corresponding record from the `sessions` table. This ensures the token can no longer be used.",
+            "status": "pending",
+            "testStrategy": "Write an integration test: 1. Log in to get a token. 2. Use the token to call the logout endpoint. 3. Attempt to use the same token again on a protected route and verify that access is denied with a 401 Unauthorized status."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "UI Design System and Core Component Library",
+        "description": "Implement the visual identity by creating a reusable component library and configuring the design tokens in Tailwind CSS.",
+        "details": "Configure `tailwind.config.js` with the brand's color palette (sage green, soft blues, terracotta), typography (Montserrat, Open Sans), and spacing scale. Create a library of core, accessible components: Button, Input, Card, Modal, and Navigation Bar using Framer Motion for subtle animations.",
+        "testStrategy": "Use Storybook or a dedicated style guide page to visually inspect all components in different states (hover, focus, disabled). Run accessibility checks (e.g., Axe) on each component to ensure proper ARIA attributes and color contrast.",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "todo",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Configure Tailwind CSS Design Tokens",
+            "description": "Set up the tailwind.config.js file with the brand's color palette, typography, and spacing system",
+            "details": "Configure primary palette (sage green, soft blues, warm neutrals), accent colors (terracotta, blush, charcoal), typography settings for Montserrat/Raleway headers and Open Sans/Lato body text, and consistent spacing scale",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 3
+          },
+          {
+            "id": 2,
+            "title": "Create Button Component",
+            "description": "Create a reusable Button component with variants, states, and accessibility features",
+            "details": "Build Button component with primary/secondary/outline variants, size options, hover/focus/disabled states, proper ARIA attributes, and subtle Framer Motion animations",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 3
+          },
+          {
+            "id": 3,
+            "title": "Create Input and Form Components",
+            "description": "Create accessible form Input and TextArea components with validation states",
+            "details": "Build Input component with different types (text, email, password), validation states (error, success), proper labels, help text, and TextArea variant. Include accessibility features like proper labeling and screen reader support",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 3
+          },
+          {
+            "id": 4,
+            "title": "Create Card Component",
+            "description": "Create Card component for displaying content with consistent styling",
+            "details": "Build Card component with header, body, and footer sections, shadow variants, hover effects, and responsive design. Include organic shapes and natural imagery styling as per brand guidelines",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 3
+          },
+          {
+            "id": 5,
+            "title": "Create Modal Component",
+            "description": "Create accessible Modal component with focus management and animations",
+            "details": "Build Modal component with overlay, close functionality, focus trapping, escape key handling, proper ARIA attributes, and smooth entrance/exit animations using Framer Motion",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 3
+          },
+          {
+            "id": 6,
+            "title": "Create Navigation Bar Component",
+            "description": "Create responsive Navigation Bar component with mobile menu",
+            "details": "Build Navigation component with desktop and mobile layouts, hamburger menu for mobile, smooth transitions, accessibility features, and integration with the authentication state",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 3
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "User Authentication and Session Management (ST-103)",
+        "description": "Implement secure user registration, login, and session management using NextAuth.js or Clerk.",
+        "details": "Integrate NextAuth.js with the Prisma adapter. Set up email/password and social login providers. Implement password hashing with bcrypt. Create protected API routes and server components. Configure JWT session strategy with a 24-hour expiry.",
+        "testStrategy": "Unit test authentication endpoints. Perform manual testing: register a new user, log in, verify session persistence on refresh, log out, and test password reset flow. Check for secure cookie flags (HttpOnly, Secure).",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "0": "c",
+        "id": 5,
+        "status": "pending",
+        "priority": "medium",
+        "dependencies": [],
+        "subtasks": [],
+        "title": "",
+        "description": "",
+        "details": "",
+        "testStrategy": ""
+      },
+      {
+        "id": 6,
+        "title": "Homepage and Static Pages Development",
+        "description": "Build the main public-facing pages of the website, including the Homepage and About page, using the established component library.",
+        "details": "Develop the Homepage with a hero section (video/image), featured offerings, testimonials, and a newsletter signup form stub. Create the 'About/Philosophy' and instructor bio pages. Ensure all pages are fully responsive and use Next.js Image for optimized images.",
+        "testStrategy": "Visually inspect pages on multiple devices (desktop, tablet, mobile). Verify all links and CTAs work. Check for content accuracy against the PRD. Run a Lighthouse audit to check initial performance and SEO scores.",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 7,
+        "title": "Class Schedule Display and Filtering (ST-101)",
+        "description": "Create the interactive class schedule page that fetches and displays class data with real-time filtering capabilities.",
+        "details": "Create a Next.js page with server-side rendering to fetch initial class data from the PostgreSQL database via Prisma. Implement client-side state management (Zustand/React Context) for interactive filters (by type, level, instructor). Ensure the calendar/list view loads in under 2 seconds.",
+        "testStrategy": "Verify that the schedule displays correct class information. Test all filter combinations to ensure the list updates correctly and quickly. Use browser dev tools to confirm initial data is server-rendered and subsequent filtering is done on the client.",
+        "priority": "high",
+        "dependencies": [
+          2,
+          3
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 8,
+        "title": "Class Booking and Stripe Payment Flow (ST-102)",
+        "description": "Implement the end-to-end class booking process, including form handling, payment processing, and email confirmation.",
+        "details": "Use React Hook Form with Zod for client-side and server-side validation of the booking form. Integrate the Stripe Payment Intents API for one-time payments. Create a Next.js API route to handle the booking logic (update class capacity, create booking record). Use SendGrid/Resend to send a confirmation email upon successful payment.",
+        "testStrategy": "Test the booking flow with valid and invalid form data. Use Stripe's test card numbers to simulate successful and failed payments. Verify that a booking record is created in the database and class availability is updated. Check that a confirmation email is received within 2 minutes.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          7
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 9,
+        "title": "Membership Subscription System (ST-109)",
+        "description": "Integrate Stripe Subscriptions to allow users to sign up for tiered membership plans.",
+        "details": "Set up subscription products and prices in the Stripe dashboard. Use Stripe Checkout or Payment Links for the subscription signup flow. Create a webhook endpoint to listen for Stripe events (e.g., `checkout.session.completed`, `customer.subscription.deleted`) and update the user's membership status in the database.",
+        "testStrategy": "Test the full subscription lifecycle: sign up for a plan, verify membership status is active in the app, use the Stripe dashboard to cancel, and confirm the webhook correctly updates the user's status to inactive.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          8
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 10,
+        "title": "Secure Video Library and Streaming (ST-104)",
+        "description": "Develop the members-only video library with secure video streaming from Mux or Vimeo.",
+        "details": "Set up video hosting on Mux or Vimeo. Create an API route that, for authenticated members, generates a signed URL or private playback token for a requested video. On the frontend, build a grid layout for the video library with search and category filters. Use a responsive video player (e.g., Plyr.io) to play the content from the secure URL.",
+        "testStrategy": "Verify that only authenticated, subscribed members can access the video library page. Attempt to access a video's direct URL without a valid token/signature to ensure it fails. Test video playback on various devices and network speeds to check adaptive streaming.",
+        "priority": "high",
+        "dependencies": [
+          9
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 11,
+        "title": "Video Progress Tracking",
+        "description": "Implement functionality to track and display a member's viewing progress for each video.",
+        "details": "Create a `VideoProgress` table in the database linked to `User` and `Video` models. On the client, use the video player's API to periodically send the current timestamp to a backend endpoint, which updates the database. Display a progress bar overlay on video thumbnails in the library.",
+        "testStrategy": "Watch a portion of a video, navigate away, and return to verify the video resumes from the correct timestamp. Check the library view to confirm the progress bar accurately reflects the watched percentage.",
+        "priority": "medium",
+        "dependencies": [
+          10
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 12,
+        "title": "Admin Dashboard for Class Management (ST-105)",
+        "description": "Create a secure admin-only dashboard for performing CRUD operations on the class schedule.",
+        "details": "Create a protected route group for `/admin`. Build a UI with a table or calendar view of all classes. Implement forms (using React Hook Form) within modals or on separate pages for creating, updating, and deleting classes. Use Prisma mutations for database operations and revalidate data to update the UI.",
+        "testStrategy": "Log in as a non-admin user and verify access to `/admin` is denied. Log in as an admin and perform all CRUD operations. Verify that changes made in the admin dashboard are immediately reflected on the public-facing class schedule page.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          7
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 13,
+        "title": "Instructor Portal and Schedule View (ST-106)",
+        "description": "Develop a dedicated portal for instructors to view their personal teaching schedule and class rosters.",
+        "details": "Implement role-based access control (RBAC) to differentiate between admin, instructor, and member roles. Create a protected route for instructors. On this page, query the database for classes assigned to the logged-in instructor's ID. Display the schedule and a list of booked students for each class.",
+        "testStrategy": "Log in as an instructor and verify access only to their own schedule. Log in as a different instructor and confirm they cannot see the first instructor's data. Check that the student list for a class is accurate.",
+        "priority": "medium",
+        "dependencies": [
+          12
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 14,
+        "title": "Retreats Module with Partial Payments (ST-107)",
+        "description": "Build the retreat showcase pages and a booking system that supports deposit payments.",
+        "details": "Develop dynamic pages for each retreat, pulling content from the database. For booking, use the Stripe Payment Intents API to create a charge for the deposit amount. Store the total price and amount paid in the booking record. Set up a scheduled job (cron/serverless scheduler) to trigger reminder emails for the remaining balance.",
+        "testStrategy": "Book a retreat and pay the deposit using a test card. Verify the booking is recorded with the correct partial payment status. Manually trigger the scheduled job to ensure a reminder email is sent. Test the flow for paying the remaining balance.",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 15,
+        "title": "Blog and Content Management",
+        "description": "Create a blog/resources section with basic CMS functionality for content creation and management.",
+        "details": "Create a `Post` model in the Prisma schema. Build an interface in the admin dashboard for creating and editing blog posts using a rich text editor like Tiptap or TinyMCE. Implement dynamic routing in Next.js to render individual blog posts. Add tagging and category functionality.",
+        "testStrategy": "As an admin, create a new blog post with text, images, and tags. Publish it and verify it appears on the main blog page and is accessible via its unique URL. Test the tag filtering functionality.",
+        "priority": "low",
+        "dependencies": [
+          12
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 16,
+        "title": "Email Marketing Integration (ST-108)",
+        "description": "Integrate with Mailchimp or ConvertKit to sync contacts from website forms.",
+        "details": "Create an API route that takes an email from the newsletter signup form. Use the Mailchimp/ConvertKit Node.js SDK to add the email to a specific audience list. Add a checkbox to the registration form to allow users to opt-in to the newsletter upon signup.",
+        "testStrategy": "Submit an email via the newsletter form and verify the contact appears in the Mailchimp/ConvertKit list. Register a new user with the opt-in box checked and confirm they are also added to the list.",
+        "priority": "medium",
+        "dependencies": [
+          4,
+          6
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 17,
+        "title": "Third-Party Services Integration",
+        "description": "Embed and integrate other services like Google Calendar, Zoom, and Instagram.",
+        "details": "For Google Calendar, provide an 'Add to Calendar' link on booking confirmations using an iCal/.ics file generator. For Zoom, store meeting links in the `Class` model for online classes, accessible to booked users. For Instagram, use a lightweight third-party library or a serverless function to fetch and display the feed to avoid client-side performance hits.",
+        "testStrategy": "Book a class and click the 'Add to Calendar' link; verify it opens correctly in Google Calendar/iCal. Book an online class and check that the Zoom link is visible and correct. Verify the Instagram feed loads correctly on the homepage.",
+        "priority": "low",
+        "dependencies": [
+          8
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 18,
+        "title": "Implement Security Best Practices",
+        "description": "Enhance application security by implementing rate limiting, security headers, and ensuring compliance.",
+        "details": "Configure SSL/TLS (handled by Netlify/Vercel). Add security headers (CSP, HSTS, X-Frame-Options) via `next.config.js`. Implement rate limiting on sensitive API endpoints (login, password reset) using a library like `upstash/ratelimit`. Ensure all payment processing is PCI compliant by using Stripe's hosted elements.",
+        "testStrategy": "Use a security scanner like Mozilla Observatory to check for proper header implementation. Write a script to hit the login endpoint repeatedly and verify that rate limiting blocks requests after a certain threshold. Review Stripe integration to confirm no raw card data touches the server.",
+        "priority": "high",
+        "dependencies": [
+          4,
+          8
+        ],
+        "status": "todo",
+        "subtasks": []
+      },
+      {
+        "id": 19,
+        "title": "Accessibility Audit and Remediation (WCAG 2.1 AA)",
+        "description": "Perform a full accessibility audit of the website and fix any issues to meet WCAG 2.1 AA standards.",
+        "details": "Use tools like Axe, WAVE, and Lighthouse to scan all pages. Manually test with a screen reader (VoiceOver/NVDA). Ensure all images have alt text, forms have labels, color contrast is >= 4.5:1, and keyboard navigation is logical. Add 'skip navigation' links. Provide captions/transcripts for all video content.",
+        "testStrategy": "Run automated scans and ensure zero critical errors. Navigate the entire site using only a keyboard. Use a screen reader to complete a key user flow (e.g., booking a class) and verify it is understandable and operable. Check video content for accurate captions.",
+        "priority": "medium",
+        "dependencies": [
+          6,
+          7,
+          8,
+          10
+        ],
+        "status": "todo",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Automated Accessibility Scan",
+            "description": "Run automated accessibility scans using Axe, WAVE, and Lighthouse tools",
+            "details": "Install and configure axe-core browser extension, use WAVE Web Accessibility Evaluator, and run Lighthouse accessibility audits on all major pages. Document all identified issues with priority levels",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 19
+          },
+          {
+            "id": 2,
+            "title": "Keyboard Navigation Audit",
+            "description": "Perform comprehensive keyboard navigation testing",
+            "details": "Test all interactive elements (buttons, forms, modals, menus) using only keyboard navigation. Ensure proper tab order, focus indicators, and skip navigation links. Verify all functionality is accessible without a mouse",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 19
+          },
+          {
+            "id": 3,
+            "title": "Screen Reader Testing",
+            "description": "Test critical user flows using screen reader technology",
+            "details": "Use VoiceOver (macOS) or NVDA (Windows) to test booking a class, creating an account, and accessing video content. Ensure all content is properly announced and navigation is logical for screen reader users",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 19
+          },
+          {
+            "id": 4,
+            "title": "Color Contrast and Visual Accessibility",
+            "description": "Audit and fix color contrast and visual accessibility issues",
+            "details": "Ensure all text has sufficient color contrast (4.5:1 for normal text, 3:1 for large text). Check focus indicators, verify content is readable without color alone, and test with color blindness simulators",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 19
+          },
+          {
+            "id": 5,
+            "title": "Accessibility Issue Remediation",
+            "description": "Remediate all identified accessibility issues to meet WCAG 2.1 AA standards",
+            "details": "Fix all issues found in previous audits including adding alt text to images, proper ARIA labels, form labels, captions for videos, and any other WCAG 2.1 AA compliance requirements. Re-test after fixes",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 19
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "title": "Performance Optimization and Final QA",
+        "description": "Optimize the application for speed and conduct final quality assurance testing before launch.",
+        "details": "Analyze bundle sizes with `@next/bundle-analyzer`. Implement dynamic imports for large components. Optimize images and ensure they are served in modern formats (WebP/AVIF). Conduct cross-browser and cross-device testing. Perform a final round of regression testing on all user stories.",
+        "testStrategy": "Run Lighthouse reports on key pages and ensure all scores (Performance, Accessibility, Best Practices, SEO) are >90. Measure FCP, TTI, and CLS to ensure they meet the PRD targets. Test all major features on Chrome, Firefox, Safari, and Edge on both desktop and mobile.",
+        "priority": "high",
+        "dependencies": [
+          19
+        ],
+        "status": "todo",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Bundle Analysis and Code Splitting",
+            "description": "Analyze application bundle size and implement code splitting",
+            "details": "Install and configure @next/bundle-analyzer, identify large components and dependencies, implement dynamic imports for non-critical components, and optimize bundle sizes to improve loading performance",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 20
+          },
+          {
+            "id": 2,
+            "title": "Image Optimization",
+            "description": "Implement comprehensive image optimization strategy",
+            "details": "Convert images to modern formats (WebP/AVIF), implement lazy loading, optimize image sizes and compression, use Next.js Image component with responsive sizing and CDN optimization",
+            "status": "pending",
+            "dependencies": [],
+            "parentTaskId": 20
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "title": "CI/CD Pipeline and Production Deployment",
+        "description": "Configure the continuous integration and deployment pipeline for automated builds, testing, and deployment to production.",
+        "details": "Connect the GitHub repository to Netlify or Vercel. Configure the build settings and environment variables (database URL, API keys for Stripe, SendGrid, etc.). Set up production, staging, and preview deployment environments. Configure weekly database backups via the hosting provider's tools (e.g., Supabase backups).",
+        "testStrategy": "Push a small change to a feature branch and verify a preview deployment is created. Merge the branch to `main` and confirm the production site is automatically updated. Check that all environment variables are correctly loaded in production. Manually trigger and restore a database backup to verify the process works.",
+        "priority": "high",
+        "dependencies": [
+          20
+        ],
+        "status": "todo",
+        "subtasks": []
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-10T04:45:30.301Z",
+      "updated": "2025-08-10T04:45:30.301Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

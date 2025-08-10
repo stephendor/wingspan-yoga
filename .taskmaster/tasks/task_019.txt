@@ -1,0 +1,43 @@
+# Task ID: 19
+# Title: Accessibility Audit and Remediation (WCAG 2.1 AA)
+# Status: todo
+# Dependencies: 6, 7, 8, 10
+# Priority: medium
+# Description: Perform a full accessibility audit of the website and fix any issues to meet WCAG 2.1 AA standards.
+# Details:
+Use tools like Axe, WAVE, and Lighthouse to scan all pages. Manually test with a screen reader (VoiceOver/NVDA). Ensure all images have alt text, forms have labels, color contrast is >= 4.5:1, and keyboard navigation is logical. Add 'skip navigation' links. Provide captions/transcripts for all video content.
+
+# Test Strategy:
+Run automated scans and ensure zero critical errors. Navigate the entire site using only a keyboard. Use a screen reader to complete a key user flow (e.g., booking a class) and verify it is understandable and operable. Check video content for accurate captions.
+
+# Subtasks:
+## 1. Automated Accessibility Scan [pending]
+### Dependencies: None
+### Description: Run automated accessibility scans using Axe, WAVE, and Lighthouse tools
+### Details:
+Install and configure axe-core browser extension, use WAVE Web Accessibility Evaluator, and run Lighthouse accessibility audits on all major pages. Document all identified issues with priority levels
+
+## 2. Keyboard Navigation Audit [pending]
+### Dependencies: None
+### Description: Perform comprehensive keyboard navigation testing
+### Details:
+Test all interactive elements (buttons, forms, modals, menus) using only keyboard navigation. Ensure proper tab order, focus indicators, and skip navigation links. Verify all functionality is accessible without a mouse
+
+## 3. Screen Reader Testing [pending]
+### Dependencies: None
+### Description: Test critical user flows using screen reader technology
+### Details:
+Use VoiceOver (macOS) or NVDA (Windows) to test booking a class, creating an account, and accessing video content. Ensure all content is properly announced and navigation is logical for screen reader users
+
+## 4. Color Contrast and Visual Accessibility [pending]
+### Dependencies: None
+### Description: Audit and fix color contrast and visual accessibility issues
+### Details:
+Ensure all text has sufficient color contrast (4.5:1 for normal text, 3:1 for large text). Check focus indicators, verify content is readable without color alone, and test with color blindness simulators
+
+## 5. Accessibility Issue Remediation [pending]
+### Dependencies: None
+### Description: Remediate all identified accessibility issues to meet WCAG 2.1 AA standards
+### Details:
+Fix all issues found in previous audits including adding alt text to images, proper ARIA labels, form labels, captions for videos, and any other WCAG 2.1 AA compliance requirements. Re-test after fixes
+

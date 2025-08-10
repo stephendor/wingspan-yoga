@@ -1,0 +1,11 @@
+# Task ID: 9
+# Title: Membership Subscription System (ST-109)
+# Status: todo
+# Dependencies: 4, 8
+# Priority: high
+# Description: Integrate Stripe Subscriptions to allow users to sign up for tiered membership plans.
+# Details:
+Set up subscription products and prices in the Stripe dashboard. Use Stripe Checkout or Payment Links for the subscription signup flow. Create a webhook endpoint to listen for Stripe events (e.g., `checkout.session.completed`, `customer.subscription.deleted`) and update the user's membership status in the database.
+
+# Test Strategy:
+Test the full subscription lifecycle: sign up for a plan, verify membership status is active in the app, use the Stripe dashboard to cancel, and confirm the webhook correctly updates the user's status to inactive.

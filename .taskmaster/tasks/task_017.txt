@@ -1,0 +1,11 @@
+# Task ID: 17
+# Title: Third-Party Services Integration
+# Status: todo
+# Dependencies: 8
+# Priority: low
+# Description: Embed and integrate other services like Google Calendar, Zoom, and Instagram.
+# Details:
+For Google Calendar, provide an 'Add to Calendar' link on booking confirmations using an iCal/.ics file generator. For Zoom, store meeting links in the `Class` model for online classes, accessible to booked users. For Instagram, use a lightweight third-party library or a serverless function to fetch and display the feed to avoid client-side performance hits.
+
+# Test Strategy:
+Book a class and click the 'Add to Calendar' link; verify it opens correctly in Google Calendar/iCal. Book an online class and check that the Zoom link is visible and correct. Verify the Instagram feed loads correctly on the homepage.

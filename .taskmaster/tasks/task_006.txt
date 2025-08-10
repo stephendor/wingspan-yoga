@@ -1,0 +1,11 @@
+# Task ID: 6
+# Title: Homepage and Static Pages Development
+# Status: todo
+# Dependencies: 3
+# Priority: medium
+# Description: Build the main public-facing pages of the website, including the Homepage and About page, using the established component library.
+# Details:
+Develop the Homepage with a hero section (video/image), featured offerings, testimonials, and a newsletter signup form stub. Create the 'About/Philosophy' and instructor bio pages. Ensure all pages are fully responsive and use Next.js Image for optimized images.
+
+# Test Strategy:
+Visually inspect pages on multiple devices (desktop, tablet, mobile). Verify all links and CTAs work. Check for content accuracy against the PRD. Run a Lighthouse audit to check initial performance and SEO scores.

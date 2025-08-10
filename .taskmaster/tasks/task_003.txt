@@ -1,0 +1,49 @@
+# Task ID: 3
+# Title: UI Design System and Core Component Library
+# Status: todo
+# Dependencies: 1
+# Priority: high
+# Description: Implement the visual identity by creating a reusable component library and configuring the design tokens in Tailwind CSS.
+# Details:
+Configure `tailwind.config.js` with the brand's color palette (sage green, soft blues, terracotta), typography (Montserrat, Open Sans), and spacing scale. Create a library of core, accessible components: Button, Input, Card, Modal, and Navigation Bar using Framer Motion for subtle animations.
+
+# Test Strategy:
+Use Storybook or a dedicated style guide page to visually inspect all components in different states (hover, focus, disabled). Run accessibility checks (e.g., Axe) on each component to ensure proper ARIA attributes and color contrast.
+
+# Subtasks:
+## 1. Configure Tailwind CSS Design Tokens [pending]
+### Dependencies: None
+### Description: Set up the tailwind.config.js file with the brand's color palette, typography, and spacing system
+### Details:
+Configure primary palette (sage green, soft blues, warm neutrals), accent colors (terracotta, blush, charcoal), typography settings for Montserrat/Raleway headers and Open Sans/Lato body text, and consistent spacing scale
+
+## 2. Create Button Component [pending]
+### Dependencies: None
+### Description: Create a reusable Button component with variants, states, and accessibility features
+### Details:
+Build Button component with primary/secondary/outline variants, size options, hover/focus/disabled states, proper ARIA attributes, and subtle Framer Motion animations
+
+## 3. Create Input and Form Components [pending]
+### Dependencies: None
+### Description: Create accessible form Input and TextArea components with validation states
+### Details:
+Build Input component with different types (text, email, password), validation states (error, success), proper labels, help text, and TextArea variant. Include accessibility features like proper labeling and screen reader support
+
+## 4. Create Card Component [pending]
+### Dependencies: None
+### Description: Create Card component for displaying content with consistent styling
+### Details:
+Build Card component with header, body, and footer sections, shadow variants, hover effects, and responsive design. Include organic shapes and natural imagery styling as per brand guidelines
+
+## 5. Create Modal Component [pending]
+### Dependencies: None
+### Description: Create accessible Modal component with focus management and animations
+### Details:
+Build Modal component with overlay, close functionality, focus trapping, escape key handling, proper ARIA attributes, and smooth entrance/exit animations using Framer Motion
+
+## 6. Create Navigation Bar Component [pending]
+### Dependencies: None
+### Description: Create responsive Navigation Bar component with mobile menu
+### Details:
+Build Navigation component with desktop and mobile layouts, hamburger menu for mobile, smooth transitions, accessibility features, and integration with the authentication state
+

@@ -1,0 +1,11 @@
+# Task ID: 7
+# Title: Class Schedule Display and Filtering (ST-101)
+# Status: todo
+# Dependencies: 2, 3
+# Priority: high
+# Description: Create the interactive class schedule page that fetches and displays class data with real-time filtering capabilities.
+# Details:
+Create a Next.js page with server-side rendering to fetch initial class data from the PostgreSQL database via Prisma. Implement client-side state management (Zustand/React Context) for interactive filters (by type, level, instructor). Ensure the calendar/list view loads in under 2 seconds.
+
+# Test Strategy:
+Verify that the schedule displays correct class information. Test all filter combinations to ensure the list updates correctly and quickly. Use browser dev tools to confirm initial data is server-rendered and subsequent filtering is done on the client.

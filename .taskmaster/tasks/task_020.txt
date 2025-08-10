@@ -1,0 +1,25 @@
+# Task ID: 20
+# Title: Performance Optimization and Final QA
+# Status: todo
+# Dependencies: 19
+# Priority: high
+# Description: Optimize the application for speed and conduct final quality assurance testing before launch.
+# Details:
+Analyze bundle sizes with `@next/bundle-analyzer`. Implement dynamic imports for large components. Optimize images and ensure they are served in modern formats (WebP/AVIF). Conduct cross-browser and cross-device testing. Perform a final round of regression testing on all user stories.
+
+# Test Strategy:
+Run Lighthouse reports on key pages and ensure all scores (Performance, Accessibility, Best Practices, SEO) are >90. Measure FCP, TTI, and CLS to ensure they meet the PRD targets. Test all major features on Chrome, Firefox, Safari, and Edge on both desktop and mobile.
+
+# Subtasks:
+## 1. Bundle Analysis and Code Splitting [pending]
+### Dependencies: None
+### Description: Analyze application bundle size and implement code splitting
+### Details:
+Install and configure @next/bundle-analyzer, identify large components and dependencies, implement dynamic imports for non-critical components, and optimize bundle sizes to improve loading performance
+
+## 2. Image Optimization [pending]
+### Dependencies: None
+### Description: Implement comprehensive image optimization strategy
+### Details:
+Convert images to modern formats (WebP/AVIF), implement lazy loading, optimize image sizes and compression, use Next.js Image component with responsive sizing and CDN optimization
+

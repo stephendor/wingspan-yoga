@@ -1,0 +1,11 @@
+# Task ID: 21
+# Title: CI/CD Pipeline and Production Deployment
+# Status: todo
+# Dependencies: 20
+# Priority: high
+# Description: Configure the continuous integration and deployment pipeline for automated builds, testing, and deployment to production.
+# Details:
+Connect the GitHub repository to Netlify or Vercel. Configure the build settings and environment variables (database URL, API keys for Stripe, SendGrid, etc.). Set up production, staging, and preview deployment environments. Configure weekly database backups via the hosting provider's tools (e.g., Supabase backups).
+
+# Test Strategy:
+Push a small change to a feature branch and verify a preview deployment is created. Merge the branch to `main` and confirm the production site is automatically updated. Check that all environment variables are correctly loaded in production. Manually trigger and restore a database backup to verify the process works.

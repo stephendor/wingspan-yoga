@@ -1,0 +1,11 @@
+# Task ID: 10
+# Title: Secure Video Library and Streaming (ST-104)
+# Status: todo
+# Dependencies: 9
+# Priority: high
+# Description: Develop the members-only video library with secure video streaming from Mux or Vimeo.
+# Details:
+Set up video hosting on Mux or Vimeo. Create an API route that, for authenticated members, generates a signed URL or private playback token for a requested video. On the frontend, build a grid layout for the video library with search and category filters. Use a responsive video player (e.g., Plyr.io) to play the content from the secure URL.
+
+# Test Strategy:
+Verify that only authenticated, subscribed members can access the video library page. Attempt to access a video's direct URL without a valid token/signature to ensure it fails. Test video playback on various devices and network speeds to check adaptive streaming.

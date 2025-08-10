@@ -1,0 +1,11 @@
+# Task ID: 18
+# Title: Implement Security Best Practices
+# Status: todo
+# Dependencies: 4, 8
+# Priority: high
+# Description: Enhance application security by implementing rate limiting, security headers, and ensuring compliance.
+# Details:
+Configure SSL/TLS (handled by Netlify/Vercel). Add security headers (CSP, HSTS, X-Frame-Options) via `next.config.js`. Implement rate limiting on sensitive API endpoints (login, password reset) using a library like `upstash/ratelimit`. Ensure all payment processing is PCI compliant by using Stripe's hosted elements.
+
+# Test Strategy:
+Use a security scanner like Mozilla Observatory to check for proper header implementation. Write a script to hit the login endpoint repeatedly and verify that rate limiting blocks requests after a certain threshold. Review Stripe integration to confirm no raw card data touches the server.

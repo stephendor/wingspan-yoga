@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "task-master-ai": "github:eyaltoledano/claude-task-master"
+  }
+}

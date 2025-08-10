@@ -1,0 +1,11 @@
+# Task ID: 8
+# Title: Class Booking and Stripe Payment Flow (ST-102)
+# Status: todo
+# Dependencies: 4, 7
+# Priority: high
+# Description: Implement the end-to-end class booking process, including form handling, payment processing, and email confirmation.
+# Details:
+Use React Hook Form with Zod for client-side and server-side validation of the booking form. Integrate the Stripe Payment Intents API for one-time payments. Create a Next.js API route to handle the booking logic (update class capacity, create booking record). Use SendGrid/Resend to send a confirmation email upon successful payment.
+
+# Test Strategy:
+Test the booking flow with valid and invalid form data. Use Stripe's test card numbers to simulate successful and failed payments. Verify that a booking record is created in the database and class availability is updated. Check that a confirmation email is received within 2 minutes.

@@ -1,0 +1,11 @@
+# Task ID: 13
+# Title: Instructor Portal and Schedule View (ST-106)
+# Status: todo
+# Dependencies: 12
+# Priority: medium
+# Description: Develop a dedicated portal for instructors to view their personal teaching schedule and class rosters.
+# Details:
+Implement role-based access control (RBAC) to differentiate between admin, instructor, and member roles. Create a protected route for instructors. On this page, query the database for classes assigned to the logged-in instructor's ID. Display the schedule and a list of booked students for each class.
+
+# Test Strategy:
+Log in as an instructor and verify access only to their own schedule. Log in as a different instructor and confirm they cannot see the first instructor's data. Check that the student list for a class is accurate.

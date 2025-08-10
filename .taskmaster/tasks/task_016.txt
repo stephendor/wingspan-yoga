@@ -1,0 +1,11 @@
+# Task ID: 16
+# Title: Email Marketing Integration (ST-108)
+# Status: todo
+# Dependencies: 4, 6
+# Priority: medium
+# Description: Integrate with Mailchimp or ConvertKit to sync contacts from website forms.
+# Details:
+Create an API route that takes an email from the newsletter signup form. Use the Mailchimp/ConvertKit Node.js SDK to add the email to a specific audience list. Add a checkbox to the registration form to allow users to opt-in to the newsletter upon signup.
+
+# Test Strategy:
+Submit an email via the newsletter form and verify the contact appears in the Mailchimp/ConvertKit list. Register a new user with the opt-in box checked and confirm they are also added to the list.

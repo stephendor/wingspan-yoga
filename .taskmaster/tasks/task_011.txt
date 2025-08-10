@@ -1,0 +1,11 @@
+# Task ID: 11
+# Title: Video Progress Tracking
+# Status: todo
+# Dependencies: 10
+# Priority: medium
+# Description: Implement functionality to track and display a member's viewing progress for each video.
+# Details:
+Create a `VideoProgress` table in the database linked to `User` and `Video` models. On the client, use the video player's API to periodically send the current timestamp to a backend endpoint, which updates the database. Display a progress bar overlay on video thumbnails in the library.
+
+# Test Strategy:
+Watch a portion of a video, navigate away, and return to verify the video resumes from the correct timestamp. Check the library view to confirm the progress bar accurately reflects the watched percentage.

@@ -1,0 +1,43 @@
+# Task ID: 2
+# Title: Database Schema Design and Migration Setup (ST-110)
+# Status: todo
+# Dependencies: 1
+# Priority: high
+# Description: Define the complete database schema using Prisma ORM and set up the initial migration for the PostgreSQL database.
+# Details:
+Use Prisma schema language (`schema.prisma`) to define models for User, Class, Booking, Subscription, Video, Retreat, etc. Establish relations (one-to-many, many-to-many). Use a provider like Supabase or Neon. Generate and run the initial database migration using `prisma migrate dev`.
+
+# Test Strategy:
+Review the generated ERD for correctness. Inspect the database tables and columns directly in the PostgreSQL instance to ensure they match the Prisma schema. Run a test script to create and retrieve a record from each table.
+
+# Subtasks:
+## 1. Design and Implement User Authentication Database Schema [pending]
+### Dependencies: None
+### Description: Create the necessary database tables to store user information, including credentials, profiles, and session tokens.
+### Details:
+Define a `users` table with columns like `id`, `username`, `email`, `password_hash`, `created_at`, and `updated_at`. Also, define a `sessions` table for managing user login states with `id`, `user_id`, `token`, and `expires_at`. Use a migration tool like Alembic or Flyway to apply the schema.
+
+## 2. Develop the User Registration API Endpoint [pending]
+### Dependencies: None
+### Description: Create a public API endpoint (e.g., `POST /api/auth/register`) that allows new users to create an account.
+### Details:
+The endpoint should accept user data (e.g., email, password). It must validate the input, check for existing users, and hash the password using a strong algorithm like bcrypt before storing it in the `users` table. Return a success message or appropriate error codes.
+
+## 3. Develop the User Login API Endpoint [pending]
+### Dependencies: None
+### Description: Create an API endpoint (e.g., `POST /api/auth/login`) for authenticating existing users and issuing a session token.
+### Details:
+The endpoint should accept user credentials (email and password). It must retrieve the user from the database, compare the provided password with the stored hash, and if they match, generate a session token (e.g., JWT). Store the session and return the token to the client.
+
+## 4. Implement Authentication Middleware for Protected Routes [pending]
+### Dependencies: None
+### Description: Create a middleware component that intercepts requests to protected API endpoints, validates the session token, and attaches user information to the request.
+### Details:
+The middleware should extract the token from the `Authorization` header. It will then validate the token's signature and expiration. If valid, it will fetch the corresponding user from the database and make it available for downstream handlers. If invalid, it should return a 401 Unauthorized error.
+
+## 5. Develop the User Logout API Endpoint [pending]
+### Dependencies: None
+### Description: Create a protected API endpoint (e.g., `POST /api/auth/logout`) to invalidate a user's current session.
+### Details:
+This endpoint must be protected by the authentication middleware. It should identify the session token from the request and invalidate it in the database, for example, by deleting the corresponding record from the `sessions` table. This ensures the token can no longer be used.
+

@@ -1,0 +1,11 @@
+# Task ID: 14
+# Title: Retreats Module with Partial Payments (ST-107)
+# Status: todo
+# Dependencies: 8
+# Priority: medium
+# Description: Build the retreat showcase pages and a booking system that supports deposit payments.
+# Details:
+Develop dynamic pages for each retreat, pulling content from the database. For booking, use the Stripe Payment Intents API to create a charge for the deposit amount. Store the total price and amount paid in the booking record. Set up a scheduled job (cron/serverless scheduler) to trigger reminder emails for the remaining balance.
+
+# Test Strategy:
+Book a retreat and pay the deposit using a test card. Verify the booking is recorded with the correct partial payment status. Manually trigger the scheduled job to ensure a reminder email is sent. Test the flow for paying the remaining balance.
