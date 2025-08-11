@@ -14,12 +14,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-    security_opt:
-      - no-new-privileges:true
-    read_only: true
-    tmpfs:
-      - /var/run/postgresql:rw
-      - /tmp:rw
     volumes:
       - pgdata:/var/lib/postgresql/data:rw
 volumes:

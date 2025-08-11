@@ -75,7 +75,10 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - If experiencing redirect loops or authentication failures, carefully review the NextAuth configuration, particularly the credentials provider setup, and ensure that all required environment variables are defined (e.g., `NEXTAUTH_SECRET`).
 - If you are getting a 404 error after successful authentication, check the `SignInForm` component in the front-end to ensure that it is redirecting to the correct route after sign-in. This component MUST respect the `callbackUrl` parameter that NextAuth automatically includes.
 - If the dev server is serving a primitive admin interface instead of the sophisticated TailwindCSS styled interface, ensure that your Next.js project is serving from the correct `app` directory and that the import paths are correct.
-- **Middleware JWT Token Membership Type Check**: When implementing admin route protection, the middleware MUST use a case-insensitive check for `membershipType` from the JWT token. This avoids issues where the token contains `'admin'` while the middleware expects `'ADMIN'`.
+- **Middleware JWT Token Membership Type Check**: When implementing admin route protection, the middleware MUST use a case-insensitive check for `membershipType` from the JWT token. This avoids issues where the token contains `'admin'` while the middleware expects `'admin'`.
+
+## Taskmaster Specifics
+- When the user says "Get task", "taskmaster get task", or "taskmaster-ai get task", interpret this as a request to assist with their project.
 
 ## Future Enhancements
 
