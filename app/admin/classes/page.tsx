@@ -1,5 +1,5 @@
 import { prisma } from '../../../src/lib/prisma';
-import ClassTable from '../../../components/admin/ClassTable';
+import AdminClassesClient from './AdminClassesClient';
 
 export default async function AdminClassesPage() {
   const classes = await prisma.class.findMany({
@@ -11,5 +11,5 @@ export default async function AdminClassesPage() {
     },
   });
 
-  return <ClassTable classes={classes} />;
+  return <AdminClassesClient classes={classes} />;
 }

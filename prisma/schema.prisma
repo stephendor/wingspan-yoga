@@ -129,21 +129,23 @@ model UserSubscription {
 model Payment {
   id              String        @id @default(cuid())
   stripePaymentId String        @unique
-  amount          Int // Amount in cents
-  currency        String        @default("usd")
+  amount          Int // Amount in pence (GBP)
+  currency        String        @default("gbp")
   status          PaymentStatus
   description     String?
   paymentMethod   String? // card, bank_transfer, etc.
   createdAt       DateTime      @default(now())
 
-  // Relations
+  // Relations - supports both legacy classes and new class instances
   userId             String
   userSubscriptionId String? @map("subscriptionId") // keep underlying column for now
-  classId            String?
+  classId            String? // Legacy class payment
+  classInstanceId    String? // New instance payment
 
   user             User              @relation(fields: [userId], references: [id])
   userSubscription UserSubscription? @relation(fields: [userSubscriptionId], references: [id])
   class            Class?            @relation(fields: [classId], references: [id])
+  classInstance    ClassInstance?    @relation(fields: [classInstanceId], references: [id])
 
   @@map("payments")
 }
@@ -174,8 +176,10 @@ model Instructor {
   updatedAt     DateTime @updatedAt
 
   // Relations
-  classes Class[]
-  videos  Video[]
+  classes         Class[]
+  classTemplates  ClassTemplate[]
+  classInstances  ClassInstance[]
+  videos          Video[]
 
   @@map("instructors")
 }
@@ -223,7 +227,73 @@ model VideoProgress {
   @@map("video_progress")
 }
 
-// Class Booking Models
+// Class Booking Models - Recurring Class System
+model ClassTemplate {
+  id          String         @id @default(cuid())
+  title       String
+  description String?
+  dayOfWeek   Int // 0 = Sunday, 1 = Monday, etc.
+  startTime   String // Time in HH:MM format (e.g., "18:00")
+  endTime     String // Time in HH:MM format (e.g., "19:00")
+  capacity    Int
+  price       Int // Price in pence (GBP)
+  difficulty  DifficultyLevel
+  category    ClassCategory
+  location    ClassLocation
+  meetingUrl  String? // For online classes
+  notes       String? // Special instructions
+  isActive    Boolean        @default(true) // Can disable template without deleting
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  // Relations
+  instructorId String
+  instructor   Instructor      @relation(fields: [instructorId], references: [id])
+  instances    ClassInstance[]
+  exceptions   ClassException[]
+
+  @@map("class_templates")
+}
+
+model ClassInstance {
+  id               String          @id @default(cuid())
+  date             DateTime // Specific date for this instance
+  startTime        DateTime // Full datetime for this instance
+  endTime          DateTime // Full datetime for this instance
+  capacity         Int? // Override template capacity if needed
+  price            Int? // Override template price if needed
+  status           ClassStatus     @default(SCHEDULED)
+  notes            String? // Instance-specific notes
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  // Relations
+  templateId       String
+  template         ClassTemplate   @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  instructorId     String? // Override template instructor if needed
+  instructor       Instructor?     @relation(fields: [instructorId], references: [id])
+  bookings         Booking[]
+  payments         Payment[]
+
+  @@unique([templateId, date])
+  @@map("class_instances")
+}
+
+model ClassException {
+  id         String        @id @default(cuid())
+  date       DateTime // Date when class is cancelled/modified
+  reason     String? // Why was it cancelled/modified
+  createdAt  DateTime      @default(now())
+
+  // Relations
+  templateId String
+  template   ClassTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@unique([templateId, date])
+  @@map("class_exceptions")
+}
+
+// Legacy model for backwards compatibility - will be migrated
 model Class {
   id          String          @id @default(cuid())
   title       String
@@ -231,9 +301,9 @@ model Class {
   startTime   DateTime
   endTime     DateTime
   capacity    Int
-  price       Int // Price in cents
+  price       Int // Price in pence (GBP)
   difficulty  DifficultyLevel
-  category    VideoCategory
+  category    ClassCategory
   location    ClassLocation
   status      ClassStatus     @default(SCHEDULED)
   meetingUrl  String? // For online classes
@@ -257,13 +327,16 @@ model Booking {
   cancelledAt DateTime?
   notes       String? // Special requests or notes
 
-  // Relations
-  userId  String
-  classId String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  class   Class  @relation(fields: [classId], references: [id], onDelete: Cascade)
+  // Relations - supports both legacy classes and new class instances
+  userId          String
+  classId         String? // Legacy class booking
+  classInstanceId String? // New instance booking
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class           Class?         @relation(fields: [classId], references: [id], onDelete: Cascade)
+  classInstance   ClassInstance? @relation(fields: [classInstanceId], references: [id], onDelete: Cascade)
 
   @@unique([userId, classId])
+  @@unique([userId, classInstanceId])
   @@map("bookings")
 }
 
@@ -357,6 +430,22 @@ enum VideoCategory {
   BREATHWORK
   POWER
   GENTLE
+}
+
+enum ClassCategory {
+  VINYASA
+  HATHA
+  YIN
+  RESTORATIVE
+  MEDITATION
+  BREATHWORK
+  POWER
+  GENTLE
+  WORKSHOP
+  RETREAT
+  BEGINNER_COURSE
+  PRENATAL
+  SENIORS
 }
 
 enum DifficultyLevel {

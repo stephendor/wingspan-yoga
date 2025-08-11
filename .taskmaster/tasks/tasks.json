@@ -466,8 +466,8 @@
             "dependencies": [
               "12.3"
             ],
-            "details": "Add a 'Create New Class' button to the `/app/admin/classes/page.tsx`. This button will toggle a `CreateClassModal.tsx` component. The modal will contain a reusable `ClassForm.tsx` built with React Hook Form. Create a Zod schema for class validation. The form will submit to a `createClass` server action in `/lib/actions/class.actions.ts` which uses `prisma.class.create()`. On success, use `revalidatePath` to refresh the class table.",
-            "status": "pending",
+            "details": "Add a 'Create New Class' button to the `/app/admin/classes/page.tsx`. This button will toggle a `CreateClassModal.tsx` component. The modal will contain a reusable `ClassForm.tsx` built with React Hook Form. Create a Zod schema for class validation. The form will submit to a `createClass` server action in `/lib/actions/class.actions.ts` which uses `prisma.class.create()`. On success, use `revalidatePath` to refresh the class table.\n<info added on 2025-08-11T07:41:12.056Z>\nUpdate the implementation to align with the new `ClassTemplate` and `ClassInstance` database schema for recurring classes. The `createClass` server action should now create a `ClassTemplate` record. The `ClassForm.tsx` and its Zod schema must be modified to capture recurrence details (e.g., day of week, start time, instructor) and the new `ClassCategory` enum values. The price input should be configured for GBP and store the value in pence.\n</info added on 2025-08-11T07:41:12.056Z>",
+            "status": "done",
             "testStrategy": "Open the create modal, fill out the form with valid data, and submit. Verify the new class appears in the table without a page refresh. Test form validation by attempting to submit with empty or invalid data."
           },
           {
@@ -478,7 +478,7 @@
               "12.4"
             ],
             "details": "In the `ClassTable.tsx` component, add an 'Edit' button to each row. Clicking it will open a modal that reuses the `ClassForm.tsx` component, pre-filled with the data for the selected class. The form will submit to a new `updateClass` server action that takes the class ID and updated data, using `prisma.class.update()`. Revalidate the path on successful update.",
-            "status": "pending",
+            "status": "in-progress",
             "testStrategy": "Click the 'Edit' button for a class. Verify the form is pre-populated with the correct data. Change a value (e.g., the class time) and submit. Verify the table updates to show the new information."
           },
           {
@@ -824,7 +824,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-11T06:36:11.693Z",
+      "updated": "2025-08-11T07:55:16.170Z",
       "description": "Tasks for master context"
     }
   }

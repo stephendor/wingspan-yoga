@@ -76,3 +76,27 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - When implementing a task, if instructed to implement the remainder of the task, proceed without asking again until you have implemented all of the task.
 - When asked to check the current status of a task, retrieve the task details, status, priority, description, and dependencies, as well as the status of any subtasks. Present this information clearly and concisely to the user.
 - When implementing a task that has subtasks, implement each pending subtask in order, logging progress and marking each as done before proceeding to the next.
+- When asked for the next task, first check the available Taskmaster tools. Then check for the next available task using the Taskmaster MCP.
+- When implementing task 12.4 ("Implement 'Create Class' Form and Modal"), remember that the intended output should be a modern, highly polished dashboard that is easy to read and modify. Classes can be online or in person, and can be workshops or retreats. When implementing this task, ensure recurring classes and individual class exceptions are supported, with prices displayed in £ (GBP). The intended database schema should support a Class Template + Class Instance pattern with ClassException records.
+
+## Debugging
+- If a user encounters an error related to Next.js DevTools or React Dev overlay, and the application UI loads and functions correctly, the error can be ignored. If the UI does not load, investigate other errors in the terminal or browser console.
+- If a user encounters an error related to Next.js DevTools or React Dev overlay, suggest these troubleshooting steps:
+  - Try disabling or uninstalling the Next.js DevTools browser extension.
+  - Restart the development server (`npm run dev`).
+  - Clear the browser cache or use a different browser.
+- If the requested export doesn't exist, this often indicates a module resolution issue, potentially due to incorrect import paths, misconfigured TypeScript, or a build cache issue. Consider the following troubleshooting steps:
+  - Restart the development server (`npm run dev`) after stopping it completely.
+  - Delete `.next` and `.cache` folders, then restart the server.
+  - Ensure import paths are correct and match the actual file names (case-sensitive).
+- When working with Next.js app directory, if you encounter "React Hook" errors such as `useState` in server components:
+  - Add `"use client"` as the very first line in the file.
+- If you encounter import errors such as "export useForm doesn't exist in target module":
+  - Ensure you are importing from the correct entry point, e.g.,`'react-hook-form'` and not `'react-hook-form/dist/react-server.esm.mjs'`. Also, ensure the component is a client component if using hooks.
+- When fixing errors, ensure that any directives, such as `"use client"`, are at the very top of the file, before any imports.
+- After applying fixes, always check for and remove duplicate imports.
+- If you encounter an error where the `"use client"` directive is not at the very top of the file:
+  - Ensure that the `"use client"` directive is the very first line of the file, before any imports or code.
+- If you encounter the error `Error: Event handlers cannot be passed to Client Component props.`, it means a server component is passing an event handler (a function prop) to a client component. To fix:
+  - The parent component (likely `page.tsx`) must be a client component if it passes event handlers to children by adding `"use client"` to the top of the file.
+  - Or, move the event handler logic into the client component itself.
