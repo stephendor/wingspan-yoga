@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Session } from 'next-auth'
 import { ClassDetails, BookingForm } from '@/components/booking'
+import { DifficultyLevel, ClassLocation } from '@prisma/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { AlertCircle, ArrowLeft, LogIn } from 'lucide-react'
@@ -17,9 +18,9 @@ interface BookingClientProps {
     endTime: Date
     capacity: number
     price: number
-    difficulty: any
+  difficulty: DifficultyLevel
     category: string
-    location: any
+  location: ClassLocation
     meetingUrl?: string | null
     notes?: string | null
     instructor: {
@@ -41,16 +42,17 @@ interface BookingClientProps {
 export function BookingClient({ classData, session }: BookingClientProps) {
   const router = useRouter()
   const [bookingError, setBookingError] = useState<string | null>(null)
-  const [isProcessing, setIsProcessing] = useState(false)
+  // Track processing state if future UX needs a spinner; currently unused so removed to satisfy lint
+  // const [isProcessing, setIsProcessing] = useState(false)
 
-  const handleBookingSuccess = (bookingId: string) => {
+  const handleBookingSuccess = () => {
     setBookingError(null)
     // Navigation is handled in the BookingForm component
   }
 
   const handleBookingError = (error: string) => {
     setBookingError(error)
-    setIsProcessing(false)
+  // No processing state currently displayed; hook removed
   }
 
   const handleSignIn = () => {
@@ -110,7 +112,7 @@ export function BookingClient({ classData, session }: BookingClientProps) {
                     </Button>
                     
                     <div className="text-center">
-                      <span className="text-sm text-gray-600">Don't have an account? </span>
+                      <span className="text-sm text-gray-600">Don&apos;t have an account? </span>
                       <a
                         href="/auth/register"
                         className="text-sm text-sage-600 hover:text-sage-800 font-medium underline"

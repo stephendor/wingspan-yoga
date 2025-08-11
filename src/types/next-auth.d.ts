@@ -6,16 +6,20 @@ declare module 'next-auth' {
     user: {
       id: string
       membershipType: string
+      membershipStatus?: string
+      subscriptionPeriodEnd?: string
     } & DefaultSession['user']
   }
 
   interface User extends DefaultUser {
     membershipType: string
+    membershipStatus?: string
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT extends DefaultJWT {
     membershipType: string
+    membershipStatus?: string
   }
 }

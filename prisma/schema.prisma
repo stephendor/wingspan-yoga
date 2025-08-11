@@ -148,6 +148,16 @@ model Payment {
   @@map("payments")
 }
 
+// Webhook event idempotency tracking (Stripe events processed)
+model WebhookEvent {
+  id          String   @id // Stripe event id
+  type        String
+  createdAt   DateTime @default(now())
+  processedAt DateTime? // reserved for future granular state
+
+  @@map("webhook_events")
+}
+
 // Instructor Model
 model Instructor {
   id            String   @id @default(cuid())

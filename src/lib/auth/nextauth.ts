@@ -5,11 +5,16 @@ import GitHubProvider from 'next-auth/providers/github'
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
 import { prisma } from '@/lib/prisma'
+import { getActiveUserSubscription } from '@/lib/auth/subscription'
 
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1),
 })
+
+interface AugmentedToken {
+  membershipType?: string
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -75,14 +80,32 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user?.membershipType) {
-        token.membershipType = user.membershipType
+        ;(token as AugmentedToken).membershipType = user.membershipType
       }
       return token
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub!
-        session.user.membershipType = token.membershipType || 'FREE'
+        const u = session.user as typeof session.user & {
+          membershipStatus?: string
+          subscriptionPeriodEnd?: string
+        }
+        const t = token as AugmentedToken & { sub?: string }
+        u.id = t.sub!
+        u.membershipType = t.membershipType || 'FREE'
+        try {
+          const active = await getActiveUserSubscription(u.id)
+          if (active) {
+            u.membershipType = active.membershipType
+            u.membershipStatus = active.membershipStatus
+            u.subscriptionPeriodEnd = active.currentPeriodEnd.toISOString()
+          } else {
+            u.membershipStatus = 'ACTIVE'
+            u.subscriptionPeriodEnd = undefined
+          }
+        } catch {
+          u.membershipStatus = u.membershipStatus || 'ACTIVE'
+        }
       }
       return session
     },
@@ -105,6 +128,4 @@ export const authOptions: NextAuthOptions = {
 }
 
 export default NextAuth(authOptions)
-
-// Helper function for getting session in App Router (NextAuth v4)
 export { getServerSession } from 'next-auth'

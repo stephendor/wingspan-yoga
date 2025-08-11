@@ -10,5 +10,7 @@ export function useNextAuth() {
     isLoading: status === 'loading',
     isAuthenticated: !!session?.user,
     membershipType: session?.user?.membershipType || 'FREE',
+    membershipStatus: session?.user?.membershipStatus || 'ACTIVE',
+    subscriptionPeriodEnd: session?.user?.subscriptionPeriodEnd,
   }
 }

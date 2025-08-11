@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { formatCurrency } from '@/lib/stripe'
@@ -76,15 +77,13 @@ export function ConfirmationClient({ booking }: ConfirmationClientProps) {
   const generateCalendarLink = () => {
     const startISOString = startDate.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
     const endISOString = endDate.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
-    
+
     const params = new URLSearchParams({
       action: 'TEMPLATE',
       text: `Yoga Class: ${classData.title}`,
       dates: `${startISOString}/${endISOString}`,
-      details: `${classData.description || ''}\n\nInstructor: ${classData.instructor.name}\nLocation: ${classData.location}${classData.meetingUrl ? `\nMeeting URL: ${classData.meetingUrl}` : ''}`,
-      location: classData.location === 'ONLINE' ? 'Online Class' : '123 Wellness Way, Mindful City, CA',
+      details: `${classData.description || ''}\n\nInstructor: ${classData.instructor.name}\nLocation: ${classData.location}${classData.meetingUrl ? `\nMeeting URL: ${classData.meetingUrl}` : ''}`
     })
-
     return `https://calendar.google.com/calendar/render?${params.toString()}`
   }
 
@@ -125,7 +124,7 @@ export function ConfirmationClient({ booking }: ConfirmationClientProps) {
         <div className="space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">Booking Confirmed!</h1>
           <p className="text-lg text-gray-600">
-            Your spot is reserved. We can't wait to see you in class!
+            Your spot is reserved. We can&apos;t wait to see you in class!
           </p>
         </div>
       </div>
@@ -214,9 +213,11 @@ export function ConfirmationClient({ booking }: ConfirmationClientProps) {
         <CardContent>
           <div className="flex items-center space-x-4">
             {classData.instructor.avatar ? (
-              <img
+              <Image
                 src={classData.instructor.avatar}
                 alt={classData.instructor.name}
+                width={48}
+                height={48}
                 className="h-12 w-12 rounded-full object-cover"
               />
             ) : (
@@ -268,7 +269,7 @@ export function ConfirmationClient({ booking }: ConfirmationClientProps) {
       {/* Next Steps */}
       <Card className="bg-sage-50 border-sage-200">
         <CardHeader>
-          <CardTitle className="text-sage-800">What's Next?</CardTitle>
+          <CardTitle className="text-sage-800">What&apos;s Next?</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-3 text-sm text-sage-700">
@@ -284,7 +285,7 @@ export function ConfirmationClient({ booking }: ConfirmationClientProps) {
               <Clock className="h-4 w-4 text-sage-600 mt-0.5" />
               <div>
                 <div className="font-medium">Class Reminder</div>
-                <div>We'll send you a reminder 24 hours and 1 hour before class.</div>
+                <div>We&apos;ll send you a reminder 24 hours and 1 hour before class.</div>
               </div>
             </div>
             

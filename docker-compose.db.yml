@@ -1,0 +1,26 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: wingspan_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wingspan
+    ports:
+      - '5432:5432'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /var/run/postgresql:rw
+      - /tmp:rw
+    volumes:
+      - pgdata:/var/lib/postgresql/data:rw
+volumes:
+  pgdata:

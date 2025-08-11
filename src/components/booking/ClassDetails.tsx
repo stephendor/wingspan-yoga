@@ -1,7 +1,7 @@
 'use client'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Calendar, Clock, MapPin, Users, Video, User, Award, Star } from 'lucide-react'
+import { Calendar, MapPin, Users, Video, User, Award, Star } from 'lucide-react'
 import { formatCurrency } from '@/lib/stripe'
 import { ClassLocation, DifficultyLevel } from '@prisma/client'
 import Image from 'next/image'
