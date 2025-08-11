@@ -1,19 +1,18 @@
-import { describe, it, expect, beforeEach, vi, MockedFunction } from 'vitest'
-import { prisma } from '../../src/lib/prisma'
-import { getActiveUserSubscription } from '../../src/lib/auth/subscription'
-import { authOptions } from '../../src/lib/auth/nextauth'
-import { MembershipStatus, BillingInterval } from '@prisma/client'
+import { describe, it, expect, beforeEach, jest } from '@jest/globals'
+import { getActiveUserSubscription } from '@/lib/auth/subscription'
+import { authOptions } from '@/lib/auth/nextauth'
+import { MembershipStatus } from '@prisma/client'
 
 // Mock the subscription helper
-vi.mock('../../src/lib/auth/subscription', () => ({
-  getActiveUserSubscription: vi.fn(),
+jest.mock('@/lib/auth/subscription', () => ({
+  getActiveUserSubscription: jest.fn(),
 }))
 
-const mockGetActiveUserSubscription = getActiveUserSubscription as MockedFunction<typeof getActiveUserSubscription>
+const mockGetActiveUserSubscription = getActiveUserSubscription as jest.MockedFunction<typeof getActiveUserSubscription>
 
 describe('NextAuth Session Callback Integration', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   describe('session callback enrichment', () => {
@@ -27,20 +26,29 @@ describe('NextAuth Session Callback Integration', () => {
 
       mockGetActiveUserSubscription.mockResolvedValue(mockSubscriptionData)
 
-      // Mock session and token
+      // Mock session and token with proper structure
       const mockSession = {
         user: {
           id: 'user-123',
           email: 'test@example.com',
           name: 'Test User',
+          membershipType: 'STANDARD',
         },
         expires: '2025-01-01T00:00:00.000Z',
-      }
+      } as any
 
       const mockToken = {
         sub: 'user-123',
         email: 'test@example.com',
         name: 'Test User',
+        membershipType: 'STANDARD',
+      } as any
+
+      // Mock params for the callback
+      const mockParams = {
+        session: mockSession,
+        token: mockToken,
+        user: {} as any,
       }
 
       // Get the session callback from authOptions
@@ -51,16 +59,14 @@ describe('NextAuth Session Callback Integration', () => {
       }
 
       // Call the session callback
-      const enrichedSession = await sessionCallback({
-        session: mockSession,
-        token: mockToken,
-      })
+      const enrichedSession = await sessionCallback(mockParams)
 
       // Verify the session was enriched with membership data
       expect(enrichedSession.user).toEqual({
         id: 'user-123',
         email: 'test@example.com',
         name: 'Test User',
+        membershipType: 'STANDARD',
         membershipStatus: 'ACTIVE',
         subscriptionPeriodEnd: '2025-12-31T23:59:59.000Z',
       })
@@ -78,27 +84,33 @@ describe('NextAuth Session Callback Integration', () => {
           id: 'user-456',
           email: 'basic@example.com',
           name: 'Basic User',
+          membershipType: 'STANDARD',
         },
         expires: '2025-01-01T00:00:00.000Z',
-      }
+      } as any
 
       const mockToken = {
         sub: 'user-456',
         email: 'basic@example.com',
         name: 'Basic User',
+        membershipType: 'STANDARD',
+      } as any
+
+      const mockParams = {
+        session: mockSession,
+        token: mockToken,
+        user: {} as any,
       }
 
       const sessionCallback = authOptions.callbacks?.session!
-      const enrichedSession = await sessionCallback({
-        session: mockSession,
-        token: mockToken,
-      })
+      const enrichedSession = await sessionCallback(mockParams)
 
       // Verify session remains unchanged when no subscription
       expect(enrichedSession.user).toEqual({
         id: 'user-456',
         email: 'basic@example.com',
         name: 'Basic User',
+        membershipType: 'STANDARD',
       })
 
       expect(mockGetActiveUserSubscription).toHaveBeenCalledWith('user-456')
@@ -131,23 +143,28 @@ describe('NextAuth Session Callback Integration', () => {
             id: 'user-test',
             email: 'test@example.com',
             name: 'Test User',
+            membershipType: 'STANDARD',
           },
           expires: '2025-01-01T00:00:00.000Z',
-        }
+        } as any
 
         const mockToken = {
           sub: 'user-test',
           email: 'test@example.com',
           name: 'Test User',
+          membershipType: 'STANDARD',
+        } as any
+
+        const mockParams = {
+          session: mockSession,
+          token: mockToken,
+          user: {} as any,
         }
 
         const sessionCallback = authOptions.callbacks?.session!
-        const enrichedSession = await sessionCallback({
-          session: mockSession,
-          token: mockToken,
-        })
+        const enrichedSession = await sessionCallback(mockParams)
 
-        expect(enrichedSession.user.membershipStatus).toBe(testCase.expected)
+        expect((enrichedSession.user as any)?.membershipStatus).toBe(testCase.expected)
       }
     })
 
@@ -160,29 +177,35 @@ describe('NextAuth Session Callback Integration', () => {
           id: 'user-error',
           email: 'error@example.com',
           name: 'Error User',
+          membershipType: 'STANDARD',
         },
         expires: '2025-01-01T00:00:00.000Z',
-      }
+      } as any
 
       const mockToken = {
         sub: 'user-error',
         email: 'error@example.com',
         name: 'Error User',
+        membershipType: 'STANDARD',
+      } as any
+
+      const mockParams = {
+        session: mockSession,
+        token: mockToken,
+        user: {} as any,
       }
 
       const sessionCallback = authOptions.callbacks?.session!
 
       // Should not throw and should return session without membership data
-      await expect(
-        sessionCallback({
-          session: mockSession,
-          token: mockToken,
-        })
-      ).resolves.toEqual({
+      const result = await sessionCallback(mockParams)
+      
+      expect(result).toEqual({
         user: {
           id: 'user-error',
           email: 'error@example.com',
           name: 'Error User',
+          membershipType: 'STANDARD',
         },
         expires: '2025-01-01T00:00:00.000Z',
       })
@@ -205,25 +228,29 @@ describe('NextAuth Session Callback Integration', () => {
           id: 'user-transition',
           email: 'transition@example.com',
           name: 'Transition User',
+          membershipType: 'STANDARD',
         },
         expires: '2025-01-01T00:00:00.000Z',
-      }
+      } as any
 
       const mockToken = {
         sub: 'user-transition',
         email: 'transition@example.com',
         name: 'Transition User',
+        membershipType: 'STANDARD',
+      } as any
+
+      const mockParams = {
+        session: mockSession,
+        token: mockToken,
+        user: {} as any,
       }
 
       const sessionCallback = authOptions.callbacks?.session!
 
       // First call - ACTIVE status
-      const activeSession = await sessionCallback({
-        session: mockSession,
-        token: mockToken,
-      })
-
-      expect(activeSession.user.membershipStatus).toBe('ACTIVE')
+      const activeSession = await sessionCallback(mockParams)
+      expect((activeSession.user as any)?.membershipStatus).toBe('ACTIVE')
 
       // Simulate status change to PAST_DUE
       mockGetActiveUserSubscription.mockResolvedValueOnce({
@@ -233,12 +260,8 @@ describe('NextAuth Session Callback Integration', () => {
       })
 
       // Second call - PAST_DUE status
-      const pastDueSession = await sessionCallback({
-        session: mockSession,
-        token: mockToken,
-      })
-
-      expect(pastDueSession.user.membershipStatus).toBe('PAST_DUE')
+      const pastDueSession = await sessionCallback(mockParams)
+      expect((pastDueSession.user as any)?.membershipStatus).toBe('PAST_DUE')
     })
   })
 })
