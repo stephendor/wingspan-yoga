@@ -444,8 +444,8 @@
             "dependencies": [
               "12.1"
             ],
-            "details": "Create a `layout.tsx` file within the `/app/admin` directory. This layout will wrap all admin pages. Implement a `AdminSidebar.tsx` component in `/components/admin/` that includes navigation links for 'Dashboard' (`/admin`) and 'Class Management' (`/admin/classes`). The main `/app/admin/page.tsx` will serve as the initial dashboard landing page.",
-            "status": "pending",
+            "details": "Create a `layout.tsx` file within the `/app/admin` directory. This layout will wrap all admin pages. Implement a `AdminSidebar.tsx` component in `/components/admin/` that includes navigation links for 'Dashboard' (`/admin`) and 'Class Management' (`/admin/classes`). The main `/app/admin/page.tsx` will serve as the initial dashboard landing page.\n<info added on 2025-08-11T06:34:00.667Z>\nImplementation Summary:\n- Created `/app/admin/layout.tsx` to wrap all admin pages with a sidebar and main content area.\n- Created `/components/admin/AdminSidebar.tsx` with navigation links to 'Dashboard' and 'Class Management'.\n- Created `/app/admin/page.tsx` as the dashboard landing page.\n- Fixed a minor lint error by removing an unused import. All files compile successfully.\n</info added on 2025-08-11T06:34:00.667Z>",
+            "status": "done",
             "testStrategy": "Navigate to `/admin` as an admin. Verify the layout renders correctly with the sidebar. Click navigation links to ensure they route to the correct (currently placeholder) pages without a full page reload."
           },
           {
@@ -455,8 +455,8 @@
             "dependencies": [
               "12.2"
             ],
-            "details": "Create the page file at `/app/admin/classes/page.tsx`. This will be a server component that fetches all class records using `prisma.class.findMany()`. Pass the fetched data to a client component, `ClassTable.tsx` located in `/components/admin/`. This table should display key class details (e.g., Name, Instructor, Date, Time, Slots) and include controls for sorting columns.",
-            "status": "pending",
+            "details": "Create the page file at `/app/admin/classes/page.tsx`. This will be a server component that fetches all class records using `prisma.class.findMany()`. Pass the fetched data to a client component, `ClassTable.tsx` located in `/components/admin/`. This table should display key class details (e.g., Name, Instructor, Date, Time, Slots) and include controls for sorting columns.\n<info added on 2025-08-11T06:36:04.338Z>\nImplementation is complete. The server component at `/app/admin/classes/page.tsx` fetches all class records via Prisma, including related instructor data, and orders them by start time. This data is passed to the client component `/components/admin/ClassTable.tsx`, which renders the class details in a table with functional column sorting. The feature is now ready for testing with seeded class data.\n</info added on 2025-08-11T06:36:04.338Z>",
+            "status": "done",
             "testStrategy": "Seed the database with several classes. Navigate to `/admin/classes` and verify that all seeded classes are displayed correctly in the table. Test the sorting functionality for at least two columns."
           },
           {
@@ -824,7 +824,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-11T06:23:36.863Z",
+      "updated": "2025-08-11T06:36:11.693Z",
       "description": "Tasks for master context"
     }
   }
