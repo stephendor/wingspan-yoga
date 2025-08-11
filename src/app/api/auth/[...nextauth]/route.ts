@@ -1,3 +1,8 @@
-import NextAuth from '@/lib/auth/nextauth'
+import NextAuth from 'next-auth'
+import { authOptions } from '@/lib/auth/nextauth'
 
-export { NextAuth as GET, NextAuth as POST }
+console.log('NextAuth route handler loaded')
+
+const handler = NextAuth(authOptions)
+
+export { handler as GET, handler as POST }

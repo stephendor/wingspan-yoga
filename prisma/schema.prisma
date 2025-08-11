@@ -396,6 +396,7 @@ enum MembershipType {
   BASIC
   PREMIUM
   UNLIMITED
+  ADMIN
 }
 
 enum MembershipStatus {

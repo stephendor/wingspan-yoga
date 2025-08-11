@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { Button, Input, Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui'
 import { Github, Chrome } from 'lucide-react'
 
@@ -11,34 +11,39 @@ export function SignInForm() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
-  const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
+    console.log('Form submitted with:', { email, password, callbackUrl })
+
     try {
-      const result = await signIn('credentials', {
+      // Let NextAuth handle everything - no redirect: false
+      console.log('Calling signIn with full NextAuth handling...')
+      await signIn('credentials', {
         email,
         password,
-        redirect: false,
+        callbackUrl,
+        // Remove redirect: false to let NextAuth handle the flow completely
       })
-
-      if (result?.error) {
-        setError('Invalid email or password')
-      } else {
-        router.push('/dashboard')
-      }
-    } catch {
-      setError('An error occurred. Please try again.')
-    } finally {
+      
+      // If we reach here without an error, the redirect should have happened
+      console.log('SignIn completed - should have redirected')
+      
+    } catch (error) {
+      console.error('SignIn error:', error)
+      setError('Invalid email or password. Please try again.')
       setIsLoading(false)
     }
   }
 
   const handleSocialSignIn = (provider: string) => {
-    signIn(provider, { callbackUrl: '/dashboard' })
+    console.log('Social sign in with:', provider)
+    signIn(provider, { callbackUrl })
   }
 
   return (
@@ -48,12 +53,12 @@ export function SignInForm() {
           <CardTitle className="text-center">Sign In to Wingspan Yoga</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={(e) => { handleSubmit(e) }} className="space-y-4">
             <Input
               label="Email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value) }}
               required
               errorMessage={error && !email ? 'Email is required' : undefined}
             />
@@ -61,7 +66,7 @@ export function SignInForm() {
               label="Password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => { setPassword(e.target.value) }}
               required
               errorMessage={error && !password ? 'Password is required' : undefined}
             />
@@ -89,7 +94,7 @@ export function SignInForm() {
           <div className="grid grid-cols-2 gap-3">
             <Button
               variant="outline"
-              onClick={() => handleSocialSignIn('google')}
+              onClick={() => { handleSocialSignIn('google') }}
               className="w-full"
             >
               <Chrome className="h-4 w-4 mr-2" />
@@ -97,7 +102,7 @@ export function SignInForm() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => handleSocialSignIn('github')}
+              onClick={() => { handleSocialSignIn('github') }}
               className="w-full"
             >
               <Github className="h-4 w-4 mr-2" />

@@ -2,15 +2,9 @@
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
 ---
+
 # Codacy Rules
 Configuration for AI behavior when interacting with Codacy's MCP Server
-
-## using any tool that accepts the arguments: `provider`, `organization`, or `repository`
-- ALWAYS use:
- - provider: gh
- - organization: stephendor
- - repository: wingspan-yoga
-- Avoid calling `git remote -v` unless really necessary
 
 ## CRITICAL: After ANY successful `edit_file` or `reapply` operation
 - YOU MUST IMMEDIATELY run the `codacy_cli_analyze` tool from Codacy's MCP Server for each file that was edited, with:
@@ -68,3 +62,37 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - If the user accepts, run the `codacy_setup_repository` tool
 - Do not ever try to run the `codacy_setup_repository` tool on your own
 - After setup, immediately retry the action that failed (only retry once)
+
+## Debugging NextAuth issues
+- If you are having issues with NextAuth authentication flow, and the `authorize` function is not being called, it is likely due to cached NextAuth cookies pointing to an incorrect port.
+- Always ensure that the `NEXTAUTH_URL` environment variable is correctly set to the port where the dev server is running.
+- Clear the NextAuth cookies in the browser, or use an incognito/private window to avoid cached values. The cookies to clear include `next-auth.callback-url`, `next-auth.session-token`, and `next-auth.csrf-token`.
+
+## Admin Authentication Troubleshooting
+- If you encounter an `access_denied` error after successful sign-in, ensure the middleware is correctly configured to handle the `membershipType` from the JWT token. Check for case sensitivity issues (e.g., middleware expecting `'ADMIN'` while the token contains `'admin'`). The middleware MUST use a case-insensitive check, or the JWT token should be set to uppercase. The middleware MUST use a case-insensitive check.
+- If the NextAuth `authorize` function is not being called, verify that the `NEXTAUTH_URL` environment variable is correctly set and matches the port where the development server is running. A mismatch between `NEXTAUTH_URL` and the actual server port can lead to silent authentication failures.
+- After changing `NEXTAUTH_URL`, clear browser cookies related to NextAuth including `next-auth.callback-url`, `next-auth.session-token`, and `next-auth.csrf-token`. Use an incognito/private window to avoid cached values.
+- If experiencing redirect loops or authentication failures, carefully review the NextAuth configuration, particularly the credentials provider setup, and ensure that all required environment variables are defined (e.g., `NEXTAUTH_SECRET`).
+- If you are getting a 404 error after successful authentication, check the `SignInForm` component in the front-end to ensure that it is redirecting to the correct route after sign-in. This component MUST respect the `callbackUrl` parameter that NextAuth automatically includes.
+- If the dev server is serving a primitive admin interface instead of the sophisticated TailwindCSS styled interface, ensure that your Next.js project is serving from the correct `app` directory and that the import paths are correct.
+- **Middleware JWT Token Membership Type Check**: When implementing admin route protection, the middleware MUST use a case-insensitive check for `membershipType` from the JWT token. This avoids issues where the token contains `'admin'` while the middleware expects `'ADMIN'`.
+
+## Future Enhancements
+
+These are polish items to make the admin interface more user-friendly:
+
+### 1. Authentication UX Improvements
+- On sign-in page load, pull the cursor into the email field.
+- Add a password visibility toggle (show/hide password).
+- Replace GitHub OAuth with Facebook, Twitter, and Instagram OAuth options (keep Google).
+
+### 2. Calendar Interaction Enhancements
+- When clicking cancelled classes in the calendar view: Replace "Keep/Cancel" dialog with "Restore Class" and "Go Back" options.
+
+### 3. Data Sorting
+- Sort upcoming instances by date/time in chronological order in the upcoming instances view.
+
+### 4. Multi-Day Event Support
+- For Workshops and Retreats in the create recurring class dialog:
+  - Allow adding multiple calendar dates.
+  - Automatically set as non-recurring. Support multi-day events that don't repeat (common for workshops/retreats).

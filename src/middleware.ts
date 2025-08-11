@@ -38,8 +38,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(signInUrl);
     }
 
-    // Check if user has admin role
-    if (token.membershipType !== 'ADMIN') {
+    // Check if user has admin role (case-insensitive)
+    if (token.membershipType?.toLowerCase() !== 'admin') {
       // Not an admin - redirect to home with error
       const homeUrl = new URL('/', request.url);
       homeUrl.searchParams.set('error', 'access_denied');

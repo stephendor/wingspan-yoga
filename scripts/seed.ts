@@ -70,6 +70,17 @@ async function main() {
     },
   })
 
+  const adminUser = await prisma.user.create({
+    data: {
+      email: 'admin@example.com',
+      name: 'Admin User',
+      password: hashedPassword,
+      membershipType: 'ADMIN',
+      membershipStatus: 'ACTIVE',
+      bio: 'System administrator for the yoga platform.',
+    },
+  })
+
   // Create sample videos
   const video1 = await prisma.video.create({
     data: {
