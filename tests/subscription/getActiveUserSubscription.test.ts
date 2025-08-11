@@ -9,7 +9,7 @@ describe('getActiveUserSubscription', () => {
   const mockFindFirst = prisma.userSubscription.findFirst as unknown as jest.Mock
 
   beforeEach(() => {
-    mockFindFirst.mockClear()
+    mockFindFirst.mockReset()
   })
 
   it('returns null when no active subscription exists', async () => {

@@ -2,6 +2,7 @@
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
 ---
+
 # Codacy Rules
 Configuration for AI behavior when interacting with Codacy's MCP Server
 
@@ -55,9 +56,23 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - Do not try to manually install Codacy CLI using either brew, npm, npx, or any other package manager.
 - If the Codacy CLI is not installed, just run the `codacy_cli_analyze` tool from Codacy's MCP Server.
 - When calling `codacy_cli_analyze`, only send provider, organization and repository if the project is a git repository.
+- ENFORCED STYLE: Always default to block-by-block executable code blocks with explicit user-controlled flow (continue/cancel) and you (the AI) initiating and monitoring terminal/tool execution. Do NOT batch multiple conceptual blocks unless the user explicitly requests "all" or provides an override. Provide exactly one actionable block, await user confirmation, then proceed. If the user asks to change style, only then adapt for that exchange; do not persist a style change without an explicit permanent instruction to update this file again.
 
 ## Whenever a call to a Codacy tool that uses `repository` or `organization` as a parameter returns a 404 error
 - Offer to run the `codacy_setup_repository` tool to add the repository to Codacy
 - If the user accepts, run the `codacy_setup_repository` tool
 - Do not ever try to run the `codacy_setup_repository` tool on your own
 - After setup, immediately retry the action that failed (only retry once)
+
+## Task Management
+- Check for task completion documents.
+- Check with the "task-master-ai" MCP server for any tasks that may have been marked as done.
+- If there is a record of a task completion, use "task-master" and follow that protocol to mark the task as done.
+- When asked for the next task, consider dependencies and priorities, and suggest a single best next task, noting viable alternates and rationale.
+- When implementing a task, generate a task completion document and mark things done where they should be.
+- Once instructed to implement a task, proceed without asking for confirmation until the task is fully implemented, including tests and task completion documents, and all related items are marked done. Do not ask for confirmation until the task is fully implemented.
+- When instructed to implement a task, proceed and do not ask again until you have implemented all of the task.
+- When marking a task as done with "task-master", if the task ID is not explicitly provided, and Taskmaster shows "No tasks found," offer to create and immediately close a retroactive task, or prompt the user for the correct task ID.
+- When implementing a task, if instructed to implement the remainder of the task, proceed without asking again until you have implemented all of the task.
+- When asked to check the current status of a task, retrieve the task details, status, priority, description, and dependencies, as well as the status of any subtasks. Present this information clearly and concisely to the user.
+- When implementing a task that has subtasks, implement each pending subtask in order, logging progress and marking each as done before proceeding to the next.

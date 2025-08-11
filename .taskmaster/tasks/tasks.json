@@ -304,7 +304,7 @@
           4,
           8
         ],
-        "status": "in-progress",
+        "status": "done",
         "subtasks": [
           {
             "id": 1,
@@ -433,8 +433,8 @@
             "title": "Implement Admin Route Protection Middleware",
             "description": "Create and configure Next.js middleware to protect the `/admin` route group, ensuring only authenticated users with an 'ADMIN' role can access it.",
             "dependencies": [],
-            "details": "Create a `middleware.ts` file at the root of the `/app` directory. Inside the middleware, check the user's session (e.g., from NextAuth.js) for a role property. If the user is not authenticated or their role is not 'ADMIN', redirect them to the homepage ('/'). The middleware's matcher should be configured to run on all paths under `/admin/:path*`.",
-            "status": "pending",
+            "details": "Create a `middleware.ts` file at the root of the `/app` directory. Inside the middleware, check the user's session (e.g., from NextAuth.js) for a role property. If the user is not authenticated or their role is not 'ADMIN', redirect them to the homepage ('/'). The middleware's matcher should be configured to run on all paths under `/admin/:path*`.\n<info added on 2025-08-11T06:23:33.293Z>\n**Implementation Summary:**\nThe database schema was updated to support an admin role by adding `ADMIN` to the `MembershipType` enum and applying the migration `20250811061500_add_admin_membership_type`.\n\nThe middleware was implemented using `NextAuth.js`'s `getToken()` function for session validation. It is configured to protect all routes under `/admin/:path*`. The logic performs the following checks:\n- Unauthenticated users are redirected to `/auth/signin` with a `callbackUrl` parameter.\n- Authenticated users without the 'ADMIN' membership type are redirected to the homepage ('/') with an error message.\n\nThis ensures that only authenticated admin users can access the admin dashboard routes.\n</info added on 2025-08-11T06:23:33.293Z>",
+            "status": "done",
             "testStrategy": "Attempt to navigate to `/admin` as a logged-out user and verify redirection to '/'. Log in as a non-admin user and verify redirection. Log in as an admin user and verify successful access."
           },
           {
@@ -824,7 +824,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-11T06:12:42.600Z",
+      "updated": "2025-08-11T06:23:36.863Z",
       "description": "Tasks for master context"
     }
   }
