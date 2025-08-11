@@ -1,7 +1,11 @@
 "use client";
-import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../../src/components/ui/dialog';
+import React, { useState, useEffect } from 'react';
 import ClassForm from './ClassForm';
+
+interface Instructor {
+  id: string;
+  name: string;
+}
 
 interface EditClassModalProps {
   template: {
@@ -19,7 +23,10 @@ interface EditClassModalProps {
     meetingUrl?: string;
     notes?: string;
     isActive: boolean;
-    instructorId: string;
+    instructor: {
+      id: string;
+      name: string;
+    };
   };
   isOpen: boolean;
   onClose: () => void;
@@ -27,68 +34,105 @@ interface EditClassModalProps {
 }
 
 export default function EditClassModal({ template, isOpen, onClose, onUpdated }: EditClassModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [instructors, setInstructors] = useState<Instructor[]>([]);
 
-  const handleSubmit = async (data: any) => {
-    setIsSubmitting(true);
-    
+  const fetchInstructors = async () => {
     try {
-      const response = await fetch(`/api/admin/class-templates/${template.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
+      const response = await fetch('/api/admin/instructors');
       if (response.ok) {
-        onUpdated();
-        onClose();
-      } else {
-        console.error('Failed to update template');
+        const data = await response.json();
+        setInstructors(data.instructors || []);
       }
     } catch (error) {
-      console.error('Error updating template:', error);
+      console.error('Error fetching instructors:', error);
     }
-    
-    setIsSubmitting(false);
   };
 
-  // Convert template data to form format
+  useEffect(() => {
+    if (isOpen) {
+      fetchInstructors();
+    }
+  }, [isOpen]);
+
+  const handleSuccess = () => {
+    onUpdated();
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-gray-900">Edit Recurring Class</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl font-bold w-8 h-8 flex items-center justify-center"
+          >
+            ×
+          </button>
+        </div>
+        
+        <div className="p-6">
+          <p className="text-gray-600 mb-6">
+            Modify the recurring class template. Changes will apply to future class instances.
+          </p>
+          
+          <EditableClassForm
+            template={template}
+            instructors={instructors}
+            onSuccess={handleSuccess}
+            onCancel={onClose}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Create a version of ClassForm that supports editing
+function EditableClassForm({ 
+  template, 
+  instructors, 
+  onSuccess, 
+  onCancel 
+}: { 
+  template: EditClassModalProps['template']; 
+  instructors: Instructor[];
+  onSuccess: () => void;
+  onCancel: () => void;
+}) {
+  // Define the allowed enum types
+  type CategoryType = 'VINYASA' | 'HATHA' | 'YIN' | 'RESTORATIVE' | 'MEDITATION' | 'BREATHWORK' | 'POWER' | 'GENTLE' | 'WORKSHOP' | 'RETREAT' | 'BEGINNER_COURSE' | 'PRENATAL' | 'SENIORS';
+  type LocationType = 'STUDIO' | 'ONLINE' | 'HYBRID';
+  type DifficultyType = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'ALL_LEVELS';
+
+  // Prepare default values from the template
   const defaultValues = {
     title: template.title,
     description: template.description || '',
-    dayOfWeek: template.dayOfWeek.toString(),
+    category: template.category as CategoryType,
+    location: template.location as LocationType,
+    dayOfWeek: template.dayOfWeek,
     startTime: template.startTime,
     endTime: template.endTime,
     capacity: template.capacity,
     price: template.price / 100, // Convert from pence to pounds for display
-    difficulty: template.difficulty,
-    category: template.category,
-    location: template.location,
+    difficulty: template.difficulty as DifficultyType,
+    instructorId: template.instructor.id,
     meetingUrl: template.meetingUrl || '',
     notes: template.notes || '',
-    isActive: template.isActive,
-    instructorId: template.instructorId,
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => !isSubmitting && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Edit Recurring Class</DialogTitle>
-          <DialogDescription>
-            Modify the recurring class template. Changes will apply to future class instances.
-          </DialogDescription>
-        </DialogHeader>
-        
-        <ClassForm 
-          onSubmit={handleSubmit}
-          defaultValues={defaultValues}
-          isSubmitting={isSubmitting}
-          submitButtonText="Update Class Template"
-        />
-      </DialogContent>
-    </Dialog>
+    <ClassForm
+      onSuccess={onSuccess}
+      onCancel={onCancel}
+      instructors={instructors}
+      defaultValues={defaultValues}
+      isEditMode={true}
+      templateId={template.id}
+    />
   );
 }

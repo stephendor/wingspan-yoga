@@ -11,7 +11,7 @@ export async function POST(
     const templateId = params.id;
 
     // Get the template
-    const template = await (prisma as any).classTemplate.findUnique({
+    const template = await prisma.classTemplate.findUnique({
       where: { id: templateId },
     });
 
@@ -35,7 +35,7 @@ export async function POST(
     // Generate instances for each week
     while (currentDate <= endDate) {
       // Check if this date has an exception
-      const hasException = await (prisma as any).classException.findUnique({
+      const hasException = await prisma.classException.findUnique({
         where: {
           templateId_date: {
             templateId: templateId,
@@ -45,7 +45,7 @@ export async function POST(
       });
 
       // Check if instance already exists
-      const existingInstance = await (prisma as any).classInstance.findUnique({
+      const existingInstance = await prisma.classInstance.findUnique({
         where: {
           templateId_date: {
             templateId: templateId,
@@ -80,7 +80,7 @@ export async function POST(
     }
 
     if (instances.length > 0) {
-      await (prisma as any).classInstance.createMany({
+      await prisma.classInstance.createMany({
         data: instances,
       });
     }

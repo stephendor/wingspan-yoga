@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     
     // Create a class template (recurring class)
-    const template = await (prisma as any).classTemplate.create({
+    const template = await prisma.classTemplate.create({
       data: {
         title: body.title,
         description: body.description,
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     // Get all active class templates with upcoming instances
-    const templates = await (prisma as any).classTemplate.findMany({
+    const templates = await prisma.classTemplate.findMany({
       where: { isActive: true },
       include: {
         instructor: true,

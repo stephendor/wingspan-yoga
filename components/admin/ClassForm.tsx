@@ -31,6 +31,9 @@ interface ClassFormProps {
   onSuccess: () => void;
   onCancel: () => void;
   instructors?: Instructor[];
+  defaultValues?: Partial<ClassTemplateFormValues>;
+  isEditMode?: boolean;
+  templateId?: string;
 }
 
 const DAYS_OF_WEEK = [
@@ -72,18 +75,20 @@ const LOCATIONS = [
   { value: 'HYBRID', label: 'Hybrid (Studio + Online)' },
 ];
 
-export default function ClassForm({ onSuccess, onCancel, instructors = [] }: ClassFormProps) {
+export default function ClassForm({ onSuccess, onCancel, instructors = [], defaultValues, isEditMode = false, templateId }: ClassFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, watch } = useForm<ClassTemplateFormValues>({
     resolver: zodResolver(ClassTemplateSchema),
     defaultValues: {
-      dayOfWeek: 1, // Default to Monday
+      dayOfWeek: 1,
       difficulty: 'ALL_LEVELS',
       location: 'STUDIO',
       category: 'VINYASA',
       capacity: 15,
-      price: 18, // Default £18
+      price: 18,
+      ...((typeof instructors !== 'undefined' && instructors.length > 0) ? { instructorId: instructors[0].id } : {}),
+      ...(defaultValues || {}),
     },
   });
 
@@ -98,8 +103,14 @@ export default function ClassForm({ onSuccess, onCancel, instructors = [] }: Cla
         price: Math.round(data.price * 100), // Convert £ to pence
       };
 
-      const response = await fetch('/api/admin/class-templates', {
-        method: 'POST',
+      const url = isEditMode && templateId 
+        ? `/api/admin/class-templates/${templateId}`
+        : '/api/admin/class-templates';
+      
+      const method = isEditMode ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(dataInPence),
       });
@@ -109,11 +120,11 @@ export default function ClassForm({ onSuccess, onCancel, instructors = [] }: Cla
       if (result.success) {
         onSuccess();
       } else {
-        alert(result.error || 'Failed to create class template');
+        alert(result.error || `Failed to ${isEditMode ? 'update' : 'create'} class template`);
       }
     } catch (error) {
-      console.error('Error creating class template:', error);
-      alert('Failed to create class template');
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} class template:`, error);
+      alert(`Failed to ${isEditMode ? 'update' : 'create'} class template`);
     } finally {
       setIsLoading(false);
     }

@@ -1,5 +1,6 @@
 "use client";
 import CreateClassModal from '../../../components/admin/CreateClassModal';
+import EditClassModal from '../../../components/admin/EditClassModal';
 import { useCallback, useEffect, useState } from 'react';
 
 function formatGBP(price: number) {
@@ -64,10 +65,11 @@ interface ClassTemplate {
   }>;
 }
 
-export default function AdminClassesClient({ classes }: { classes: any[] }) {
+export default function AdminClassesClient({ classes }: { classes: ClassTemplate[] }) {
   const [templates, setTemplates] = useState<ClassTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'templates' | 'instances'>('templates');
+  const [editingTemplate, setEditingTemplate] = useState<ClassTemplate | null>(null);
 
   const fetchTemplates = useCallback(async () => {
     try {
@@ -214,15 +216,23 @@ export default function AdminClassesClient({ classes }: { classes: any[] }) {
                       </div>
                       
                       <div className="text-right ml-6">
-                        <div className="text-2xl font-bold text-green-600 mb-2">
+                        <div className="text-2xl font-bold text-green-600 mb-3">
                           {formatGBP(template.price)}
                         </div>
-                        <button
-                          onClick={() => generateInstances(template.id)}
-                          className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                        >
-                          Generate 12 weeks
-                        </button>
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => setEditingTemplate(template)}
+                            className="block w-full px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
+                          >
+                            Edit Template
+                          </button>
+                          <button
+                            onClick={() => generateInstances(template.id)}
+                            className="block w-full px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                          >
+                            Generate 12 weeks
+                          </button>
+                        </div>
                       </div>
                     </div>
 
@@ -307,6 +317,19 @@ export default function AdminClassesClient({ classes }: { classes: any[] }) {
           </div>
         )}
       </div>
+      
+      {/* Edit Template Modal */}
+      {editingTemplate && (
+        <EditClassModal
+          template={editingTemplate}
+          isOpen={true}
+          onClose={() => setEditingTemplate(null)}
+          onUpdated={() => {
+            setEditingTemplate(null);
+            fetchTemplates();
+          }}
+        />
+      )}
     </div>
   );
 }

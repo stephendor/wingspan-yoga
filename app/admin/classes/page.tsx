@@ -2,14 +2,21 @@ import { prisma } from '../../../src/lib/prisma';
 import AdminClassesClient from './AdminClassesClient';
 
 export default async function AdminClassesPage() {
-  const classes = await prisma.class.findMany({
+  const classes = await prisma.classTemplate.findMany({
     include: {
       instructor: true,
+      instances: {
+        include: {
+          instructor: true,
+        },
+      },
+      exceptions: true,
     },
     orderBy: {
-      startTime: 'asc',
+      title: 'asc',
     },
   });
 
-  return <AdminClassesClient classes={classes} />;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return <AdminClassesClient classes={classes as any} />;
 }

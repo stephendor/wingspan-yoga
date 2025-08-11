@@ -478,7 +478,7 @@
               "12.4"
             ],
             "details": "In the `ClassTable.tsx` component, add an 'Edit' button to each row. Clicking it will open a modal that reuses the `ClassForm.tsx` component, pre-filled with the data for the selected class. The form will submit to a new `updateClass` server action that takes the class ID and updated data, using `prisma.class.update()`. Revalidate the path on successful update.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": "Click the 'Edit' button for a class. Verify the form is pre-populated with the correct data. Change a value (e.g., the class time) and submit. Verify the table updates to show the new information."
           },
           {
@@ -824,7 +824,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-11T07:55:16.170Z",
+      "updated": "2025-08-11T16:46:34.949Z",
       "description": "Tasks for master context"
     }
   }
