@@ -1,5 +1,6 @@
 import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import bcrypt from 'bcryptjs'
 // OAuth provider imports commented out - can be enabled later when needed
 // import GoogleProvider from 'next-auth/providers/google'
 // import FacebookProvider from 'next-auth/providers/facebook'
@@ -33,24 +34,45 @@ export const authOptions: NextAuthOptions = {
             return null
           }
           
-          // Check for the specific test admin account
-          if (credentials.email === 'admin@example.com' && credentials.password === 'password123') {
-            const user = { 
-              id: '1', 
-              email: 'admin@example.com', 
-              name: 'Test Admin User',
-              membershipType: 'admin'
-            }
-            
-            console.log('Valid admin credentials - returning user object:', JSON.stringify(user, null, 2))
-            console.log('=== END AUTHORIZE ===')
-            return user
+          // Look up the user in the database
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+            select: {
+              id: true,
+              email: true,
+              name: true,
+              password: true,
+              membershipType: true,
+            },
+          })
+          
+          if (!user) {
+            console.log('User not found in database - returning null')
+            return null
           }
           
-          // Invalid credentials
-          console.log('Invalid credentials - returning null')
+          if (!user.password) {
+            console.log('User has no password set - returning null')
+            return null
+          }
+          
+          // Check password using bcrypt
+          const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
+          if (!isPasswordValid) {
+            console.log('Invalid password - returning null')
+            return null
+          }
+          
+          const returnUser = { 
+            id: user.id, // Use the actual database ID
+            email: user.email, 
+            name: user.name || 'User',
+            membershipType: user.membershipType.toLowerCase()
+          }
+          
+          console.log('Valid credentials - returning user object:', JSON.stringify(returnUser, null, 2))
           console.log('=== END AUTHORIZE ===')
-          return null
+          return returnUser
         } catch (error) {
           console.error('Authorize error:', error)
           return null

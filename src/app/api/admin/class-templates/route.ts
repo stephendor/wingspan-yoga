@@ -53,7 +53,7 @@ export async function GET() {
           orderBy: {
             startTime: 'asc',
           },
-          take: 5, // Next 5 instances per template
+          take: 12, // Show next 12 upcoming instances
           include: {
             instructor: true,
           },

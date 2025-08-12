@@ -5,19 +5,19 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
 const ClassTemplateSchema = z.object({
-  title: z.string().min(2, 'Title must be at least 2 characters'),
+  title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  category: z.enum(['VINYASA', 'HATHA', 'YIN', 'RESTORATIVE', 'MEDITATION', 'BREATHWORK', 'POWER', 'GENTLE', 'WORKSHOP', 'RETREAT', 'BEGINNER_COURSE', 'PRENATAL', 'SENIORS']),
-  location: z.enum(['STUDIO', 'ONLINE', 'HYBRID']),
-  dayOfWeek: z.number().min(0).max(6), // 0 = Sunday, 6 = Saturday
-  startTime: z.string().regex(/^\d{2}:\d{2}$/, 'Start time must be in HH:MM format'),
-  endTime: z.string().regex(/^\d{2}:\d{2}$/, 'End time must be in HH:MM format'),
-  capacity: z.number().min(1, 'Capacity must be at least 1'),
-  price: z.number().min(0, 'Price must be 0 or greater'), // Price in pounds
+  dayOfWeek: z.string().min(1, 'Day of week is required'),
+  startTime: z.string().min(1, 'Start time is required'),
+  endTime: z.string().min(1, 'End time is required'),
+  capacity: z.string().min(1, 'Capacity is required'),
+  price: z.string().min(1, 'Price is required'),
   difficulty: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'ALL_LEVELS']),
-  instructorId: z.string().min(1, 'Please select an instructor'),
-  meetingUrl: z.string().url().optional().or(z.literal('')),
+  category: z.enum(['VINYASA', 'HATHA', 'YIN', 'RESTORATIVE', 'MEDITATION', 'BREATHWORK', 'POWER', 'GENTLE', 'BEGINNER_COURSE', 'PRENATAL', 'SENIORS']),
+  location: z.enum(['STUDIO', 'ONLINE']),
+  meetingUrl: z.string().optional(),
   notes: z.string().optional(),
+  instructorId: z.string().min(1, 'Instructor is required'),
 });
 
 export type ClassTemplateFormValues = z.infer<typeof ClassTemplateSchema>;
@@ -55,8 +55,6 @@ const CLASS_CATEGORIES = [
   { value: 'BREATHWORK', label: 'Breathwork' },
   { value: 'POWER', label: 'Power Yoga' },
   { value: 'GENTLE', label: 'Gentle Yoga' },
-  { value: 'WORKSHOP', label: 'Workshop' },
-  { value: 'RETREAT', label: 'Retreat' },
   { value: 'BEGINNER_COURSE', label: 'Beginner Course' },
   { value: 'PRENATAL', label: 'Prenatal Yoga' },
   { value: 'SENIORS', label: 'Seniors Yoga' },
@@ -72,23 +70,20 @@ const DIFFICULTY_LEVELS = [
 const LOCATIONS = [
   { value: 'STUDIO', label: 'In Studio' },
   { value: 'ONLINE', label: 'Online' },
-  { value: 'HYBRID', label: 'Hybrid (Studio + Online)' },
 ];
 
 export default function ClassForm({ onSuccess, onCancel, instructors = [], defaultValues, isEditMode = false, templateId }: ClassFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [multiDates, setMultiDates] = useState<string[]>([]);
-  const [isMultiDay, setIsMultiDay] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, watch } = useForm<ClassTemplateFormValues>({
     resolver: zodResolver(ClassTemplateSchema),
     defaultValues: {
-      dayOfWeek: 1,
+      dayOfWeek: "1",
       difficulty: 'ALL_LEVELS',
       location: 'STUDIO',
       category: 'VINYASA',
-      capacity: 15,
-      price: 18,
+      capacity: "15",
+      price: "18",
       ...((typeof instructors !== 'undefined' && instructors.length > 0) ? { instructorId: instructors[0].id } : {}),
       ...(defaultValues || {}),
     },
@@ -102,58 +97,27 @@ export default function ClassForm({ onSuccess, onCancel, instructors = [], defau
       // Convert price from pounds to pence
       const dataInPence = {
         ...data,
-        price: Math.round(data.price * 100), // Convert £ to pence
+        price: Math.round(parseFloat(data.price) * 100), // Convert £ to pence
       };
 
-      // For workshops/retreats with multi-day selected, create a minimal template and then create individual instances for chosen dates
-      const isWorkshopOrRetreat = dataInPence.category === 'WORKSHOP' || dataInPence.category === 'RETREAT';
-      if (!isEditMode && isWorkshopOrRetreat && isMultiDay && multiDates.length > 0) {
-        const templateRes = await fetch('/api/admin/class-templates', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dataInPence),
-        });
-        const templateJson = await templateRes.json();
-        if (!templateJson.success) {
-          alert(templateJson.error || 'Failed to create class template');
-          setIsLoading(false);
-          return;
-        }
+      const url = isEditMode && templateId 
+        ? `/api/admin/class-templates/${templateId}`
+        : '/api/admin/class-templates';
+      
+      const method = isEditMode ? 'PUT' : 'POST';
 
-        const createdTemplateId = templateJson.data.id as string;
-        // Create instances for each selected date sequentially
-        for (const d of multiDates) {
-          const instRes = await fetch(`/api/admin/class-templates/${createdTemplateId}/instances`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ date: d }),
-          });
-          const instJson = await instRes.json();
-          if (!instJson.success) {
-            console.error('Failed creating instance for', d, instJson.error);
-          }
-        }
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataInPence),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
         onSuccess();
       } else {
-        const url = isEditMode && templateId 
-          ? `/api/admin/class-templates/${templateId}`
-          : '/api/admin/class-templates';
-        
-        const method = isEditMode ? 'PUT' : 'POST';
-
-        const response = await fetch(url, {
-          method,
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dataInPence),
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          onSuccess();
-        } else {
-          alert(result.error || `Failed to ${isEditMode ? 'update' : 'create'} class template`);
-        }
+        alert(result.error || `Failed to ${isEditMode ? 'update' : 'create'} class template`);
       }
     } catch (error) {
       console.error(`Error ${isEditMode ? 'updating' : 'creating'} class template:`, error);
@@ -250,54 +214,6 @@ export default function ClassForm({ onSuccess, onCancel, instructors = [], defau
               {errors.endTime && <p className="text-red-500 text-xs mt-1">{errors.endTime.message}</p>}
             </div>
           </div>
-
-          {/* Multi-day dates for Workshops/Retreats */}
-          <div className="mt-2">
-            <div className="flex items-center gap-2">
-              <input
-                id="multi-day"
-                type="checkbox"
-                className="h-4 w-4"
-                checked={isMultiDay}
-                onChange={(e) => setIsMultiDay(e.target.checked)}
-              />
-              <label htmlFor="multi-day" className="text-sm text-gray-700">This is a multi-day workshop/retreat</label>
-            </div>
-            {isMultiDay && (
-              <div className="mt-3 space-y-3">
-                <div className="flex gap-2">
-                  <input
-                    type="date"
-                    className="px-3 py-2 border border-gray-300 rounded-md"
-                    aria-label="Add date"
-                    onChange={(e) => {
-                      const v = e.target.value
-                      if (v && !multiDates.includes(v)) setMultiDates(prev => [...prev, v])
-                      e.currentTarget.value = ''
-                    }}
-                  />
-                  <button
-                    type="button"
-                    className="px-3 py-2 bg-gray-200 rounded-md"
-                    onClick={() => setMultiDates([])}
-                  >
-                    Clear dates
-                  </button>
-                </div>
-                {multiDates.length > 0 && (
-                  <ul className="list-disc pl-6 text-sm text-gray-700 space-y-1">
-                    {multiDates.map((d) => (
-                      <li key={d} className="flex items-center justify-between">
-                        <span>{d}</span>
-                        <button type="button" className="text-red-600 text-xs" onClick={() => setMultiDates(prev => prev.filter(x => x !== d))}>remove</button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                <p className="text-xs text-gray-500">We will create an instance for each date. These will not be recurring.</p>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* Details */}
@@ -372,7 +288,7 @@ export default function ClassForm({ onSuccess, onCancel, instructors = [], defau
             </div>
           </div>
 
-          {(watchLocation === 'ONLINE' || watchLocation === 'HYBRID') && (
+          {watchLocation === 'ONLINE' && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Meeting URL</label>
               <input

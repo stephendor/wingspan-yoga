@@ -1,5 +1,6 @@
 "use client";
 import CreateClassModal from '../../../../components/admin/CreateClassModal';
+import CreateSingleClassModal from '../../../../components/admin/CreateSingleClassModal';
 import EditClassModal from '../../../../components/admin/EditClassModal';
 import ClassCalendarView from '../../../../components/admin/ClassCalendarView';
 import { Modal, ModalHeader, ModalTitle, ModalContent, ModalFooter, ModalClose } from '../../../components/ui/modal';
@@ -174,12 +175,15 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-6">
+          <div className="flex justify-between items-start mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Class Management</h1>
               <p className="text-gray-600 mt-1">Manage recurring classes and their instances</p>
             </div>
-            <CreateClassModal onCreated={handleCreated} />
+            <div className="flex flex-col gap-3 min-w-[200px]">
+              <CreateClassModal onCreated={handleCreated} />
+              <CreateSingleClassModal onCreated={handleCreated} />
+            </div>
           </div>
 
           {/* View Toggle */}
@@ -202,7 +206,7 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              Upcoming Instances
+              Upcoming Classes
             </button>
             <button
               onClick={handleViewCalendar}
@@ -294,10 +298,10 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
                       </div>
                     </div>
 
-                    {/* Upcoming Instances */}
+                    {/* Upcoming Classes */}
                     {template.instances.length > 0 && (
                       <div className="border-t pt-4">
-                        <h4 className="font-medium text-gray-900 mb-3">Next 5 classes:</h4>
+                        <h4 className="font-medium text-gray-900 mb-3">Next 12 classes:</h4>
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
                           {template.instances.map(instance => (
                             <div key={instance.id} className="p-2 bg-gray-50 rounded text-sm">
@@ -330,7 +334,6 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
         ) : view === 'instances' ? (
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">All Upcoming Class Instances</h2>
               <div className="space-y-2">
                 {templates.flatMap(template => template.instances).length === 0 ? (
                   <p className="text-gray-600 text-center py-8">No upcoming instances. Generate some from your recurring classes!</p>
@@ -340,6 +343,7 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
                       template.instances.map(instance => ({ instance, template }))
                     )
                     .sort((a, b) => new Date(a.instance.startTime).getTime() - new Date(b.instance.startTime).getTime())
+                    .slice(0, 12) // Show only next 12 classes
                     .map(({ instance, template }) => (
                       <div key={instance.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
                         <div>

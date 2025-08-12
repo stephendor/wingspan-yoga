@@ -13,34 +13,26 @@ async function main() {
   await prisma.payment.deleteMany()
   await prisma.video.deleteMany()
   await prisma.class.deleteMany()
+  await prisma.classException.deleteMany()
+  await prisma.classInstance.deleteMany()
+  await prisma.classTemplate.deleteMany()
   await prisma.instructor.deleteMany()
   await prisma.blogPost.deleteMany()
+  await prisma.siteSettings.deleteMany()
   await prisma.userSubscription.deleteMany()
   await prisma.session.deleteMany()
   await prisma.account.deleteMany()
   await prisma.user.deleteMany()
 
-  // Create instructors
+  // Create instructor
   const instructor1 = await prisma.instructor.create({
     data: {
-      name: 'Sarah Johnson',
-      email: 'sarah@wingspanyoga.com',
-      bio: 'Sarah is a certified 500-hour yoga instructor with over 8 years of experience. She specializes in Vinyasa flow and mindfulness meditation.',
-      specialties: ['Vinyasa', 'Meditation', 'Breathwork'],
-      yearsExp: 8,
+      name: 'Anna Dorman',
+      email: 'anna@wingspanyoga.com',
+      bio: 'Anna is a certified yoga instructor with extensive experience in various yoga styles. She brings passion and expertise to every class.',
+      specialties: ['Vinyasa', 'Hatha', 'Meditation', 'Breathwork'],
+      yearsExp: 10,
       certification: 'RYT 500',
-      isActive: true,
-    },
-  })
-
-  const instructor2 = await prisma.instructor.create({
-    data: {
-      name: 'Michael Chen',
-      email: 'michael@wingspanyoga.com',
-      bio: 'Michael brings a gentle approach to yoga with focus on restorative and yin practices. Perfect for beginners and those seeking relaxation.',
-      specialties: ['Yin', 'Restorative', 'Gentle'],
-      yearsExp: 5,
-      certification: 'RYT 200',
       isActive: true,
     },
   })
@@ -70,6 +62,8 @@ async function main() {
     },
   })
 
+  // Create admin user for system access
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const adminUser = await prisma.user.create({
     data: {
       email: 'admin@example.com',
@@ -110,7 +104,7 @@ async function main() {
       tags: ['evening', 'relaxation', 'stretch'],
       isPublic: true,
       membershipRequired: 'BASIC',
-      instructorId: instructor2.id,
+      instructorId: instructor1.id,
     },
   })
 
@@ -152,7 +146,7 @@ async function main() {
       difficulty: 'BEGINNER',
       category: 'HATHA',
       location: 'STUDIO',
-      instructorId: instructor2.id,
+      instructorId: instructor1.id,
     },
   })
 
@@ -192,7 +186,7 @@ async function main() {
       difficulty: 'INTERMEDIATE',
       category: 'YIN',
       location: 'STUDIO',
-      instructorId: instructor2.id,
+      instructorId: instructor1.id,
     },
   })
 
@@ -213,7 +207,7 @@ async function main() {
       category: 'RESTORATIVE',
       location: 'ONLINE',
       meetingUrl: 'https://zoom.us/j/123456789',
-      instructorId: instructor2.id,
+      instructorId: instructor1.id,
     },
   })
 
@@ -367,7 +361,7 @@ async function main() {
   console.log('✅ Database seeded successfully!')
   console.log(`
 📊 Created:
-- 2 instructors
+- 1 instructor
 - 2 users
 - 2 videos
 - 7 classes (various styles, levels, and locations)

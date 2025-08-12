@@ -104,21 +104,31 @@ function EditableClassForm({
   onCancel: () => void;
 }) {
   // Define the allowed enum types
-  type CategoryType = 'VINYASA' | 'HATHA' | 'YIN' | 'RESTORATIVE' | 'MEDITATION' | 'BREATHWORK' | 'POWER' | 'GENTLE' | 'WORKSHOP' | 'RETREAT' | 'BEGINNER_COURSE' | 'PRENATAL' | 'SENIORS';
-  type LocationType = 'STUDIO' | 'ONLINE' | 'HYBRID';
+  type CategoryType = 'VINYASA' | 'HATHA' | 'YIN' | 'RESTORATIVE' | 'MEDITATION' | 'BREATHWORK' | 'POWER' | 'GENTLE' | 'BEGINNER_COURSE' | 'PRENATAL' | 'SENIORS';
+  type LocationType = 'STUDIO' | 'ONLINE';
   type DifficultyType = 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'ALL_LEVELS';
 
   // Prepare default values from the template
+  // Map workshop/retreat categories to valid categories since they're no longer supported in recurring classes
+  const mappedCategory = (template.category === 'WORKSHOP' || template.category === 'RETREAT') 
+    ? 'GENTLE' // Default fallback for workshop/retreat templates
+    : template.category as CategoryType;
+    
+  // Map hybrid location to valid location since it's no longer supported
+  const mappedLocation = template.location === 'HYBRID' 
+    ? 'STUDIO' // Default fallback for hybrid location
+    : template.location as LocationType;
+    
   const defaultValues = {
     title: template.title,
     description: template.description || '',
-    category: template.category as CategoryType,
-    location: template.location as LocationType,
-    dayOfWeek: template.dayOfWeek,
+    category: mappedCategory,
+    location: mappedLocation,
+    dayOfWeek: template.dayOfWeek.toString(),
     startTime: template.startTime,
     endTime: template.endTime,
-    capacity: template.capacity,
-    price: template.price / 100, // Convert from pence to pounds for display
+    capacity: template.capacity.toString(),
+    price: (template.price / 100).toString(), // Convert from pence to pounds for display
     difficulty: template.difficulty as DifficultyType,
     instructorId: template.instructor.id,
     meetingUrl: template.meetingUrl || '',
