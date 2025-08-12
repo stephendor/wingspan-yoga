@@ -20,6 +20,8 @@ const CreateSingleClassModal: React.FC<CreateSingleClassModalProps> = ({
     description: '',
     instructorId: '',
     date: '',
+    startDate: '',
+    endDate: '',
     startTime: '',
     endTime: '',
     capacity: 15,
@@ -56,8 +58,14 @@ const CreateSingleClassModal: React.FC<CreateSingleClassModalProps> = ({
       console.log('🚀 Submitting single class creation...');
       console.log('Form data before submission:', formData);
 
+      // Determine which date to use based on class type
+      const isMultiDay = formData.type === 'WORKSHOP' || formData.type === 'RETREAT';
+      const eventDate = isMultiDay ? formData.startDate : formData.date;
+
       const requestData = {
         ...formData,
+        date: eventDate,
+        endDate: isMultiDay ? formData.endDate : undefined,
         capacity: parseInt(formData.capacity.toString()),
         price: parseFloat(formData.price.toString()),
         // Convert date + time to datetime
@@ -89,6 +97,8 @@ const CreateSingleClassModal: React.FC<CreateSingleClassModalProps> = ({
           description: '',
           instructorId: '',
           date: '',
+          startDate: '',
+          endDate: '',
           startTime: '',
           endTime: '',
           capacity: 15,
@@ -209,21 +219,59 @@ const CreateSingleClassModal: React.FC<CreateSingleClassModalProps> = ({
                 </select>
               </div>
 
-              {/* Date */}
-              <div>
-                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
-                  Date *
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  name="date"
-                  value={formData.date}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              {/* Date/Date Range */}
+              {formData.type === 'WORKSHOP' || formData.type === 'RETREAT' ? (
+                <>
+                  {/* Start Date */}
+                  <div>
+                    <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-2">
+                      Start Date *
+                    </label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      name="startDate"
+                      value={formData.startDate}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  {/* End Date */}
+                  <div>
+                    <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-2">
+                      End Date *
+                    </label>
+                    <input
+                      type="date"
+                      id="endDate"
+                      name="endDate"
+                      value={formData.endDate}
+                      onChange={handleInputChange}
+                      required
+                      min={formData.startDate}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </>
+              ) : (
+                /* Single Date */
+                <div>
+                  <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
+                    Date *
+                  </label>
+                  <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    value={formData.date}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              )}
 
               {/* Start Time */}
               <div>

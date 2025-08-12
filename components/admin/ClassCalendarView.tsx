@@ -45,13 +45,44 @@ interface ClassTemplate {
   }>;
 }
 
+interface ClassInstance {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  template: {
+    id: string;
+    title: string;
+    category: string;
+    difficulty: string;
+    location: string;
+    isActive: boolean;
+    capacity: number;
+    price: number;
+    instructor: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  };
+  instructor: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  _count?: {
+    bookings: number;
+  };
+}
+
 interface CalendarEvent {
   id: string;
   title: string;
   start: Date;
   end: Date;
   resource: {
-    type: 'instance' | 'template';
+    type: 'instance' | 'template' | 'single';
     templateId: string;
     instanceId?: string;
     instructor: string;
@@ -68,7 +99,15 @@ function formatGBP(price: number) {
   return new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(price / 100);
 }
 
-export default function ClassCalendarView({ templates }: { templates: ClassTemplate[] }) {
+export default function ClassCalendarView({ 
+  templates, 
+  allInstances = [],
+  onDataUpdate
+}: { 
+  templates: ClassTemplate[];
+  allInstances?: ClassInstance[];
+  onDataUpdate?: () => void;
+}) {
   const router = useRouter();
   const [view, setView] = useState<View>(Views.WEEK);
   const [date, setDate] = useState(new Date());
@@ -109,8 +148,12 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
       if (result.success) {
         setShowCancelModal(false);
         setSelectedEvent(null);
-        // Refresh the page to show updated data
-        router.refresh();
+        // Refresh data without full page reload
+        if (onDataUpdate) {
+          onDataUpdate();
+        } else {
+          router.refresh();
+        }
       } else {
         console.error('Failed to cancel class instance');
         alert('Failed to cancel class instance');
@@ -134,7 +177,12 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
       if (result.success) {
         setShowCancelModal(false);
         setSelectedEvent(null);
-        router.refresh();
+        // Refresh data without full page reload
+        if (onDataUpdate) {
+          onDataUpdate();
+        } else {
+          router.refresh();
+        }
       } else {
         alert('Failed to restore class instance');
       }
@@ -273,6 +321,53 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
       });
     });
 
+    // Add standalone instances (single classes)
+    allInstances.forEach(instance => {
+      if (instance.template && !instance.template.isActive) {
+        // This is a single class (inactive template)
+        // Get the instance date and ensure it's treated as local time
+        const instanceDate = new Date(instance.date);
+        const year = instanceDate.getFullYear();
+        const month = instanceDate.getMonth();
+        const day = instanceDate.getDate();
+        
+        // Extract time from the full datetime strings that are stored in the instance
+        const startDateTime = new Date(instance.startTime);
+        const endDateTime = new Date(instance.endTime);
+        
+        // Create start and end times on the correct date, using local timezone
+        const start = new Date(year, month, day, startDateTime.getHours(), startDateTime.getMinutes(), 0, 0);
+        const end = new Date(year, month, day, endDateTime.getHours(), endDateTime.getMinutes(), 0, 0);
+
+        console.log('Creating event for single class:', {
+          instanceDate: instance.date,
+          templateTitle: instance.template.title,
+          instructor: instance.template.instructor?.name,
+          finalStart: start,
+          finalEnd: end
+        });
+
+        events.push({
+          id: `single-${instance.id}`,
+          title: `${instance.template.title} (${instance.template.instructor?.name || 'No Instructor'}) - Single Class`,
+          start,
+          end,
+          resource: {
+            type: 'single',
+            templateId: instance.template.id,
+            instanceId: instance.id,
+            instructor: instance.template.instructor?.name || 'No Instructor',
+            capacity: instance.template.capacity,
+            price: instance.template.price,
+            difficulty: instance.template.difficulty,
+            category: instance.template.category,
+            location: instance.template.location,
+            status: instance.status,
+          },
+        });
+      }
+    });
+
     console.log('Total events created:', events.length);
     console.log('Events by view:', view, events.map(e => ({
       title: e.title,
@@ -282,7 +377,7 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
     })));
 
     return events;
-  }, [templates, view]);
+  }, [templates, allInstances, view]);
 
   const eventStyleGetter = (event: CalendarEvent) => {
     let backgroundColor = '#3174ad';

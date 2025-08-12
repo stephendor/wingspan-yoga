@@ -2,7 +2,6 @@
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
 ---
-
 # Codacy Rules
 Configuration for AI behavior when interacting with Codacy's MCP Server
 
@@ -69,9 +68,3 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - If the user accepts, run the `codacy_setup_repository` tool
 - Do not ever try to run the `codacy_setup_repository` tool on your own
 - After setup, immediately retry the action that failed (only retry once)
-
-## UI/UX Rules:
-- When displaying class instances in the admin interface, the tab title should be "Upcoming Classes".
-- In the "Upcoming Classes" section, display only the next twelve classes from the current date.
-- On the class management page, the "Create Recurring Class" and "Create Single Class" buttons should be aligned vertically, have the same shape and size, with the "Create Recurring Class" button above the "Create Single Class" button in the position the "Create Recurring Class" button currently occupies.
-- Workshops and retreats will be handled in the single class creation option.

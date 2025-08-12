@@ -69,8 +69,40 @@ interface ClassTemplate {
   }>;
 }
 
+interface ClassInstance {
+  id: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: string;
+  template: {
+    id: string;
+    title: string;
+    category: string;
+    difficulty: string;
+    location: string;
+    isActive: boolean;
+    capacity: number;
+    price: number;
+    instructor: {
+      id: string;
+      name: string;
+      email: string;
+    };
+  };
+  instructor: {
+    id: string;
+    name: string;
+    email: string;
+  };
+  _count?: {
+    bookings: number;
+  };
+}
+
 export default function AdminClassesClient({ classes }: { classes: ClassTemplate[] }) {
   const [templates, setTemplates] = useState<ClassTemplate[]>([]);
+  const [allInstances, setAllInstances] = useState<ClassInstance[]>([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState<'templates' | 'instances' | 'calendar'>('templates');
   const [editingTemplate, setEditingTemplate] = useState<ClassTemplate | null>(null);
@@ -108,13 +140,29 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
     }
   }, []);
 
+  const fetchAllInstances = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/class-instances');
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setAllInstances(result.instances);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching all instances:', error);
+    }
+  }, []);
+
   useEffect(() => {
     void fetchTemplates();
-  }, [fetchTemplates]);
+    void fetchAllInstances();
+  }, [fetchTemplates, fetchAllInstances]);
 
   const handleCreated = useCallback(() => {
     void fetchTemplates();
-  }, [fetchTemplates]);
+    void fetchAllInstances();
+  }, [fetchTemplates, fetchAllInstances]);
 
   const generateInstances = async (templateId: string) => {
     try {
@@ -335,24 +383,25 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
           <div className="bg-white rounded-lg shadow-sm">
             <div className="p-6">
               <div className="space-y-2">
-                {templates.flatMap(template => template.instances).length === 0 ? (
-                  <p className="text-gray-600 text-center py-8">No upcoming instances. Generate some from your recurring classes!</p>
+                {allInstances.length === 0 ? (
+                  <p className="text-gray-600 text-center py-8">No upcoming instances. Create some single classes or generate recurring ones!</p>
                 ) : (
-                  templates
-                    .flatMap(template => 
-                      template.instances.map(instance => ({ instance, template }))
-                    )
-                    .sort((a, b) => new Date(a.instance.startTime).getTime() - new Date(b.instance.startTime).getTime())
-                    .slice(0, 12) // Show only next 12 classes
-                    .map(({ instance, template }) => (
+                  allInstances
+                    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())
+                    .slice(0, 20) // Show next 20 classes
+                    .map((instance) => (
                       <div key={instance.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
                         <div>
-                          <span className="font-medium">{template.title}</span>
+                          <span className="font-medium">{instance.template.title}</span>
                           <span className="text-gray-600 ml-2">- {formatDateTime(instance.startTime)}</span>
+                          {!instance.template.isActive && (
+                            <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded ml-2">Single Class</span>
+                          )}
                         </div>
                         <div className="text-right">
-                          <div className="text-sm text-gray-600">{template.instructor.name}</div>
-                          <div className="text-sm font-medium">{instance.status}</div>
+                          <div className="text-sm text-gray-600">{instance.instructor.name}</div>
+                          <div className="text-sm font-medium">{instance.status || 'SCHEDULED'}</div>
+                          <div className="text-xs text-gray-500">{instance.template.location}</div>
                         </div>
                       </div>
                     ))
@@ -361,7 +410,14 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
             </div>
           </div>
         ) : (
-          <ClassCalendarView templates={templates} />
+          <ClassCalendarView 
+            templates={templates} 
+            allInstances={allInstances}
+            onDataUpdate={() => {
+              void fetchTemplates();
+              void fetchAllInstances();
+            }}
+          />
         )}
 
         {/* Legacy Classes Section */}
