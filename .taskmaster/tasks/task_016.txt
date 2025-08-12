@@ -9,3 +9,41 @@ Create an API route that takes an email from the newsletter signup form. Use the
 
 # Test Strategy:
 Submit an email via the newsletter form and verify the contact appears in the Mailchimp/ConvertKit list. Register a new user with the opt-in box checked and confirm they are also added to the list.
+
+# Subtasks:
+## 1. Setup & Configuration [pending]
+### Dependencies: None
+### Description: Choose the provider (Mailchimp or ConvertKit), obtain the API key and audience/list ID. Install the required Node.js SDK and securely store credentials.
+### Details:
+This is a foundational step. No code can be written until the credentials and SDK are in place. Install npm package (@mailchimp/mailchimp_marketing or ConvertKit equivalent). Securely store the API key and list ID as environment variables (.env.local).
+
+## 2. Develop Backend API Endpoint [pending]
+### Dependencies: 16.1
+### Description: Create a new API route, for example, POST /api/newsletter/subscribe. This route should accept an email address in the request body, perform basic validation, and use the provider's SDK to add the contact to the designated list.
+### Details:
+Implement robust error handling for cases like an invalid API key, a user already being subscribed, or the provider's API being down. Return clear success or error messages.
+
+## 3. Integrate Homepage Newsletter Form [pending]
+### Dependencies: 16.2
+### Description: Connect the newsletter signup form (mentioned in Task 6) to the new API endpoint.
+### Details:
+Implement client-side logic to handle the form submission, call the /api/newsletter/subscribe route, and display loading, success, or error states to the user. This depends on Subtask 16.2.
+
+## 4. Update Registration Form UI [pending]
+### Dependencies: None
+### Description: Modify the user registration component to include a new checkbox with a label like "I'd like to receive news and updates via email."
+### Details:
+Ensure the checkbox is accessible and its state is managed correctly within the registration form's data.
+
+## 5. Update User Registration Logic [pending]
+### Dependencies: 16.2, 16.4
+### Description: Modify the backend logic that handles new user registration (likely part of the NextAuth implementation from Task 4). If the newsletter opt-in checkbox is checked, call the same subscription service created in Subtask 16.2 to add the new user's email to the list.
+### Details:
+This reuses the core subscription logic, ensuring consistency. It should be done carefully to not interfere with the core registration flow if the email subscription fails.
+
+## 6. End-to-End Testing [pending]
+### Dependencies: 16.3, 16.5
+### Description: Execute the test strategy. Manually test the homepage form and the registration opt-in. Verify in the Mailchimp/ConvertKit dashboard that contacts are added correctly and, if applicable, with the correct source tag (e.g., 'newsletter-form' vs. 'registration-signup').
+### Details:
+Test both form submission paths to ensure proper email marketing integration. Verify error handling and success states in both UI flows.
+

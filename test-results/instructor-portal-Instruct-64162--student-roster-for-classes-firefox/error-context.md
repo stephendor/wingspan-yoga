@@ -1,0 +1,73 @@
+# Page snapshot
+
+```yaml
+- navigation:
+  - link "Wingspan Yoga":
+    - /url: /
+  - link "Home":
+    - /url: /
+  - link "About":
+    - /url: /about
+  - link "Meet Anna":
+    - /url: /instructor
+  - link "Schedule":
+    - /url: /schedule
+  - link "Membership":
+    - /url: /membership
+  - link "E2E Test":
+    - /url: /e2e-test
+  - link "Login":
+    - /url: /auth/signin
+  - link "Register":
+    - /url: /auth/register
+- alert
+- heading "Welcome to Wingspan Yoga" [level=1]
+- paragraph: with Anna Dorman
+- paragraph: Transform your practice with personalized yoga instruction that honors your body, calms your mind, and opens your heart. Join Anna for classes that blend traditional wisdom with modern alignment principles in a safe, inclusive environment.
+- link "Book Your First Class":
+  - /url: /schedule
+  - button "Book Your First Class"
+- link "Meet Anna":
+  - /url: /about
+  - button "Meet Anna"
+- heading "Your Yoga Journey Starts Here" [level=2]
+- heading "🧘‍♀️ Gentle Hatha" [level=3]
+- paragraph: Perfect for beginners and those seeking a slower-paced practice. Build strength and flexibility with mindful attention to alignment.
+- link "View Classes":
+  - /url: /schedule
+  - button "View Classes"
+- heading "🌊 Alignment Vinyasa" [level=3]
+- paragraph: Flowing sequences with detailed alignment cues. Experience the meditative quality of careful attention with mindful movement.
+- link "View Classes":
+  - /url: /schedule
+  - button "View Classes"
+- heading "🌸 Restorative Yoga" [level=3]
+- paragraph: Deeply nourishing practice with full prop support. Perfect for stress relief and nervous system healing.
+- link "View Classes":
+  - /url: /schedule
+  - button "View Classes"
+- text: 🧘‍♀️
+- heading "Meet Anna Dorman" [level=2]
+- paragraph: With over 15 years of experience and RYT-500 certification, Anna brings a unique blend of traditional Hatha yoga and trauma-informed teaching to create a safe, inclusive space for all practitioners.
+- text: RYT-500 Certified Trauma-Informed 15+ Years Experience
+- link "Learn About Anna's Approach":
+  - /url: /instructor
+  - button "Learn About Anna's Approach"
+- heading "What Students Say" [level=2]
+- blockquote: “Anna's classes are exactly what I needed. Her trauma-informed approach helped me reconnect with my body in a way I never thought possible.”
+- paragraph: — Sarah M.
+- blockquote: “The alignment focus has completely transformed my practice. I finally understand how to move safely and mindfully.”
+- paragraph: — Michael R.
+- heading "Stay Connected" [level=2]
+- paragraph: Receive yoga tips, class updates, and mindfulness practices delivered to your inbox.
+- textbox "Enter your email"
+- button "Subscribe"
+- heading "Ready to Spread Your Wings?" [level=2]
+- paragraph: Join Anna for a practice that honors your body, calms your mind, and opens your heart. Your journey toward greater strength, flexibility, and inner peace starts here.
+- link "Book Your First Class":
+  - /url: /schedule
+  - button "Book Your First Class"
+- link "Explore Memberships":
+  - /url: /membership
+  - button "Explore Memberships"
+```

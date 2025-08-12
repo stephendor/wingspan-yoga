@@ -1,7 +1,7 @@
 # Task ID: 13
 # Title: Instructor Portal and Schedule View (ST-106)
 # Status: todo
-# Dependencies: 12
+# Dependencies: 12, 23
 # Priority: medium
 # Description: Develop a dedicated portal for instructors to view their personal teaching schedule and class rosters.
 # Details:
@@ -9,3 +9,55 @@ Implement role-based access control (RBAC) to differentiate between admin, instr
 
 # Test Strategy:
 Log in as an instructor and verify access only to their own schedule. Log in as a different instructor and confirm they cannot see the first instructor's data. Check that the student list for a class is accurate.
+
+# Subtasks:
+## 1. Implement Instructor Role-Based Access and Protected Route [done]
+### Dependencies: None
+### Description: Enhance the authentication system to enforce role-based access. Create a protected route, for example `/instructor/dashboard`, that is only accessible to users with the 'INSTRUCTOR' role.
+### Details:
+Update the existing authentication logic (e.g., NextAuth.js callbacks) to include the user's role in the session object, leveraging the `role` field defined in the Prisma schema (Task 2). Implement Next.js middleware (`middleware.ts`) to inspect the user's session on incoming requests to `/instructor/*`. The middleware should redirect unauthenticated users to the login page and non-instructor users (e.g., 'MEMBER') to the homepage.
+<info added on 2025-08-12T16:03:04.369Z>
+This subtask now depends on the completion of Task 23 (Enhanced RBAC System Setup), as the `INSTRUCTOR` role and user accounts must be properly configured before this instructor-specific route protection can be implemented.
+</info added on 2025-08-12T16:03:04.369Z>
+<info added on 2025-08-12T16:33:25.545Z>
+Implemented and completed. A protected route and dashboard page were created at `/src/app/instructor/dashboard/page.tsx`. Security is handled with a double authorization check: Next.js middleware protects the `/instructor/*` path, while the page itself performs a server-side check using `getServerSession`. Authorization is based on the specific `'access:instructor_portal'` permission, leveraging the RBAC system. The page includes a full dashboard UI with stats, action buttons, and an activity feed, and is ready for testing.
+</info added on 2025-08-12T16:33:25.545Z>
+
+## 2. Create API Endpoint for Instructor-Specific Schedule Data [done]
+### Dependencies: 13.1
+### Description: Develop a backend API route or a server-side data fetching function to retrieve all classes and their associated student bookings for the currently logged-in instructor.
+### Details:
+Using Prisma, create a data-fetching function within a Next.js API route (e.g., `/api/instructor/schedule`) or a `getServerSideProps` function. The query should find all `Class` records where `instructorId` matches the ID from the authenticated user's session. The query must also eager-load the related `Booking` records, and for each booking, include the associated `User` (student) details (e.g., name, email). Ensure sensitive student data is handled securely.
+<info added on 2025-08-12T17:15:51.417Z>
+The API endpoint has been successfully implemented at `GET /api/instructor/schedule`. The route is protected by NextAuth.js, validating the user's session and instructor role. The Prisma query correctly fetches all classes for the authenticated instructor, including eager-loaded booking records with associated student details. The response payload also contains valuable summary statistics, such as total bookings and capacity utilization. During implementation, several schema field name inconsistencies were resolved (e.g., `startTime`, `difficulty`). The endpoint is now validated and ready for frontend integration in the next subtask.
+</info added on 2025-08-12T17:15:51.417Z>
+
+## 3. Develop UI for Instructor's Schedule View [done]
+### Dependencies: 13.2
+### Description: Create the user interface on the protected instructor page to display the fetched class schedule in a clear, chronological format.
+### Details:
+On the `/instructor/dashboard` page, consume the data fetched in the previous subtask. Reuse existing core components from the UI library (Task 3), such as `Card`, to represent each class. Display key class details like title, date, time, and current number of bookings. Arrange the class cards in a list sorted by date. This UI can be inspired by the existing public schedule (Task 7) but tailored for an instructor's needs.
+<info added on 2025-08-12T17:30:57.332Z>
+**Implementation Summary:**
+The UI has been successfully implemented and integrated with the live API endpoint (`/api/instructor/schedule`).
+- **Component Architecture:** A new `InstructorDashboardClient.tsx` component was created to handle client-side state management and data fetching, wrapping the core `InstructorSchedule.tsx` display component. This maintains a clean server/client component separation on the main dashboard page.
+- **Features Delivered:**
+    - Displays upcoming and past classes in distinct sections, sorted by date.
+    - Uses `Card` components to show class details and booking statistics.
+    - Implemented robust loading, error, and empty states for a better user experience.
+    - A callback pattern updates dashboard-level stats in real-time based on the fetched schedule data.
+- **Status:** The dashboard now displays real, dynamic schedule data instead of static placeholders.
+</info added on 2025-08-12T17:30:57.332Z>
+
+## 4. Implement Student Roster Display for Each Class [in-progress]
+### Dependencies: 13.3
+### Description: For each class displayed in the schedule, implement a feature to view a list of students who have booked that class.
+### Details:
+Enhance the class `Card` component from the previous subtask. Add a 'View Roster' button. On click, this button should trigger a `Modal` component (from Task 3) to open. The modal will display a list of the students booked for that specific class, showing their names and any other relevant, non-sensitive information. The student data should already be available from the initial data fetch in subtask 13.2.
+
+## 5. End-to-End Integration and Testing [pending]
+### Dependencies: 13.1, 13.4
+### Description: Conduct comprehensive end-to-end testing of the entire instructor portal feature, covering access control, data accuracy, and UI functionality from login to roster view.
+### Details:
+Perform a full user flow test: 1. Log in as an instructor. 2. Navigate to the instructor portal and verify access. 3. Confirm the schedule shows only their assigned classes. 4. Open the roster for a class and verify its accuracy against the database. 5. Log out. 6. Log in as a different instructor and verify they see their own, different schedule. 7. Log in as a regular 'MEMBER' and confirm they are denied access to the instructor portal.
+

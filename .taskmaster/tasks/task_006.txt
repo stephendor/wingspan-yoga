@@ -1,6 +1,6 @@
 # Task ID: 6
 # Title: Homepage and Static Pages Development
-# Status: todo
+# Status: in-progress
 # Dependencies: 3
 # Priority: medium
 # Description: Build the main public-facing pages of the website, including the Homepage and About page, using the established component library.
@@ -9,3 +9,41 @@ Develop the Homepage with a hero section (video/image), featured offerings, test
 
 # Test Strategy:
 Visually inspect pages on multiple devices (desktop, tablet, mobile). Verify all links and CTAs work. Check for content accuracy against the PRD. Run a Lighthouse audit to check initial performance and SEO scores.
+
+# Subtasks:
+## 1. Develop Homepage - Hero Section [pending]
+### Dependencies: None
+### Description: Implement the main "above-the-fold" hero section. This includes integrating the background video or image and adding the primary headline and Call-to-Action (CTA) buttons using the established Button component.
+### Details:
+Focus on making this section visually impactful and ensuring the CTAs are prominent.
+
+## 2. Develop Homepage - Featured Offerings Section [pending]
+### Dependencies: None
+### Description: Build the section that showcases key services (e.g., classes, retreats). This will likely involve using the Card component in a grid or carousel layout to display a summary of each offering with a link to learn more.
+### Details:
+This may require creating a small data structure or fetching placeholder data to populate the cards.
+
+## 3. Develop Homepage - Testimonials Section [pending]
+### Dependencies: None
+### Description: Create a dedicated component to display client testimonials. This could be a simple grid or a more dynamic slider/carousel.
+### Details:
+Use the core typography and styling from the design system. Ensure it's easy to update with new testimonials later.
+
+## 4. Build 'About/Philosophy' Page [pending]
+### Dependencies: None
+### Description: Create the static /about page. Lay out the text and image content provided in the project requirements using the core component library for structure and styling.
+### Details:
+Focus on readability and brand alignment. Use Next/Image for all images.
+
+## 5. Build Instructor Bio Page(s) [pending]
+### Dependencies: None
+### Description: Develop the page(s) for instructor biographies. This could be a single page with sections for each instructor or a template for individual bio pages.
+### Details:
+This is a good candidate for a reusable layout that can be populated with different instructor data.
+
+## 6. Final Responsive Polish & QA [pending]
+### Dependencies: 6.1, 6.2, 6.3, 6.4, 6.5
+### Description: Conduct a thorough review of all pages and sections created in the subtasks above. Adjust styling for tablet and mobile breakpoints to ensure a seamless experience on all devices.
+### Details:
+Test all links, buttons, and forms. Run a Lighthouse audit to check for initial performance, accessibility, and SEO metrics and address any major issues.
+

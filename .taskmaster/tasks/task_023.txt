@@ -1,0 +1,71 @@
+# Task ID: 23
+# Title: Implement Role-Based Access Control (RBAC) for Admin and Instructor Roles
+# Status: done
+# Dependencies: 2, 4, 12
+# Priority: high
+# Description: Enhance the authentication system by introducing an 'INSTRUCTOR' role alongside the existing 'ADMIN' role, seed initial user accounts, and update application middleware to enforce role-based permissions for current and future features.
+# Details:
+1. **Database Schema Enhancement:**
+   - Modify the `User` model in `prisma/schema.prisma` to include a `role` field.
+   - Define a `Role` enum with values: `MEMBER`, `INSTRUCTOR`, `ADMIN`.
+   - Set the default value for the `role` field to `MEMBER`. Example: `role Role @default(MEMBER)`
+   - Generate and apply the new database migration using `npx prisma migrate dev --name add_user_roles`.
+
+2. **Update NextAuth.js Configuration:**
+   - In the NextAuth.js configuration file (e.g., `/app/api/auth/[...nextauth]/route.ts`), update the session and JWT callbacks.
+   - Ensure the `role` from the user's database record is added to the JWT token during the `jwt` callback.
+   - Propagate the `role` from the token to the `session` object in the `session` callback so it's accessible in client and server components.
+
+3. **Seed User Accounts:**
+   - Create or update the `prisma/seed.ts` script.
+   - Use `bcrypt` to hash passwords before seeding.
+   - Create the ADMIN user: `email: 'admin@wingspan-yoga.com'`, `password: (hashed 'rufus@power0')`, `role: 'ADMIN'`.
+   - Create the INSTRUCTOR user: `email: 'anna@wingspan-yoga.com'`, `password: (hashed '100%Rufus')`, `role: 'INSTRUCTOR'`.
+   - Update `package.json` to ensure the seed script runs with `npx prisma db seed`.
+
+4. **Middleware for Route Protection:**
+   - In `middleware.ts`, enhance the logic to perform role-based authorization.
+   - Read the user's role from the `next-auth.token` object.
+   - Protect route groups based on roles: 
+     - `/admin/**`: Requires `ADMIN` role.
+     - `/instructor/**`: Requires `INSTRUCTOR` or `ADMIN` role.
+   - Redirect unauthorized users to a login page or a '403 Forbidden' page.
+
+5. **Define Permission Matrix:**
+   - Create a file like `lib/permissions.ts` to document and potentially export the permission structure for easy reference and use in the application.
+   - **ADMIN:** Full CRUD on all data models (Classes, Users, Posts, Videos), access to security settings, full system access.
+   - **INSTRUCTOR:** Read access to assigned classes and rosters. Create/Update/Delete permissions for future content they own (Blog Posts, Videos). No access to other user data or system settings.
+   - **MEMBER:** Read access to public content, booking management for their own account.
+<info added on 2025-08-12T16:16:49.164Z>
+<info added on 2025-08-12T16:15:00Z>
+**Implementation Summary**
+
+1.  **Database Schema Enhancement:** Added a `Role` enum (`MEMBER`, `INSTRUCTOR`, `ADMIN`) and a `role` field to the `User` model, with `MEMBER` as the default. A new migration (`20250812160722_add_user_roles`) was successfully applied.
+2.  **User Account Seeding:** Created an ADMIN user (`admin@wingspan-yoga.com`) and an INSTRUCTOR user (`anna@wingspan-yoga.com`). Both were verified in the database with correct roles and hashed passwords.
+3.  **NextAuth.js Configuration:** The JWT and session callbacks were updated to propagate the user's `role` into the token and session object, making it available throughout the application. OAuth user creation was also updated to assign the default `MEMBER` role.
+4.  **Middleware for Route Protection:** The application middleware was enhanced to protect routes based on roles. `/admin/**` requires the `ADMIN` role, and `/instructor/**` requires either `INSTRUCTOR` or `ADMIN`. Unauthorized users are redirected.
+5.  **Permission Matrix:** A new file, `lib/permissions.ts`, was created to document the permission structure for each role and includes helper functions for permission checking.
+
+**Testing Results**
+- All migration and seeding scripts completed successfully.
+- Role-based access control was verified for both `/admin` and `/instructor` routes. Unauthenticated and unauthorized users are correctly redirected to the sign-in page.
+- The RBAC foundation is now established, satisfying the dependencies for Task 13 (Instructor Portal).
+</info>
+</info added on 2025-08-12T16:16:49.164Z>
+
+# Test Strategy:
+1. **Migration and Seed Verification:**
+   - Run `prisma migrate dev` and confirm the script executes successfully.
+   - Inspect the `User` table in the database to verify the `role` column exists and is an enum type.
+   - Run `prisma db seed` and query the database to confirm the 'admin@wingspan-yoga.com' and 'anna@wingspan-yoga.com' users exist with their correct roles and hashed passwords.
+
+2. **Role-Based Access Control Tests:**
+   - **Admin User:** Log in as `admin@wingspan-yoga.com`. Navigate to the `/admin` dashboard (from Task 12) and verify access is granted. Attempt to access instructor-only pages (from Task 13, once built) and verify access is granted.
+   - **Instructor User:** Log in as `anna@wingspan-yoga.com`. Attempt to navigate to the `/admin` dashboard and verify you are redirected or shown a 'Forbidden' error. Verify you can access the future `/instructor` portal.
+   - **Standard User:** Register a new user (who will have the default `MEMBER` role). Log in and verify access to both `/admin` and `/instructor` routes is denied.
+   - **Unauthenticated User:** Attempt to access any protected route (`/admin`, `/instructor`) and verify redirection to the login page.
+
+3. **API Endpoint Protection:**
+   - Using an API client like Postman, obtain a JWT for the instructor user.
+   - Attempt to call an admin-only API endpoint (e.g., `DELETE /api/users/:id`) with the instructor's JWT. Verify the server responds with a `403 Forbidden` status code.
+   - Attempt to call an API endpoint the instructor should have access to (e.g., `GET /api/classes/my-schedule`) and verify a `200 OK` response.

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
+import { Modal, ModalHeader, ModalTitle, ModalContent, ModalClose } from '@/components/ui/modal';
+import { Button } from '@/components/ui/button';
 
 // Types based on our API response
 interface StudentBooking {
@@ -69,6 +71,22 @@ export default function InstructorSchedule({ onStatsUpdate }: InstructorSchedule
   const [scheduleData, setScheduleData] = useState<ScheduleData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Modal state for student roster
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
+
+  // Function to open the student roster modal
+  const openRosterModal = (classData: ClassData) => {
+    setSelectedClass(classData);
+    setIsModalOpen(true);
+  };
+
+  // Function to close the modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedClass(null);
+  };
 
   useEffect(() => {
     async function fetchSchedule() {
@@ -268,6 +286,16 @@ export default function InstructorSchedule({ onStatsUpdate }: InstructorSchedule
                       </div>
                     </div>
                   )}
+
+                  <div className="mt-4 flex justify-end">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => openRosterModal(classItem)}
+                    >
+                      View Roster ({classItem.bookings.students.length})
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -298,9 +326,19 @@ export default function InstructorSchedule({ onStatsUpdate }: InstructorSchedule
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600">
-                    {classItem.bookings.total} students attended • {classItem.location}
-                  </p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm text-gray-600">
+                      {classItem.bookings.total} students attended • {classItem.location}
+                    </p>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => openRosterModal(classItem)}
+                      className="text-gray-600 hover:text-gray-900"
+                    >
+                      View Roster ({classItem.bookings.students.length})
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))}
@@ -312,6 +350,104 @@ export default function InstructorSchedule({ onStatsUpdate }: InstructorSchedule
           </div>
         </div>
       )}
+
+      {/* Student Roster Modal */}
+      <Modal open={isModalOpen} onOpenChange={closeModal}>
+        <ModalContent>
+          <ModalHeader>
+            <ModalTitle>
+              {selectedClass ? `Student Roster - ${selectedClass.title}` : 'Student Roster'}
+            </ModalTitle>
+            <ModalClose onClose={closeModal} />
+          </ModalHeader>
+          
+          {selectedClass && (
+            <div className="space-y-4">
+              {/* Class Info */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-gray-700">Date & Time:</span>
+                    <p className="text-gray-900">
+                      {formatDate(selectedClass.startTime)} • {formatTime(selectedClass.startTime)} - {formatTime(selectedClass.endTime)}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700">Location:</span>
+                    <p className="text-gray-900">{selectedClass.location}</p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700">Capacity:</span>
+                    <p className="text-gray-900">
+                      {selectedClass.bookings.students.length} / {selectedClass.capacity} students
+                    </p>
+                  </div>
+                  <div>
+                    <span className="font-medium text-gray-700">Available Spots:</span>
+                    <p className="text-gray-900">{selectedClass.bookings.availableSpots} remaining</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Student List */}
+              <div>
+                <h3 className="font-medium text-gray-900 mb-3">
+                  Enrolled Students ({selectedClass.bookings.students.length})
+                </h3>
+                
+                {selectedClass.bookings.students.length > 0 ? (
+                  <div className="space-y-2">
+                    {selectedClass.bookings.students.map((booking) => (
+                      <div 
+                        key={booking.bookingId} 
+                        className="flex items-center justify-between p-3 bg-white border border-gray-200 rounded-lg"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-medium text-gray-600">
+                              {booking.student.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">{booking.student.name}</p>
+                            <p className="text-sm text-gray-500">{booking.student.email}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm text-gray-500">
+                            Booked: {new Date(booking.bookingDate).toLocaleDateString()}
+                          </p>
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            booking.status === 'confirmed' 
+                              ? 'bg-green-100 text-green-800'
+                              : booking.status === 'cancelled'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {booking.status}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-500">No students enrolled yet</p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Students can still book this class if spots are available
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </ModalContent>
+      </Modal>
     </div>
   );
 }
