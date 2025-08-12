@@ -5,7 +5,7 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { cancelClassInstance } from '../../src/lib/actions/class.actions';
+import { cancelClassInstance, restoreClassInstance } from '../../src/lib/actions/class.actions';
 
 const localizer = momentLocalizer(moment);
 
@@ -75,6 +75,14 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const isCancelled = selectedEvent?.resource.status === 'CANCELLED';
+
+  // UI handlers to satisfy linter about arrow shorthand and promise-returning handlers
+  const handleSetMonth = () => { setView(Views.MONTH); };
+  const handleSetWeek = () => { setView(Views.WEEK); };
+  const handleSetDay = () => { setView(Views.DAY); };
+  const handleCancelClick = () => { handleCancelInstance().catch(() => {}); };
+  const handleRestoreClick = () => { handleRestoreInstance().catch(() => {}); };
 
   const handleNavigate = (newDate: Date) => {
     setDate(newDate);
@@ -110,6 +118,29 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
     } catch (error) {
       console.error('Error cancelling class instance:', error);
       alert('Error cancelling class instance');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleRestoreInstance = async () => {
+    if (!selectedEvent) return;
+    setIsDeleting(true);
+    try {
+      const result = await restoreClassInstance(
+        selectedEvent.resource.templateId,
+        moment(selectedEvent.start).format('YYYY-MM-DD')
+      );
+      if (result.success) {
+        setShowCancelModal(false);
+        setSelectedEvent(null);
+        router.refresh();
+      } else {
+        alert('Failed to restore class instance');
+      }
+    } catch (e) {
+      console.error('Error restoring class instance:', e);
+      alert('Error restoring class instance');
     } finally {
       setIsDeleting(false);
     }
@@ -309,7 +340,7 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
           <h2 className="text-lg font-semibold text-gray-900">Class Calendar</h2>
           <div className="flex space-x-2">
             <button
-              onClick={() => setView(Views.MONTH)}
+              onClick={handleSetMonth}
               className={`px-3 py-1 text-sm rounded transition-colors ${
                 view === Views.MONTH
                   ? 'bg-blue-600 text-white'
@@ -319,7 +350,7 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
               Month
             </button>
             <button
-              onClick={() => setView(Views.WEEK)}
+              onClick={handleSetWeek}
               className={`px-3 py-1 text-sm rounded transition-colors ${
                 view === Views.WEEK
                   ? 'bg-blue-600 text-white'
@@ -329,7 +360,7 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
               Week
             </button>
             <button
-              onClick={() => setView(Views.DAY)}
+              onClick={handleSetDay}
               className={`px-3 py-1 text-sm rounded transition-colors ${
                 view === Views.DAY
                   ? 'bg-blue-600 text-white'
@@ -393,12 +424,12 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
           />
         </div>
 
-        {/* Cancel Class Instance Modal */}
+        {/* Cancel/Restore Class Instance Modal */}
         {showCancelModal && selectedEvent && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Cancel Class Instance
+                {isCancelled ? 'Restore Class Instance' : 'Cancel Class Instance'}
               </h3>
               <div className="mb-4">
                 <p className="text-gray-700 mb-2">
@@ -413,9 +444,13 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
                 <p className="text-gray-700 mb-4">
                   <strong>Location:</strong> {selectedEvent.resource.location}
                 </p>
-                <p className="text-red-600 text-sm">
-                  ⚠️ This will permanently cancel this specific class instance and cannot be undone.
-                </p>
+                {!isCancelled ? (
+                  <p className="text-red-600 text-sm">
+                    ⚠️ This will permanently cancel this specific class instance and cannot be undone.
+                  </p>
+                ) : (
+                  <p className="text-gray-700 text-sm">This class was previously cancelled. You can restore it.</p>
+                )}
               </div>
               <div className="flex space-x-3">
                 <button
@@ -426,15 +461,25 @@ export default function ClassCalendarView({ templates }: { templates: ClassTempl
                   className="flex-1 px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
                   disabled={isDeleting}
                 >
-                  Keep Class
+                  {isCancelled ? 'Go Back' : 'Keep Class'}
                 </button>
-                <button
-                  onClick={handleCancelInstance}
-                  disabled={isDeleting}
-                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
-                >
-                  {isDeleting ? 'Cancelling...' : 'Cancel Class'}
-                </button>
+                {isCancelled ? (
+                  <button
+                    onClick={handleRestoreClick}
+                    disabled={isDeleting}
+                    className="flex-1 px-4 py-2 bg-sage-600 text-white rounded-md hover:bg-sage-700 transition-colors disabled:opacity-50"
+                  >
+                    {isDeleting ? 'Restoring...' : 'Restore Class'}
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleCancelClick}
+                    disabled={isDeleting}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors disabled:opacity-50"
+                  >
+                    {isDeleting ? 'Cancelling...' : 'Cancel Class'}
+                  </button>
+                )}
               </div>
             </div>
           </div>

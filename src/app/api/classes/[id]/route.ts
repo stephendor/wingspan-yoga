@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import type { ClassWithInstructor } from '@/app/api/classes/route'
 
@@ -8,12 +8,9 @@ export interface ClassDetailsResponse {
   message?: string
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request, context: unknown) {
   try {
-    const classId = params.id
+  const classId = (context as { params?: { id?: string } })?.params?.id || ''
 
     if (!classId) {
       return NextResponse.json(

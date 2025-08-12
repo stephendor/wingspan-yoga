@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,7 +8,10 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { CheckCircleIcon, LoaderIcon } from 'lucide-react'
 
-export default function MembershipSuccessPage() {
+// Force dynamic rendering since this page uses search params
+export const dynamic = 'force-dynamic'
+
+function MembershipSuccessContent() {
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(true)
   const [sessionId, setSessionId] = useState<string | null>(null)
@@ -27,28 +30,12 @@ export default function MembershipSuccessPage() {
 
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
-    visible: { 
-      opacity: 1, 
-      scale: 1,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    }
+    visible: { opacity: 1, scale: 1 }
   }
 
   const iconVariants = {
     hidden: { scale: 0, rotate: -180 },
-    visible: { 
-      scale: 1, 
-      rotate: 0,
-      transition: {
-        type: "spring",
-        stiffness: 200,
-        damping: 15,
-        delay: 0.2
-      }
-    }
+    visible: { scale: 1, rotate: 0 }
   }
 
   if (isLoading) {
@@ -137,5 +124,27 @@ export default function MembershipSuccessPage() {
         </Card>
       </motion.div>
     </div>
+  )
+}
+
+export default function MembershipSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-sage-50 via-white to-ocean-50 flex items-center justify-center">
+        <Card className="max-w-md mx-auto">
+          <CardContent className="py-12 text-center">
+            <LoaderIcon className="h-8 w-8 animate-spin text-sage-500 mx-auto mb-4" />
+            <h2 className="text-xl font-heading font-semibold text-charcoal-800 mb-2">
+              Loading...
+            </h2>
+            <p className="text-charcoal-600">
+              Please wait while we load your membership details.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    }>
+      <MembershipSuccessContent />
+    </Suspense>
   )
 }

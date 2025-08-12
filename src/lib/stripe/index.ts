@@ -1,18 +1,27 @@
 import Stripe from 'stripe'
 import { loadStripe } from '@stripe/stripe-js'
+import type { Stripe as StripeJs } from '@stripe/stripe-js'
 
 // Server-side Stripe instance
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
+if (!STRIPE_SECRET_KEY) {
+  throw new Error('STRIPE_SECRET_KEY is not set')
+}
+export const stripe = new Stripe(STRIPE_SECRET_KEY, {
+  apiVersion: '2025-07-30.basil',
   typescript: true,
 })
 
-// Client-side Stripe promise
-let stripePromise: Promise<Stripe | null>
+// Client-side Stripe promise (Stripe.js type)
+let stripePromise: Promise<StripeJs | null> | undefined
 
 export const getStripe = () => {
-  if (!stripePromise) {
-    stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+  if (typeof stripePromise === 'undefined') {
+    const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    if (!pk) {
+      throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set')
+    }
+    stripePromise = loadStripe(pk)
   }
   return stripePromise
 }

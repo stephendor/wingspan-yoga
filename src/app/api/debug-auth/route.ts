@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { authOptions } from '@/lib/auth/nextauth'
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   console.log('Testing authOptions configuration')
   console.log('Providers count:', authOptions.providers.length)
   console.log('First provider:', authOptions.providers[0])

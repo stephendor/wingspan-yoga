@@ -14,10 +14,10 @@ export async function POST() {
       console.log('Provider has authorize function')
       
       // Try to call authorize directly
-      const result = await credentialsProvider.authorize({
+  const result = await credentialsProvider.authorize({
         email: 'admin@example.com',
         password: 'password123'
-      }, {} as Request)
+  }, {} as unknown as Record<string, unknown>)
       
       console.log('Direct authorize result:', result)
       

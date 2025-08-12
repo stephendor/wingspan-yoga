@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import { PlanCard } from '@/components/subscription/PlanCard'
@@ -12,8 +12,11 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { CheckIcon, StarIcon } from 'lucide-react'
 
-export default function MembershipPage() {
-  const { status } = useNextAuth()
+// Force dynamic rendering since this page uses client-side authentication
+export const dynamic = 'force-dynamic'
+
+function MembershipContent() {
+  const { isAuthenticated, isLoading } = useNextAuth()
   const searchParams = useSearchParams()
   const [selectedInterval, setSelectedInterval] = useState<'MONTHLY' | 'YEARLY'>('MONTHLY')
   const [notification, setNotification] = useState<string | null>(null)
@@ -28,7 +31,7 @@ export default function MembershipPage() {
   }, [searchParams])
 
   const handleSelectPlan = async (planKey: PlanKey) => {
-    if (status !== 'authenticated') {
+  if (!isAuthenticated) {
       // Redirect to sign in with return URL
       window.location.href = `/auth/signin?callbackUrl=${encodeURIComponent('/membership')}`
       return
@@ -155,14 +158,14 @@ export default function MembershipPage() {
                 plan={plan}
                 isPopular={plan.key === getPopularPlan()}
                 onSelectPlan={handleSelectPlan}
-                disabled={status === 'loading'}
+                disabled={isLoading}
               />
             </motion.div>
           ))}
         </motion.div>
 
         {/* Auth State Message */}
-        {status !== 'authenticated' && (
+  {!isAuthenticated && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -224,5 +227,17 @@ export default function MembershipPage() {
         </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function MembershipPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-sage-50 via-white to-ocean-50 flex items-center justify-center">
+        <div className="animate-pulse">Loading membership plans...</div>
+      </div>
+    }>
+      <MembershipContent />
+    </Suspense>
   )
 }

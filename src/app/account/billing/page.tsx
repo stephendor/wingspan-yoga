@@ -20,14 +20,14 @@ interface SubscriptionData {
 }
 
 export default function BillingPage() {
-  const { data: session, status } = useNextAuth()
+  const { user, isLoading: authLoading, isAuthenticated } = useNextAuth()
   const [subscription, setSubscription] = useState<SubscriptionData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchSubscription = async () => {
-      if (status !== 'authenticated' || !session?.user?.email) {
+      if (!isAuthenticated || !user?.email) {
         setIsLoading(false)
         return
       }
@@ -57,10 +57,10 @@ export default function BillingPage() {
     }
 
     fetchSubscription()
-  }, [session, status])
+  }, [isAuthenticated, user?.email])
 
   // Redirect to sign in if not authenticated
-  if (status === 'unauthenticated') {
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-sage-50 via-white to-ocean-50 flex items-center justify-center">
         <Card className="max-w-md mx-auto">
@@ -89,7 +89,7 @@ export default function BillingPage() {
     )
   }
 
-  if (status === 'loading' || isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-sage-50 via-white to-ocean-50 flex items-center justify-center">
         <Card className="max-w-md mx-auto">

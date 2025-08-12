@@ -3,7 +3,8 @@
 import { useSession } from 'next-auth/react'
 
 export function useNextAuth() {
-  const { data: session, status } = useSession()
+  const sessionResult = useSession()
+  const { data: session, status } = sessionResult || { data: null, status: 'loading' }
 
   return {
     user: session?.user || null,

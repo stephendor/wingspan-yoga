@@ -31,8 +31,11 @@ export async function middleware(request: NextRequest) {
       secret: process.env.NEXTAUTH_SECRET 
     });
 
+    console.log('Middleware: Checking admin access for:', pathname);
+
     if (!token || !token.sub) {
       // Not authenticated - redirect to sign in
+      console.log('Middleware: No token found, redirecting to sign in');
       const signInUrl = new URL('/auth/signin', request.url);
       signInUrl.searchParams.set('callbackUrl', pathname);
       return NextResponse.redirect(signInUrl);
@@ -41,12 +44,14 @@ export async function middleware(request: NextRequest) {
     // Check if user has admin role (case-insensitive)
     if (token.membershipType?.toLowerCase() !== 'admin') {
       // Not an admin - redirect to home with error
+      console.log('Middleware: Access denied - not admin, membershipType:', token.membershipType);
       const homeUrl = new URL('/', request.url);
       homeUrl.searchParams.set('error', 'access_denied');
       return NextResponse.redirect(homeUrl);
     }
 
     // User is authenticated and has admin role - allow access
+    console.log('Middleware: Admin access granted to:', pathname);
     return NextResponse.next();
 
   } catch (error) {

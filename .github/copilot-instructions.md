@@ -6,6 +6,13 @@ globs: *
 # Codacy Rules
 Configuration for AI behavior when interacting with Codacy's MCP Server
 
+## using any tool that accepts the arguments: `provider`, `organization`, or `repository`
+- ALWAYS use:
+ - provider: gh
+ - organization: stephendor
+ - repository: wingspan-yoga
+- Avoid calling `git remote -v` unless really necessary
+
 ## CRITICAL: After ANY successful `edit_file` or `reapply` operation
 - YOU MUST IMMEDIATELY run the `codacy_cli_analyze` tool from Codacy's MCP Server for each file that was edited, with:
  - `rootPath`: set to the workspace path
@@ -63,39 +70,133 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - Do not ever try to run the `codacy_setup_repository` tool on your own
 - After setup, immediately retry the action that failed (only retry once)
 
-## Debugging NextAuth issues
-- If you are having issues with NextAuth authentication flow, and the `authorize` function is not being called, it is likely due to cached NextAuth cookies pointing to an incorrect port.
-- Always ensure that the `NEXTAUTH_URL` environment variable is correctly set to the port where the dev server is running.
-- Clear the NextAuth cookies in the browser, or use an incognito/private window to avoid cached values. The cookies to clear include `next-auth.callback-url`, `next-auth.session-token`, and `next-auth.csrf-token`.
+## Debugging Authentication and Redirects
 
-## Admin Authentication Troubleshooting
-- If you encounter an `access_denied` error after successful sign-in, ensure the middleware is correctly configured to handle the `membershipType` from the JWT token. Check for case sensitivity issues (e.g., middleware expecting `'ADMIN'` while the token contains `'admin'`). The middleware MUST use a case-insensitive check, or the JWT token should be set to uppercase. The middleware MUST use a case-insensitive check.
-- If the NextAuth `authorize` function is not being called, verify that the `NEXTAUTH_URL` environment variable is correctly set and matches the port where the development server is running. A mismatch between `NEXTAUTH_URL` and the actual server port can lead to silent authentication failures.
-- After changing `NEXTAUTH_URL`, clear browser cookies related to NextAuth including `next-auth.callback-url`, `next-auth.session-token`, and `next-auth.csrf-token`. Use an incognito/private window to avoid cached values.
-- If experiencing redirect loops or authentication failures, carefully review the NextAuth configuration, particularly the credentials provider setup, and ensure that all required environment variables are defined (e.g., `NEXTAUTH_SECRET`).
-- If you are getting a 404 error after successful authentication, check the `SignInForm` component in the front-end to ensure that it is redirecting to the correct route after sign-in. This component MUST respect the `callbackUrl` parameter that NextAuth automatically includes.
-- If the dev server is serving a primitive admin interface instead of the sophisticated TailwindCSS styled interface, ensure that your Next.js project is serving from the correct `app` directory and that the import paths are correct.
-- **Middleware JWT Token Membership Type Check**: When implementing admin route protection, the middleware MUST use a case-insensitive check for `membershipType` from the JWT token. This avoids issues where the token contains `'admin'` while the middleware expects `'admin'`.
+- **When debugging authentication issues, always verify the `NEXTAUTH_URL` environment variable matches the actual port the development server is running on.** A mismatch will cause session and cookie issues.
+- **When debugging authentication issues, always validate the `authorize` function is validating user credentials correctly and not bypassing authentication.**
+- When encountering redirect loops after sign-in (returning to the sign-in page repeatedly):
+    - Check browser cookies for `next-auth.session-token` to ensure the session is being established.
+    - Verify the `NEXTAUTH_SECRET` in your `.env` file matches the configuration.
+    - Use `secure: false` for cookies in development and `sameSite: 'lax'`, `path: '/'`.
 
-## Taskmaster Specifics
-- When the user says "Get task", "taskmaster get task", or "taskmaster-ai get task", interpret this as a request to assist with their project.
+## OAuth Provider Setup
 
-## Future Enhancements
+When integrating social OAuth providers (Google, Facebook, Twitter/X, and Instagram), the following steps are crucial:
 
-These are polish items to make the admin interface more user-friendly:
+1.  **Set up OAuth Applications** in each provider's developer console:
+    *   **Google Cloud Console**: Create OAuth 2.0 client credentials
+    *   **Facebook Developers**: Create a Facebook app with sign-in
+    *   **Twitter Developer Portal**: Create Twitter app with OAuth 2.0
+    *   **Instagram Basic Display**: Set up Instagram app for Basic Display API
+2.  **Configure Redirect URIs** in each OAuth app:
+    *   Development: `http://localhost:3001/api/auth/callback/[provider]`
+    *   Production: `https://yourdomain.com/api/auth/callback/[provider]`
+3.  **Update Environment Variables** with real credentials:
+    ```bash
+    # Replace placeholder values with actual OAuth credentials
+    GOOGLE_CLIENT_ID=your_google_client_id
+    GOOGLE_CLIENT_SECRET=your_google_client_secret
+    # ... etc for other providers
+    ```
 
-### 1. Authentication UX Improvements
-- On sign-in page load, pull the cursor into the email field.
-- Add a password visibility toggle (show/hide password).
-- Replace GitHub OAuth with Facebook, Twitter, and Instagram OAuth options (keep Google).
+### Detailed OAuth Setup Guides:
 
-### 2. Calendar Interaction Enhancements
-- When clicking cancelled classes in the calendar view: Replace "Keep/Cancel" dialog with "Restore Class" and "Go Back" options.
+#### Google OAuth Setup
 
-### 3. Data Sorting
-- Sort upcoming instances by date/time in chronological order in the upcoming instances view.
+1.  **Go to Google Cloud Console**: <https://console.cloud.google.com/>
+2.  **Create or select a project**:
+    *   Click "Select a project" → "New Project"
+    *   Name it something like "Wingspan Yoga"
+3.  **Enable Google+ API**:
+    *   Go to "APIs & Services" → "Library"
+    *   Search for "Google+ API" and enable it
+4.  **Create OAuth credentials**:
+    *   Go to "APIs & Services" → "Credentials"
+    *   Click "Create Credentials" → "OAuth 2.0 Client IDs"
+    *   Application type: "Web application"
+    *   Name: "Wingspan Yoga Web App"
+    *   Authorized redirect URIs:
+        ```
+        http://localhost:3001/api/auth/callback/google
+        https://yourdomain.com/api/auth/callback/google
+        ```
+5.  **Copy the credentials** and add to your `.env`:
+    ```bash
+    GOOGLE_CLIENT_ID=your_google_client_id_here
+    GOOGLE_CLIENT_SECRET=your_google_client_secret_here
+    ```
 
-### 4. Multi-Day Event Support
-- For Workshops and Retreats in the create recurring class dialog:
-  - Allow adding multiple calendar dates.
-  - Automatically set as non-recurring. Support multi-day events that don't repeat (common for workshops/retreats).
+#### Facebook OAuth Setup
+
+1.  **Go to Facebook Developers**: <https://developers.facebook.com/>
+2.  **Create an App**:
+    *   Click "Create App"
+    *   Choose "Consumer" (for login)
+    *   App name: "Wingspan Yoga"
+3.  **Add Facebook Login**:
+    *   In your app dashboard, click "Add Product"
+    *   Find "Facebook Login" and click "Set Up"
+4.  **Configure OAuth settings**:
+    *   Go to Facebook Login → Settings
+    *   Valid OAuth Redirect URIs:
+        ```
+        http://localhost:3001/api/auth/callback/facebook
+        https://yourdomain.com/api/auth/callback/facebook
+        ```
+5.  **Get your credentials**:
+    *   Go to Settings → Basic
+    *   Copy App ID and App Secret to your `.env`:
+        ```bash
+        FACEBOOK_CLIENT_ID=your_facebook_app_id_here
+        FACEBOOK_CLIENT_SECRET=your_facebook_app_secret_here
+        ```
+
+#### Twitter/X OAuth Setup
+
+1.  **Go to Twitter Developer Portal**: <https://developer.twitter.com/>
+2.  **Apply for developer access** (if you don't have it):
+    *   Fill out the application form
+    *   Explain you're building a yoga studio website with social login
+3.  **Create a new App**:
+    *   Go to your developer dashboard
+    *   Click "Create App"
+    *   Name: "Wingspan Yoga"
+4.  **Configure OAuth settings**:
+    *   Go to your app → Settings → Authentication settings
+    *   Enable "3-legged OAuth"
+    *   Callback URLs:
+        ```
+        http://localhost:3001/api/auth/callback/twitter
+        https://yourdomain.com/api/auth/callback/twitter
+        ```
+5.  **Get your credentials**:
+    *   Go to Keys and Tokens tab
+    *   Copy API Key and API Secret Key:
+        ```bash
+        TWITTER_CLIENT_ID=your_twitter_api_key_here
+        TWITTER_CLIENT_SECRET=your_twitter_api_secret_here
+        ```
+
+#### Instagram OAuth Setup
+
+1.  **Go to Facebook Developers** (Instagram uses Facebook's system): <https://developers.facebook.com/>
+2.  **Use the same app** you created for Facebook, or create a new one
+3.  **Add Instagram Basic Display**:
+    *   In your app dashboard, click "Add Product"
+    *   Find "Instagram Basic Display" and click "Set Up"
+4.  **Create an Instagram App**:
+    *   Go to Instagram Basic Display → Basic Display
+    *   Click "Create New App"
+    *   Display Name: "Wingspan Yoga"
+5.  **Configure OAuth settings**:
+    *   Valid OAuth Redirect URIs:
+        ```
+        http://localhost:3001/api/auth/callback/instagram
+        https://yourdomain.com/api/auth/callback/instagram
+        ```
+6.  **Get your credentials**:
+    *   Copy Instagram App ID and Instagram App Secret:
+        ```bash
+        INSTAGRAM_CLIENT_ID=your_instagram_app_id_here
+        INSTAGRAM_CLIENT_SECRET=your_instagram_app_secret_here
+        ```

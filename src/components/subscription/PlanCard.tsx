@@ -4,13 +4,13 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { PlanDefinition } from '@/lib/stripe/plans'
+import { PlanDefinition, PlanKey } from '@/lib/stripe/plans'
 import { CheckIcon } from 'lucide-react'
 
 interface PlanCardProps {
   plan: PlanDefinition
   isPopular?: boolean
-  onSelectPlan: (planKey: string) => Promise<void>
+  onSelectPlan: (planKey: PlanKey) => Promise<void>
   disabled?: boolean
 }
 

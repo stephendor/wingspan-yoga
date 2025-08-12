@@ -22,12 +22,12 @@ interface BillingManagementProps {
 }
 
 export function BillingManagement({ subscription, className }: BillingManagementProps) {
-  const { status } = useNextAuth()
-  const [isLoading, setIsLoading] = useState(false)
+  const { isAuthenticated, isLoading: authLoading } = useNextAuth()
+  const [isPortalLoading, setIsPortalLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const handleManageBilling = async () => {
-    if (status !== 'authenticated') {
+    if (!isAuthenticated) {
       setError('Please sign in to manage your billing')
       return
     }
@@ -37,14 +37,14 @@ export function BillingManagement({ subscription, className }: BillingManagement
       return
     }
 
-    setIsLoading(true)
+    setIsPortalLoading(true)
     setError(null)
 
     try {
       await redirectToBillingPortal('/membership')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to access billing portal')
-      setIsLoading(false)
+      setIsPortalLoading(false)
     }
   }
 
@@ -186,11 +186,11 @@ export function BillingManagement({ subscription, className }: BillingManagement
           <div className="space-y-3 pt-4 border-t border-charcoal-100">
             <Button
               onClick={handleManageBilling}
-              disabled={isLoading || status !== 'authenticated'}
+              disabled={isPortalLoading || authLoading || !isAuthenticated}
               className="w-full sm:w-auto"
               size="lg"
             >
-              {isLoading ? (
+              {isPortalLoading ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                   Loading...

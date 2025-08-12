@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { SignInForm } from '@/components/auth/SignInForm'
 
 export default function SignInPage() {
@@ -12,7 +13,9 @@ export default function SignInPage() {
             Continue your yoga journey with us
           </p>
         </div>
-        <SignInForm />
+        <Suspense fallback={null}>
+          <SignInForm />
+        </Suspense>
       </div>
     </div>
   )

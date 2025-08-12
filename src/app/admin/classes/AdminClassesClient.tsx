@@ -76,6 +76,20 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
   const [deletingTemplate, setDeletingTemplate] = useState<ClassTemplate | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // View handlers
+  const handleViewTemplates = () => { setView('templates'); };
+  const handleViewInstances = () => { setView('instances'); };
+  const handleViewCalendar = () => { setView('calendar'); };
+
+  // Template handlers
+  const handleEditTemplate = (template: ClassTemplate) => () => { setEditingTemplate(template); };
+  const handleGenerateInstancesClick = (templateId: string) => () => { generateInstances(templateId).catch(() => {}); };
+  const handleAskDeleteTemplate = (template: ClassTemplate) => () => { setDeletingTemplate(template); };
+  const handleCloseEditModal = () => { setEditingTemplate(null); };
+  const handleCloseDeleteModal = () => { setDeletingTemplate(null); };
+  const handleDeleteConfirmClick = () => { handleDeleteTemplate().catch(() => {}); };
+  const handleDeleteOpenChange = (open: boolean) => { if (!open) setDeletingTemplate(null); };
+
   const fetchTemplates = useCallback(async () => {
     try {
       setLoading(true);
@@ -171,7 +185,7 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
           {/* View Toggle */}
           <div className="flex space-x-1 bg-gray-200 p-1 rounded-lg w-fit">
             <button
-              onClick={() => setView('templates')}
+              onClick={handleViewTemplates}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 view === 'templates'
                   ? 'bg-white text-blue-600 shadow-sm'
@@ -181,7 +195,7 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
               Recurring Classes ({templates.length})
             </button>
             <button
-              onClick={() => setView('instances')}
+              onClick={handleViewInstances}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 view === 'instances'
                   ? 'bg-white text-blue-600 shadow-sm'
@@ -191,7 +205,7 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
               Upcoming Instances
             </button>
             <button
-              onClick={() => setView('calendar')}
+              onClick={handleViewCalendar}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 view === 'calendar'
                   ? 'bg-white text-blue-600 shadow-sm'
@@ -259,19 +273,19 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
                         </div>
                         <div className="space-y-2">
                           <button
-                            onClick={() => setEditingTemplate(template)}
+                            onClick={handleEditTemplate(template)}
                             className="block w-full px-3 py-1 text-xs bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
                           >
                             Edit Template
                           </button>
                           <button
-                            onClick={() => generateInstances(template.id)}
+                            onClick={handleGenerateInstancesClick(template.id)}
                             className="block w-full px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
                           >
                             Generate 12 weeks
                           </button>
                           <button
-                            onClick={() => setDeletingTemplate(template)}
+                            onClick={handleAskDeleteTemplate(template)}
                             className="block w-full px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
                           >
                             Delete Template
@@ -321,8 +335,12 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
                 {templates.flatMap(template => template.instances).length === 0 ? (
                   <p className="text-gray-600 text-center py-8">No upcoming instances. Generate some from your recurring classes!</p>
                 ) : (
-                  templates.flatMap(template => 
-                    template.instances.map(instance => (
+                  templates
+                    .flatMap(template => 
+                      template.instances.map(instance => ({ instance, template }))
+                    )
+                    .sort((a, b) => new Date(a.instance.startTime).getTime() - new Date(b.instance.startTime).getTime())
+                    .map(({ instance, template }) => (
                       <div key={instance.id} className="flex justify-between items-center p-3 bg-gray-50 rounded">
                         <div>
                           <span className="font-medium">{template.title}</span>
@@ -334,7 +352,6 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
                         </div>
                       </div>
                     ))
-                  )
                 )}
               </div>
             </div>
@@ -355,7 +372,7 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
                     {new Date(cls.startTime).toLocaleString('en-GB')}
                   </div>
                   <div className="text-sm text-yellow-600 mt-1">
-                    {cls.instructor?.name} • {formatGBP(cls.price)}
+                    {cls.instructor.name} • {formatGBP(cls.price)}
                   </div>
                 </div>
               ))}
@@ -369,10 +386,10 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
         <EditClassModal
           template={editingTemplate}
           isOpen={true}
-          onClose={() => setEditingTemplate(null)}
+          onClose={handleCloseEditModal}
           onUpdated={() => {
-            setEditingTemplate(null);
-            void fetchTemplates();
+            handleCloseEditModal();
+            fetchTemplates().catch(() => {});
           }}
         />
       )}
@@ -381,11 +398,11 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
       {deletingTemplate && (
         <Modal 
           open={true} 
-          onOpenChange={(open) => !open && setDeletingTemplate(null)}
+          onOpenChange={handleDeleteOpenChange}
         >
           <ModalHeader>
             <ModalTitle>Delete Class Template</ModalTitle>
-            <ModalClose onClose={() => setDeletingTemplate(null)} />
+            <ModalClose onClose={handleCloseDeleteModal} />
           </ModalHeader>
           <ModalContent>
             <p className="text-gray-600 mb-4">
@@ -397,14 +414,14 @@ export default function AdminClassesClient({ classes }: { classes: ClassTemplate
           </ModalContent>
           <ModalFooter>
             <button
-              onClick={() => setDeletingTemplate(null)}
+              onClick={handleCloseDeleteModal}
               disabled={isDeleting}
               className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
               Cancel
             </button>
             <button
-              onClick={handleDeleteTemplate}
+              onClick={handleDeleteConfirmClick}
               disabled={isDeleting}
               className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
             >

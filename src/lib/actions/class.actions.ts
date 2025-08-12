@@ -142,6 +142,56 @@ export async function cancelClassInstance(templateId: string, date: string, reas
   }
 }
 
+// Restore a previously cancelled class instance by removing the exception and recreating the instance for that date
+export async function restoreClassInstance(templateId: string, date: string) {
+  try {
+    // Remove exception if exists
+    await prisma.classException.deleteMany({
+      where: {
+        templateId,
+        date: new Date(date),
+      },
+    });
+
+    // Recreate the instance based on template timing
+    const template = await prisma.classTemplate.findUnique({ where: { id: templateId } });
+    if (!template) return { success: false, error: 'Template not found' };
+
+    const targetDate = new Date(date);
+    const [startHour, startMinute] = template.startTime.split(':').map(Number);
+    const [endHour, endMinute] = template.endTime.split(':').map(Number);
+
+    const startTime = new Date(targetDate);
+    startTime.setHours(startHour, startMinute, 0, 0);
+    const endTime = new Date(targetDate);
+    endTime.setHours(endHour, endMinute, 0, 0);
+
+    // Ensure not duplicating if already exists
+    const existing = await prisma.classInstance.findUnique({
+      where: { templateId_date: { templateId, date: targetDate } },
+    });
+    if (!existing) {
+      await prisma.classInstance.create({
+        data: {
+          templateId,
+          date: targetDate,
+          startTime,
+          endTime,
+          capacity: template.capacity,
+          price: template.price,
+          instructorId: template.instructorId,
+        },
+      });
+    }
+
+    revalidatePath('/admin/classes');
+    return { success: true };
+  } catch (error) {
+    console.error('Error restoring class instance:', error);
+    return { success: false, error: 'Failed to restore class instance' };
+  }
+}
+
 // Update a class template
 export async function updateClassTemplate(id: string, data: Partial<CreateClassTemplateData>) {
   try {

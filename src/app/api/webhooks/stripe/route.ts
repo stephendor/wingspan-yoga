@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { stripe, verifyWebhookSignature } from '../../../../lib/stripe'
 import { prisma } from '../../../../lib/prisma'
 import type Stripe from 'stripe'
@@ -7,7 +7,7 @@ import { $Enums } from '@prisma/client'
 
 export const runtime = 'nodejs'
 
-export function mapStripeStatus(status: Stripe.Subscription.Status): $Enums.MembershipStatus {
+function mapStripeStatus(status: Stripe.Subscription.Status): $Enums.MembershipStatus {
   switch (status) {
     case 'trialing':
       return $Enums.MembershipStatus.TRIALING
@@ -28,7 +28,7 @@ export function mapStripeStatus(status: Stripe.Subscription.Status): $Enums.Memb
   }
 }
 
-export async function recordEventOnce(event: Stripe.Event): Promise<boolean> {
+async function recordEventOnce(event: Stripe.Event): Promise<boolean> {
   try {
     await prisma.webhookEvent.create({ data: { id: event.id, type: event.type } })
     return true
@@ -175,7 +175,7 @@ async function upsertUserSubscription(params: { subscription: Stripe.Subscriptio
   })
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const signature = req.headers.get('stripe-signature')
   if (!signature) {
     return NextResponse.json({ error: 'Missing Stripe signature' }, { status: 400 })

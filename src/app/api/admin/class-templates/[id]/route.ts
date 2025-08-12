@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '../../../../../lib/prisma';
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request, context: unknown) {
   try {
     const body = await request.json();
-    const templateId = params.id;
+    const templateId = (context as { params?: { id?: string } })?.params?.id || '';
+    if (!templateId) {
+      return NextResponse.json({ success: false, error: 'Missing template id' }, { status: 400 });
+    }
 
     // Extract the data from the request
     const {

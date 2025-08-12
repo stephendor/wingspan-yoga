@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/nextauth'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   try {
     // Get the authenticated user
     const session = await getServerSession(authOptions)
@@ -18,17 +18,7 @@ export async function POST(request: NextRequest) {
     // Find the user in our database
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
-      include: {
-        subscriptions: {
-          where: {
-            status: {
-              in: ['active', 'past_due', 'unpaid', 'cancelled']
-            }
-          },
-          orderBy: { createdAt: 'desc' },
-          take: 1
-        }
-      }
+      include: { activeSubscription: true }
     })
 
     if (!user) {
@@ -39,8 +29,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user has an active subscription
-    const activeSubscription = user.subscriptions[0]
-    if (!activeSubscription?.stripeCustomerId) {
+  const activeSubscription = user.activeSubscription
+  if (!activeSubscription?.stripeCustomerId) {
       return NextResponse.json(
         { error: 'No active subscription found' },
         { status: 404 }

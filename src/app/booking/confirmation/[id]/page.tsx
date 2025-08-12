@@ -1,14 +1,11 @@
 import { Suspense } from 'react'
-import { Metadata } from 'next/metadata'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/nextauth'
 import { prisma } from '@/lib/prisma'
 import { ConfirmationClient } from './ConfirmationClient'
 
-interface ConfirmationPageProps {
-  params: { id: string }
-}
 
 export const metadata: Metadata = {
   title: 'Booking Confirmation | Wingspan Yoga',
@@ -69,16 +66,21 @@ function ConfirmationPageSkeleton() {
   )
 }
 
-export default async function ConfirmationPage({ params }: ConfirmationPageProps) {
+export default async function ConfirmationPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions)
   
   if (!session?.user?.id) {
     notFound()
   }
 
-  const booking = await getBookingData(params.id, session.user.id)
+  const { id } = await params
+  const booking = await getBookingData(id, session.user.id)
 
   if (!booking) {
+    notFound()
+  }
+
+  if (!booking.class) {
     notFound()
   }
 
@@ -87,7 +89,7 @@ export default async function ConfirmationPage({ params }: ConfirmationPageProps
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           <Suspense fallback={<ConfirmationPageSkeleton />}>
-            <ConfirmationClient booking={booking} />
+            <ConfirmationClient booking={{ ...booking, class: booking.class! }} />
           </Suspense>
         </div>
       </div>

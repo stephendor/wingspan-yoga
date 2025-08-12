@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import { Metadata } from 'next/metadata'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/nextauth'
@@ -7,12 +7,9 @@ import { prisma } from '@/lib/prisma'
 import { BookingClient } from './BookingClient'
 import { ClassStatus } from '@prisma/client'
 
-interface BookingPageProps {
-  params: { id: string }
-}
-
-export async function generateMetadata({ params }: BookingPageProps): Promise<Metadata> {
-  const classData = await getClassData(params.id)
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const classData = await getClassData(id)
   
   if (!classData) {
     return {
@@ -99,12 +96,13 @@ function BookingPageSkeleton() {
   )
 }
 
-export default async function BookingPage({ params }: BookingPageProps) {
+export default async function BookingPage({ params }: { params: Promise<{ id: string }> }) {
   // Check if user is authenticated
   const session = await getServerSession(authOptions)
   
   // Get class data
-  const classData = await getClassData(params.id)
+  const { id } = await params
+  const classData = await getClassData(id)
 
   if (!classData) {
     notFound()

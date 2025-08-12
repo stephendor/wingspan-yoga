@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth/nextauth'
 import { prisma } from '@/lib/prisma'
@@ -41,7 +41,7 @@ interface BookingWithClass {
 
 interface ConfirmBody { paymentIntentId: string; classId: string; notes?: string }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   let parsedBody: ConfirmBody | undefined
   try {
     const session = await getServerSession(authOptions)
@@ -69,6 +69,9 @@ export async function POST(request: NextRequest) {
       include: { class: { include: { instructor: true } } }
     })
     if (preExisting) {
+      if (!preExisting.class) {
+        return NextResponse.json({ success: true, message: 'Booking already exists' })
+      }
       return NextResponse.json({
         success: true,
         booking: {
@@ -139,7 +142,7 @@ export async function POST(request: NextRequest) {
     location: result.class.location,
     instructorName: result.class.instructor.name
       }
-    }).catch(err => console.error('Email send failed (non-blocking):', err))
+  }).catch((err) => { console.error('Email send failed (non-blocking):', err); })
 
     return NextResponse.json({
       success: true,
