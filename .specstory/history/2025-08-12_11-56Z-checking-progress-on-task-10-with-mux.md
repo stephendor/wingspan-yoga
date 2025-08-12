@@ -106,6 +106,130 @@ Do that and then implement the remaining subtasks
 
 _**Assistant**_
 
+I’m going to update the Taskmaster tasks to reflect reality: set 10.2 to in-progress and add a subtask for implementing real Mux signed playback (JWT). After coding and verification, I’ll mark 10.2 done and update parent status as appropriate. I’ll research Mux’s current signed playback token format and required JWT claims/headers to implement correct signing in our Node code, then use that to update our mux helper and API route. Batching quick reads to confirm current Mux helper code, API route, and dependencies before implementing signed playback and updating tasks. Implementing real Mux signed playback with JWTs: I'll update the Mux helper to sign tokens using signing keys, adjust the API route to append the token to the playback URL, remove header-based auth in the player, and add required env vars. 
+```
+
+```
+Applying small edits to use Mux's Jwt signer, append the token to the playback URL in the API route, remove header-based auth in the player, and add signing env vars to .env.example. 
+```
+
+```
+Patching API route, video player, and env example to wire JWT-signed tokens into the playback URL and remove header-based auth. 
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+Checkpoint: Implemented signed Mux playback tokens (jwt RS256) with env vars, appended token in playback URL, removed header auth in player. Now I'll fix minor TS/ESLint issues in VideoPlayer and run code quality checks for the edited files. 
+```
+
+```
+
+```
+
+```
+Adding a minimal Jest test for the playback-info API to verify signed token in playback URL, then running code quality analysis on new and updated files. I'll quickly inspect the Jest config and auth/middleware path to ensure correct imports, then fix the test file to use ES module imports and proper typing so it passes lint. 
+```
+
+```
+[object Object]
+
+---
+
+_**User**_
+
+@agent Continue: "Continue to iterate?"
+
+---
+
+_**Assistant**_
+
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+I'm going to update the Task 10 subtasks' statuses to reflect the current repo reality and attach a brief implementation note, then add a developer doc for secure playback and E2E verification, and finally checkpoint what changed and what's next. 
+```
+
+```
+I’m going to fix the markdown lint issues in the secure playback documentation by inserting the required blank lines and normalizing list formatting so it passes common markdown linters. 
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+I’m going to clean up the secure playback documentation to satisfy markdown lint rules, add a small helper script to generate signed Mux URLs for manual E2E checks, and wire a package script for it. 
+```
+
+```
+
+````
+
+````
+I'll inspect `package.json` to confirm available scripts and avoid referencing non-existent commands, then I'll fix the markdown file to satisfy the linter by adjusting blank lines, list numbering, and indentation. 
+```
+
+```
+
+```
+
+```
+
+```
+
+```
+I'm going to wire a configurable TTL for playback tokens, add a small helper script to generate signed URLs, update package.json, and refresh the docs to mention the new env/script; then I'll validate for type/lint errors and run the focused test. 
+```
+
+```
+[object Object]
+
+---
+
+_**User**_
+
+@agent Continue: "Continue to iterate?"
+
+---
+
+_**Assistant**_
+
+
+```
+
+```
 
 
 ---

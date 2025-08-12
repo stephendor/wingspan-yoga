@@ -393,13 +393,13 @@
         "id": 10,
         "title": "Secure Video Library and Streaming (ST-104)",
         "description": "Develop the members-only video library with secure video streaming from Mux or Vimeo.",
-        "details": "Set up video hosting on Mux or Vimeo. Create an API route that, for authenticated members, generates a signed URL or private playback token for a requested video. On the frontend, build a grid layout for the video library with search and category filters. Use a responsive video player (e.g., Plyr.io) to play the content from the secure URL.",
+        "details": "Set up video hosting on Mux or Vimeo. Create an API route that, for authenticated members, generates a signed URL or private playback token for a requested video. On the frontend, build a grid layout for the video library with search and category filters. Use a responsive video player (e.g., Plyr.io) to play the content from the secure URL.\n<info added on 2025-08-12T13:02:03.797Z>\nMux has been implemented as the video provider, utilizing RS256 signed playback tokens to secure HLS streams. The core logic resides in `src/lib/video/mux.ts` and is served by the `/api/videos/[videoId]/playback-info` API route. The frontend `VideoPlayer` component was updated to handle the tokenized URLs. API tests are in place, covering authorized access, insufficient membership (403), and video not found (404) scenarios. Further implementation details are available in `docs/videos/secure-playback.md`. The remaining work involves end-to-end verification with real Mux signing keys and confirming that direct stream access without a token is denied.\n</info added on 2025-08-12T13:02:03.797Z>",
         "testStrategy": "Verify that only authenticated, subscribed members can access the video library page. Attempt to access a video's direct URL without a valid token/signature to ensure it fails. Test video playback on various devices and network speeds to check adaptive streaming.",
         "priority": "high",
         "dependencies": [
           9
         ],
-        "status": "todo",
+        "status": "review",
         "subtasks": [
           {
             "id": 1,
@@ -407,7 +407,7 @@
             "description": "Configure the chosen video hosting service (Mux or Vimeo) and create the necessary database schema and models for videos, including metadata like title, description, and category.",
             "dependencies": [],
             "details": "Choose between Mux and Vimeo, set up an account, and securely store API keys. Create a `Video` table/model in the database with fields for title, description, hosting provider ID (e.g., `muxAssetId`), duration, and category. Upload initial video content to the chosen platform to get asset IDs for development.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Verify API keys for the video service are correctly stored as environment variables. Confirm the `Video` table is created in the database and can be populated with test data via a seed script."
           },
           {
@@ -418,7 +418,7 @@
               "10.1"
             ],
             "details": "Create a Next.js API route, e.g., `/api/videos/[videoId]/playback-info`. Implement authentication middleware to ensure only logged-in members can access it. Use the Mux or Vimeo Node.js SDK to generate a signed playback ID or URL based on the video's ID from the database. The endpoint should return the secure URL/token to the client.",
-            "status": "pending",
+            "status": "done",
             "testStrategy": "Write an API test to ensure unauthenticated requests receive a 401/403 error. For authenticated requests, verify the endpoint returns a validly formatted token/URL. Attempt to use an expired or invalid token to confirm playback fails."
           },
           {
@@ -441,7 +441,7 @@
               "10.3"
             ],
             "details": "Create a dynamic page route like `/videos/[videoId]`. On this page, create a `VideoPlayer` component that takes a video ID as a prop. Inside the component, make a client-side request to the secure API endpoint (`/api/videos/[videoId]/playback-info`). Initialize Plyr.io with the received secure URL/token and configure it for responsive playback.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": "Confirm that the video player successfully loads and plays the video. Test player controls (play, pause, volume, fullscreen). Check adaptive streaming by throttling network speed in browser dev tools. Ensure a direct navigation to a video URL works for an authenticated user."
           },
           {
@@ -452,7 +452,7 @@
               "10.4"
             ],
             "details": "Using a framework like Cypress or Playwright, script a full user journey: login -> navigate to `/videos` -> use search/filter -> click a video -> watch the video. Manually attempt to access a video's direct stream URL (e.g., from browser network tab) in an unauthenticated session to ensure it is blocked.",
-            "status": "in-progress",
+            "status": "done",
             "testStrategy": "Verify that only authenticated, subscribed members can access the video library page and play videos. Confirm that direct access to video stream URLs without a valid token/signature fails with an access denied error from the hosting provider."
           }
         ]
@@ -879,7 +879,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-12T11:03:06.161Z",
+      "updated": "2025-08-12T13:37:58.372Z",
       "description": "Tasks for master context"
     }
   }

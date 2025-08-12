@@ -88,7 +88,10 @@ export async function GET(
     }
 
     // Create signed playback token
-    const expiresIn = 8 * 60 * 60; // 8 hours
+    const configuredTtl = Number(process.env.MUX_TOKEN_TTL_SECONDS);
+    const expiresIn = Number.isFinite(configuredTtl) && configuredTtl > 0
+      ? Math.floor(configuredTtl)
+      : 8 * 60 * 60; // default: 8 hours
     const token = await createPlaybackToken(video.streamingUrl, {
       expiresIn,
       viewerId: authUser.id,
