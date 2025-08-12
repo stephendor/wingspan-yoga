@@ -400,7 +400,62 @@
           9
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Backend: Video Hosting Setup and Data Modeling",
+            "description": "Configure the chosen video hosting service (Mux or Vimeo) and create the necessary database schema and models for videos, including metadata like title, description, and category.",
+            "dependencies": [],
+            "details": "Choose between Mux and Vimeo, set up an account, and securely store API keys. Create a `Video` table/model in the database with fields for title, description, hosting provider ID (e.g., `muxAssetId`), duration, and category. Upload initial video content to the chosen platform to get asset IDs for development.",
+            "status": "pending",
+            "testStrategy": "Verify API keys for the video service are correctly stored as environment variables. Confirm the `Video` table is created in the database and can be populated with test data via a seed script."
+          },
+          {
+            "id": 2,
+            "title": "API: Create Secure Playback Token/URL Endpoint",
+            "description": "Develop a protected API route that verifies user authentication and generates a secure, short-lived playback token (Mux) or signed URL (Vimeo) for a requested video.",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Create a Next.js API route, e.g., `/api/videos/[videoId]/playback-info`. Implement authentication middleware to ensure only logged-in members can access it. Use the Mux or Vimeo Node.js SDK to generate a signed playback ID or URL based on the video's ID from the database. The endpoint should return the secure URL/token to the client.",
+            "status": "pending",
+            "testStrategy": "Write an API test to ensure unauthenticated requests receive a 401/403 error. For authenticated requests, verify the endpoint returns a validly formatted token/URL. Attempt to use an expired or invalid token to confirm playback fails."
+          },
+          {
+            "id": 3,
+            "title": "Frontend: Build Video Library UI with Filtering",
+            "description": "Create the members-only video library page (`/videos`) with a responsive grid layout displaying video thumbnails and titles. Implement search and category filtering functionality.",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Create a new page route in Next.js protected by authentication (redirecting if not logged in). Fetch the list of all video metadata from the backend. Use the pre-built `Card` component (from Task 3) to display each video in a responsive grid. Add an input for search and a dropdown for category filtering, implementing the logic to filter the displayed videos.",
+            "status": "done",
+            "testStrategy": "Verify the page is inaccessible to logged-out users and redirects to a login page. Test the grid's responsiveness on different screen sizes. Confirm that search and category filters correctly update the list of videos shown."
+          },
+          {
+            "id": 4,
+            "title": "Frontend: Integrate Responsive Video Player",
+            "description": "Develop a video player component using Plyr.io that fetches the secure playback URL/token from the API and plays the video content on a dedicated video playback page.",
+            "dependencies": [
+              "10.2",
+              "10.3"
+            ],
+            "details": "Create a dynamic page route like `/videos/[videoId]`. On this page, create a `VideoPlayer` component that takes a video ID as a prop. Inside the component, make a client-side request to the secure API endpoint (`/api/videos/[videoId]/playback-info`). Initialize Plyr.io with the received secure URL/token and configure it for responsive playback.",
+            "status": "in-progress",
+            "testStrategy": "Confirm that the video player successfully loads and plays the video. Test player controls (play, pause, volume, fullscreen). Check adaptive streaming by throttling network speed in browser dev tools. Ensure a direct navigation to a video URL works for an authenticated user."
+          },
+          {
+            "id": 5,
+            "title": "E2E Testing and Security Verification",
+            "description": "Conduct end-to-end testing of the entire video library feature, verifying the complete user flow and explicitly testing security constraints.",
+            "dependencies": [
+              "10.4"
+            ],
+            "details": "Using a framework like Cypress or Playwright, script a full user journey: login -> navigate to `/videos` -> use search/filter -> click a video -> watch the video. Manually attempt to access a video's direct stream URL (e.g., from browser network tab) in an unauthenticated session to ensure it is blocked.",
+            "status": "in-progress",
+            "testStrategy": "Verify that only authenticated, subscribed members can access the video library page and play videos. Confirm that direct access to video stream URLs without a valid token/signature fails with an access denied error from the hosting provider."
+          }
+        ]
       },
       {
         "id": 11,
@@ -824,7 +879,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-12T07:05:49.334Z",
+      "updated": "2025-08-12T11:03:06.161Z",
       "description": "Tasks for master context"
     }
   }
