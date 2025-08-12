@@ -452,7 +452,7 @@
               "10.4"
             ],
             "details": "Using a framework like Cypress or Playwright, script a full user journey: login -> navigate to `/videos` -> use search/filter -> click a video -> watch the video. Manually attempt to access a video's direct stream URL (e.g., from browser network tab) in an unauthenticated session to ensure it is blocked.",
-            "status": "done",
+            "status": "review",
             "testStrategy": "Verify that only authenticated, subscribed members can access the video library page and play videos. Confirm that direct access to video stream URLs without a valid token/signature fails with an access denied error from the hosting provider."
           }
         ]
@@ -593,8 +593,8 @@
             "title": "Implement Instructor Role-Based Access and Protected Route",
             "description": "Enhance the authentication system to enforce role-based access. Create a protected route, for example `/instructor/dashboard`, that is only accessible to users with the 'INSTRUCTOR' role.",
             "dependencies": [],
-            "details": "Update the existing authentication logic (e.g., NextAuth.js callbacks) to include the user's role in the session object, leveraging the `role` field defined in the Prisma schema (Task 2). Implement Next.js middleware (`middleware.ts`) to inspect the user's session on incoming requests to `/instructor/*`. The middleware should redirect unauthenticated users to the login page and non-instructor users (e.g., 'MEMBER') to the homepage.\n<info added on 2025-08-12T16:03:04.369Z>\nThis subtask now depends on the completion of Task 23 (Enhanced RBAC System Setup), as the `INSTRUCTOR` role and user accounts must be properly configured before this instructor-specific route protection can be implemented.\n</info added on 2025-08-12T16:03:04.369Z>",
-            "status": "pending",
+            "details": "Update the existing authentication logic (e.g., NextAuth.js callbacks) to include the user's role in the session object, leveraging the `role` field defined in the Prisma schema (Task 2). Implement Next.js middleware (`middleware.ts`) to inspect the user's session on incoming requests to `/instructor/*`. The middleware should redirect unauthenticated users to the login page and non-instructor users (e.g., 'MEMBER') to the homepage.\n<info added on 2025-08-12T16:03:04.369Z>\nThis subtask now depends on the completion of Task 23 (Enhanced RBAC System Setup), as the `INSTRUCTOR` role and user accounts must be properly configured before this instructor-specific route protection can be implemented.\n</info added on 2025-08-12T16:03:04.369Z>\n<info added on 2025-08-12T16:33:25.545Z>\nImplemented and completed. A protected route and dashboard page were created at `/src/app/instructor/dashboard/page.tsx`. Security is handled with a double authorization check: Next.js middleware protects the `/instructor/*` path, while the page itself performs a server-side check using `getServerSession`. Authorization is based on the specific `'access:instructor_portal'` permission, leveraging the RBAC system. The page includes a full dashboard UI with stats, action buttons, and an activity feed, and is ready for testing.\n</info added on 2025-08-12T16:33:25.545Z>",
+            "status": "done",
             "testStrategy": "Attempt to access `/instructor/dashboard` as a logged-out user, a 'MEMBER' user, and an 'INSTRUCTOR' user. Verify correct redirection or access for each case. Check that the session object correctly contains the user's role after login."
           },
           {
@@ -604,8 +604,8 @@
             "dependencies": [
               "13.1"
             ],
-            "details": "Using Prisma, create a data-fetching function within a Next.js API route (e.g., `/api/instructor/schedule`) or a `getServerSideProps` function. The query should find all `Class` records where `instructorId` matches the ID from the authenticated user's session. The query must also eager-load the related `Booking` records, and for each booking, include the associated `User` (student) details (e.g., name, email). Ensure sensitive student data is handled securely.",
-            "status": "pending",
+            "details": "Using Prisma, create a data-fetching function within a Next.js API route (e.g., `/api/instructor/schedule`) or a `getServerSideProps` function. The query should find all `Class` records where `instructorId` matches the ID from the authenticated user's session. The query must also eager-load the related `Booking` records, and for each booking, include the associated `User` (student) details (e.g., name, email). Ensure sensitive student data is handled securely.\n<info added on 2025-08-12T17:15:51.417Z>\nThe API endpoint has been successfully implemented at `GET /api/instructor/schedule`. The route is protected by NextAuth.js, validating the user's session and instructor role. The Prisma query correctly fetches all classes for the authenticated instructor, including eager-loaded booking records with associated student details. The response payload also contains valuable summary statistics, such as total bookings and capacity utilization. During implementation, several schema field name inconsistencies were resolved (e.g., `startTime`, `difficulty`). The endpoint is now validated and ready for frontend integration in the next subtask.\n</info added on 2025-08-12T17:15:51.417Z>",
+            "status": "done",
             "testStrategy": "Create an integration test for the data-fetching logic. Seed the database with a test instructor, their assigned classes, and student bookings. Call the function/endpoint with the test instructor's credentials and assert that only their classes and the correct students are returned."
           },
           {
@@ -615,8 +615,8 @@
             "dependencies": [
               "13.2"
             ],
-            "details": "On the `/instructor/dashboard` page, consume the data fetched in the previous subtask. Reuse existing core components from the UI library (Task 3), such as `Card`, to represent each class. Display key class details like title, date, time, and current number of bookings. Arrange the class cards in a list sorted by date. This UI can be inspired by the existing public schedule (Task 7) but tailored for an instructor's needs.",
-            "status": "pending",
+            "details": "On the `/instructor/dashboard` page, consume the data fetched in the previous subtask. Reuse existing core components from the UI library (Task 3), such as `Card`, to represent each class. Display key class details like title, date, time, and current number of bookings. Arrange the class cards in a list sorted by date. This UI can be inspired by the existing public schedule (Task 7) but tailored for an instructor's needs.\n<info added on 2025-08-12T17:30:57.332Z>\n**Implementation Summary:**\nThe UI has been successfully implemented and integrated with the live API endpoint (`/api/instructor/schedule`).\n- **Component Architecture:** A new `InstructorDashboardClient.tsx` component was created to handle client-side state management and data fetching, wrapping the core `InstructorSchedule.tsx` display component. This maintains a clean server/client component separation on the main dashboard page.\n- **Features Delivered:**\n    - Displays upcoming and past classes in distinct sections, sorted by date.\n    - Uses `Card` components to show class details and booking statistics.\n    - Implemented robust loading, error, and empty states for a better user experience.\n    - A callback pattern updates dashboard-level stats in real-time based on the fetched schedule data.\n- **Status:** The dashboard now displays real, dynamic schedule data instead of static placeholders.\n</info added on 2025-08-12T17:30:57.332Z>",
+            "status": "done",
             "testStrategy": "Visually inspect the page using mock data to ensure the layout is correct and responsive. Verify that all class information (title, date, time, booking count) is displayed accurately as per the fetched data. Check the empty state when an instructor has no upcoming classes."
           },
           {
@@ -950,7 +950,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-12T16:16:54.062Z",
+      "updated": "2025-08-12T17:31:01.726Z",
       "description": "Tasks for master context"
     }
   }
