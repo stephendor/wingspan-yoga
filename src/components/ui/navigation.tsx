@@ -1,5 +1,6 @@
+'use client'
+
 import * as React from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 import { clsx } from 'clsx'
 import { Menu, X, User, LogOut } from 'lucide-react'
 import Link from 'next/link'
@@ -100,15 +101,8 @@ const Navigation = ({
                   <span>{user.name}</span>
                 </button>
 
-                <AnimatePresence>
-                  {isUserMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute right-0 top-full mt-2 w-48 bg-white rounded-natural shadow-zen border border-charcoal-200 py-1 z-50"
-                    >
+                {isUserMenuOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-natural shadow-zen border border-charcoal-200 py-1 z-50">
                       <div className="px-4 py-2 border-b border-charcoal-100">
                         <p className="text-sm font-medium text-charcoal-900">{user.name}</p>
                         <p className="text-xs text-charcoal-600">{user.email}</p>
@@ -120,9 +114,8 @@ const Navigation = ({
                         <LogOut className="h-4 w-4" />
                         <span>Logout</span>
                       </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex items-center space-x-4">
@@ -160,15 +153,8 @@ const Navigation = ({
       </div>
 
       {/* Mobile Navigation */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden border-t border-charcoal-200 bg-white"
-          >
+      {isMobileMenuOpen && (
+        <div className="md:hidden border-t border-charcoal-200 bg-white">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {items.map((item) => (
                 <Link
@@ -219,9 +205,8 @@ const Navigation = ({
                 </div>
               )}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        </div>
+      )}
     </nav>
   )
 }

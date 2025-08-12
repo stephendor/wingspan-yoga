@@ -1,94 +1,232 @@
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import Link from 'next/link'
+
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-50">
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center max-w-4xl mx-auto">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Welcome to{' '}
-            <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Wingspan Yoga
-            </span>
-          </h1>
-
-          <p className="text-xl text-gray-600 mb-8">
-            Transform your practice with our online yoga classes and in-studio
-            sessions. Join our community of mindful practitioners on a journey
-            of wellness and self-discovery.
-          </p>
-
-          <div className="grid md:grid-cols-3 gap-8 mt-12">
-            <div className="bg-white rounded-lg p-6 shadow-lg">
-              <div className="text-3xl mb-4">🧘‍♀️</div>
-              <h3 className="text-xl font-semibold mb-2">Video Library</h3>
-              <p className="text-gray-600">
-                Access hundreds of yoga classes anytime, anywhere
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-lg">
-              <div className="text-3xl mb-4">📅</div>
-              <h3 className="text-xl font-semibold mb-2">Live Classes</h3>
-              <p className="text-gray-600">
-                Join live sessions with certified instructors
-              </p>
-            </div>
-
-            <div className="bg-white rounded-lg p-6 shadow-lg">
-              <div className="text-3xl mb-4">💫</div>
-              <h3 className="text-xl font-semibold mb-2">
-                Personalized Journey
-              </h3>
-              <p className="text-gray-600">
-                Customized recommendations for your practice
-              </p>
+    <div className="min-h-screen bg-gradient-to-br from-sage-50 via-warm-50 to-blush-50">
+      {/* Hero Section */}
+      <section className="relative pt-20 pb-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-6xl font-heading font-bold text-charcoal-900 mb-6">
+              Welcome to{' '}
+              <span className="bg-gradient-to-r from-sage-600 to-ocean-600 bg-clip-text text-transparent">
+                Wingspan Yoga
+              </span>
+            </h1>
+            <p className="text-2xl text-sage-600 mb-6 font-medium">
+              with Anna Dorman
+            </p>
+            <p className="text-xl text-charcoal-600 mb-8 leading-relaxed max-w-3xl mx-auto">
+              Transform your practice with personalized yoga instruction that honors your body, 
+              calms your mind, and opens your heart. Join Anna for classes that blend traditional 
+              wisdom with modern alignment principles in a safe, inclusive environment.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+              <Link href="/schedule">
+                <Button size="xl" variant="primary">
+                  Book Your First Class
+                </Button>
+              </Link>
+              <Link href="/about">
+                <Button size="xl" variant="outline">
+                  Meet Anna
+                </Button>
+              </Link>
             </div>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-12">
-            <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 border">
-              <h2 className="text-2xl font-semibold mb-4">
-                🚀 Development Status
-              </h2>
-              <div className="text-left max-w-2xl mx-auto">
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-green-500">✅</span>
-                    <span>Next.js 14+ project initialized</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-green-500">✅</span>
-                    <span>TypeScript configuration</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-green-500">✅</span>
-                    <span>Tailwind CSS setup</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-green-500">✅</span>
-                    <span>ESLint & Prettier configuration</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-green-500">✅</span>
-                    <span>Project folder structure</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-green-500">✅</span>
-                    <span>Basic types and utilities</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-yellow-500">⏳</span>
-                    <span>Database setup (next step)</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-yellow-500">⏳</span>
-                    <span>Authentication system (next step)</span>
-                  </div>
+      {/* Featured Offerings */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-4xl font-heading font-bold text-charcoal-900 text-center mb-12">
+              Your Yoga Journey Starts Here
+            </h2>
+            
+            <div className="grid md:grid-cols-3 gap-8">
+              <Card variant="zen">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <span className="text-3xl mr-3">🧘‍♀️</span>
+                    Gentle Hatha
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-charcoal-600 mb-4">
+                    Perfect for beginners and those seeking a slower-paced practice. 
+                    Build strength and flexibility with mindful attention to alignment.
+                  </p>
+                  <Link href="/schedule">
+                    <Button variant="outline" size="sm">View Classes</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+              
+              <Card variant="zen">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <span className="text-3xl mr-3">🌊</span>
+                    Alignment Vinyasa
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-charcoal-600 mb-4">
+                    Flowing sequences with detailed alignment cues. Experience the 
+                    meditative quality of careful attention with mindful movement.
+                  </p>
+                  <Link href="/schedule">
+                    <Button variant="outline" size="sm">View Classes</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+              
+              <Card variant="zen">
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <span className="text-3xl mr-3">🌸</span>
+                    Restorative Yoga
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-charcoal-600 mb-4">
+                    Deeply nourishing practice with full prop support. 
+                    Perfect for stress relief and nervous system healing.
+                  </p>
+                  <Link href="/schedule">
+                    <Button variant="outline" size="sm">View Classes</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* About Anna Preview */}
+      <section className="py-16 bg-sage-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div>
+                <div className="w-64 h-64 bg-sage-200 rounded-full mx-auto md:mx-0 mb-6 flex items-center justify-center">
+                  <span className="text-9xl">🧘‍♀️</span>
                 </div>
+              </div>
+              
+              <div>
+                <h2 className="text-4xl font-heading font-bold text-charcoal-900 mb-6">
+                  Meet Anna Dorman
+                </h2>
+                <p className="text-lg text-charcoal-600 mb-6 leading-relaxed">
+                  With over 15 years of experience and RYT-500 certification, Anna brings 
+                  a unique blend of traditional Hatha yoga and trauma-informed teaching 
+                  to create a safe, inclusive space for all practitioners.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  <span className="px-4 py-2 text-sm rounded-full bg-sage-100 text-sage-700">RYT-500 Certified</span>
+                  <span className="px-4 py-2 text-sm rounded-full bg-sage-100 text-sage-700">Trauma-Informed</span>
+                  <span className="px-4 py-2 text-sm rounded-full bg-sage-100 text-sage-700">15+ Years Experience</span>
+                </div>
+                <Link href="/instructor">
+                  <Button variant="outline">
+                    Learn About Anna&apos;s Approach
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl font-heading font-bold text-charcoal-900 mb-12">
+              What Students Say
+            </h2>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <Card variant="organic">
+                <CardContent className="p-8">
+                  <blockquote className="text-lg italic text-charcoal-700 mb-4">
+                    &ldquo;Anna&apos;s classes are exactly what I needed. Her trauma-informed approach 
+                    helped me reconnect with my body in a way I never thought possible.&rdquo;
+                  </blockquote>
+                  <p className="text-sm font-medium text-sage-600">— Sarah M.</p>
+                </CardContent>
+              </Card>
+              
+              <Card variant="organic">
+                <CardContent className="p-8">
+                  <blockquote className="text-lg italic text-charcoal-700 mb-4">
+                    &ldquo;The alignment focus has completely transformed my practice. 
+                    I finally understand how to move safely and mindfully.&rdquo;
+                  </blockquote>
+                  <p className="text-sm font-medium text-sage-600">— Michael R.</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Newsletter Signup */}
+      <section className="py-16 bg-charcoal-900 text-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl font-heading font-bold mb-4">
+              Stay Connected
+            </h2>
+            <p className="text-charcoal-200 mb-8">
+              Receive yoga tips, class updates, and mindfulness practices delivered to your inbox.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 bg-white border-charcoal-300"
+              />
+              <Button variant="primary">
+                Subscribe
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Call to Action */}
+      <section className="py-16 bg-gradient-to-r from-sage-500 to-ocean-500 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-4xl font-heading font-bold mb-4">
+            Ready to Spread Your Wings?
+          </h2>
+          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
+            Join Anna for a practice that honors your body, calms your mind, and opens your heart. 
+            Your journey toward greater strength, flexibility, and inner peace starts here.
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/schedule">
+              <Button size="xl" variant="primary" className="bg-white text-sage-600 hover:bg-charcoal-50">
+                Book Your First Class
+              </Button>
+            </Link>
+            <Link href="/membership">
+              <Button size="xl" variant="outline" className="border-white text-white hover:bg-white/10">
+                Explore Memberships
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
-  );
+  )
 }

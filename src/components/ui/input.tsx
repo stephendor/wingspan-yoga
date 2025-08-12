@@ -1,5 +1,6 @@
+'use client'
+
 import * as React from 'react'
-import { motion } from 'framer-motion'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { clsx } from 'clsx'
 
@@ -52,41 +53,29 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <motion.div
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <input
-            id={inputId}
-            type={type}
-            className={clsx(inputVariants({ variant: finalVariant, size, className }))}
-            ref={ref}
-            aria-describedby={
-              clsx(
-                helpText && helpTextId,
-                errorMessage && errorId
-              ) || undefined
-            }
-            aria-invalid={!!errorMessage}
-            {...props}
-          />
-        </motion.div>
+        <input
+          id={inputId}
+          type={type}
+          className={clsx(inputVariants({ variant: finalVariant, size, className }))}
+          ref={ref}
+          aria-describedby={
+            clsx(
+              helpText && helpTextId,
+              errorMessage && errorId
+            ) || undefined
+          }
+          aria-invalid={!!errorMessage}
+          {...props}
+        />
         {helpText && !errorMessage && (
           <p id={helpTextId} className="text-xs text-charcoal-500">
             {helpText}
           </p>
         )}
         {errorMessage && (
-          <motion.p 
-            id={errorId} 
-            className="text-xs text-red-600"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            transition={{ duration: 0.2 }}
-          >
+          <p id={errorId} className="text-xs text-red-600">
             {errorMessage}
-          </motion.p>
+          </p>
         )}
       </div>
     )
@@ -122,40 +111,28 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
             {label}
           </label>
         )}
-        <motion.div
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <textarea
-            id={textareaId}
-            className={clsx(inputVariants({ variant: finalVariant, size, className }), "min-h-[80px] resize-y")}
-            ref={ref}
-            aria-describedby={
-              clsx(
-                helpText && helpTextId,
-                errorMessage && errorId
-              ) || undefined
-            }
-            aria-invalid={!!errorMessage}
-            {...props}
-          />
-        </motion.div>
+        <textarea
+          id={textareaId}
+          className={clsx(inputVariants({ variant: finalVariant, size, className }), "min-h-[80px] resize-y")}
+          ref={ref}
+          aria-describedby={
+            clsx(
+              helpText && helpTextId,
+              errorMessage && errorId
+            ) || undefined
+          }
+          aria-invalid={!!errorMessage}
+          {...props}
+        />
         {helpText && !errorMessage && (
           <p id={helpTextId} className="text-xs text-charcoal-500">
             {helpText}
           </p>
         )}
         {errorMessage && (
-          <motion.p 
-            id={errorId} 
-            className="text-xs text-red-600"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            transition={{ duration: 0.2 }}
-          >
+          <p id={errorId} className="text-xs text-red-600">
             {errorMessage}
-          </motion.p>
+          </p>
         )}
       </div>
     )

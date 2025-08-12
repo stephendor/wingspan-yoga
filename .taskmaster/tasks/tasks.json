@@ -175,7 +175,7 @@
         "dependencies": [
           3
         ],
-        "status": "todo",
+        "status": "in-progress",
         "subtasks": []
       },
       {
@@ -824,7 +824,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-12T07:00:55.937Z",
+      "updated": "2025-08-12T07:05:49.334Z",
       "description": "Tasks for master context"
     }
   }

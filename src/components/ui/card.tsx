@@ -1,5 +1,6 @@
+'use client'
+
 import * as React from 'react'
-import { motion } from 'framer-motion'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { clsx } from 'clsx'
 
@@ -36,18 +37,13 @@ export interface CardProps
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant, padding, children, ...props }, ref) => (
-    <motion.div
+    <div
       ref={ref}
       className={clsx(cardVariants({ variant, padding, className }))}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      whileHover={{ y: -2, transition: { duration: 0.2 } }}
+      {...props}
     >
-      <div {...props}>
-        {children}
-      </div>
-    </motion.div>
+      {children}
+    </div>
   )
 )
 Card.displayName = "Card"
