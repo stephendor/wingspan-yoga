@@ -1,8 +1,1 @@
-.next/
-.swc/
-node_modules/
-coverage/
-# Ignore miscellaneous build or cache outputs
-*.log
-# Ignore scripts not meant for linting (retain TypeScript seed tooling)
-scripts/*.js
+# migrated to eslint.config.mjs ignores

@@ -53,7 +53,7 @@ declare module 'plyr' {
     
     // Methods
     destroy(): void
-    on(event: string, callback: (event?: any) => void): void
+  on(event: string, callback: (event?: unknown) => void): void
     
     // Events
     static readonly events: {

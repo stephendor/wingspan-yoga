@@ -12,6 +12,7 @@ import { prisma } from '@/lib/prisma'
 
 interface AugmentedToken {
   membershipType?: string
+  role?: string
 }
 
 export const authOptions: NextAuthOptions = {
@@ -43,6 +44,7 @@ export const authOptions: NextAuthOptions = {
               name: true,
               password: true,
               membershipType: true,
+              role: true,
             },
           })
           
@@ -67,7 +69,8 @@ export const authOptions: NextAuthOptions = {
             id: user.id, // Use the actual database ID
             email: user.email, 
             name: user.name || 'User',
-            membershipType: user.membershipType.toLowerCase()
+            membershipType: user.membershipType.toLowerCase(),
+            role: user.role.toLowerCase()
           }
           
           console.log('Valid credentials - returning user object:', JSON.stringify(returnUser, null, 2))
@@ -177,6 +180,7 @@ export const authOptions: NextAuthOptions = {
                 name: user.name || 'OAuth User',
                 email: user.email,
                 membershipType: 'FREE', // Default membership for OAuth users
+                role: 'MEMBER', // Default role for OAuth users
                 // No password needed for OAuth users
               }
             })
@@ -208,6 +212,15 @@ export const authOptions: NextAuthOptions = {
         ;(token as AugmentedToken).membershipType = 'member'
         console.log('Added default membershipType for OAuth provider:', account.provider)
       }
+
+      if (user?.role) {
+        ;(token as AugmentedToken).role = user.role
+        console.log('Added role to token:', user.role)
+      } else if (account?.provider && account.provider !== 'credentials') {
+        // For OAuth providers, set default role
+        ;(token as AugmentedToken).role = 'member'
+        console.log('Added default role for OAuth provider:', account.provider)
+      }
       
       console.log('Token after:', JSON.stringify(token, null, 2))
       console.log('=== END JWT CALLBACK ===')
@@ -222,10 +235,12 @@ export const authOptions: NextAuthOptions = {
         const u = session.user as typeof session.user & {
           membershipStatus?: string
           subscriptionPeriodEnd?: string
+          role?: string
         }
         const t = token as AugmentedToken & { sub?: string }
         u.id = t.sub || '1'
         u.membershipType = t.membershipType || 'member' // Default to 'member' for OAuth users
+        u.role = t.role || 'member' // Default to 'member' role for OAuth users
         u.membershipStatus = 'ACTIVE'
         console.log('Session user after modification:', JSON.stringify(u, null, 2))
       }

@@ -8,12 +8,14 @@ declare module 'next-auth' {
       membershipType: string
       membershipStatus?: string
       subscriptionPeriodEnd?: string
+      role: string
     } & DefaultSession['user']
   }
 
   interface User extends DefaultUser {
     membershipType: string
     membershipStatus?: string
+    role: string
   }
 }
 
@@ -21,5 +23,6 @@ declare module 'next-auth/jwt' {
   interface JWT extends DefaultJWT {
     membershipType: string
     membershipStatus?: string
+    role: string
   }
 }

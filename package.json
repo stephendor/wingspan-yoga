@@ -19,8 +19,8 @@
     "db:reset": "prisma migrate reset",
     "db:seed": "tsx scripts/seed.ts",
     "plans:sync": "tsx scripts/sync-plans.ts",
-  "plans:verify": "tsx scripts/verify-stripe-prices.ts",
-  "mux:url": "tsx scripts/mux-url.ts"
+    "plans:verify": "tsx scripts/verify-stripe-prices.ts",
+    "mux:url": "tsx scripts/mux-url.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.54.2",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.6.4",

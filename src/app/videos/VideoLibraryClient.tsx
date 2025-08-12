@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import { Search, Filter, Play, Lock, Clock, User, ChevronDown } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -83,10 +84,13 @@ function VideoCard({ video }: { video: VideoLibraryData }) {
     <Card className="group overflow-hidden hover:shadow-natural transition-shadow duration-300" variant="elevated">
       <div className="relative aspect-video bg-charcoal-100 overflow-hidden">
         {video.thumbnailUrl ? (
-          <img
+          <Image
             src={video.thumbnailUrl}
             alt={video.title}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            unoptimized
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-sage-100 to-sage-200">
@@ -149,10 +153,13 @@ function VideoCard({ video }: { video: VideoLibraryData }) {
           <div className="flex items-center space-x-2 pt-2 border-t border-charcoal-100">
             <div className="flex items-center space-x-2">
               {video.instructor.avatar ? (
-                <img
+                <Image
                   src={video.instructor.avatar}
                   alt={video.instructor.name}
+                  width={24}
+                  height={24}
                   className="h-6 w-6 rounded-full object-cover"
+                  unoptimized
                 />
               ) : (
                 <div className="h-6 w-6 rounded-full bg-sage-200 flex items-center justify-center">

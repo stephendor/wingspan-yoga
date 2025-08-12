@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import Link from 'next/link'
 import { 
   ChevronLeft, 
@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { VideoPlayer } from '@/components/video/VideoPlayer'
 import { useAuth } from '@/hooks/useAuth'
-import type { VideoLibraryData, VideoDetails } from '@/types/video'
+import type { VideoLibraryData, VideoDetails, VideoCategory, DifficultyLevel } from '@/types/video'
 import { 
   formatDuration, 
   getCategoryColor, 
@@ -34,7 +34,6 @@ interface VideoPlayerClientProps {
 }
 
 export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
-  const router = useRouter()
   const { isAuthenticated, isLoading: authLoading } = useAuth()
   
   // Video states
@@ -46,9 +45,30 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
   // Progress tracking
   const [currentProgress, setCurrentProgress] = useState(0)
   const [hasStartedWatching, setHasStartedWatching] = useState(false)
-  const progressUpdateRef = useRef<NodeJS.Timeout>()
+  const progressUpdateRef = useRef<NodeJS.Timeout | null>(null)
 
   // Fetch video details
+  const fetchRelatedVideos = useCallback(async (category: string) => {
+    try {
+      const params = new URLSearchParams({
+        category,
+        limit: '6',
+      })
+      const response = await fetch(`/api/videos?${params.toString()}`)
+      const data = await response.json()
+
+      if (data.success && data.videos) {
+        const related = data.videos
+          .filter((v: VideoLibraryData) => v.id !== videoId)
+          .slice(0, 6)
+        setRelatedVideos(related)
+      }
+    } catch (err) {
+      console.error('Error fetching related videos:', err)
+      // Not critical for UX
+    }
+  }, [videoId])
+
   const fetchVideoDetails = useCallback(async () => {
     if (!isAuthenticated && !authLoading) {
       setError('Please sign in to watch videos')
@@ -75,7 +95,7 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
       setCurrentProgress(data.video.progress?.progress || 0)
       
       // Fetch related videos (same category or instructor)
-      fetchRelatedVideos(data.video.category, data.video.instructor.id)
+  fetchRelatedVideos(data.video.category)
 
     } catch (err) {
       console.error('Error fetching video:', err)
@@ -83,31 +103,7 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
     } finally {
       setLoading(false)
     }
-  }, [videoId, isAuthenticated, authLoading])
-
-  // Fetch related videos
-  const fetchRelatedVideos = async (category: string, instructorId: string) => {
-    try {
-      const params = new URLSearchParams({
-        category,
-        limit: '6'
-      })
-      
-      const response = await fetch(`/api/videos?${params.toString()}`)
-      const data = await response.json()
-
-      if (data.success && data.videos) {
-        // Filter out current video and limit to 3-6 related videos
-        const related = data.videos
-          .filter((v: VideoLibraryData) => v.id !== videoId)
-          .slice(0, 6)
-        setRelatedVideos(related)
-      }
-    } catch (err) {
-      console.error('Error fetching related videos:', err)
-      // Don't show error for related videos - it's not critical
-    }
-  }
+  }, [videoId, isAuthenticated, authLoading, fetchRelatedVideos])
 
   // Update progress in database
   const updateProgress = useCallback(async (progress: number, completed = false) => {
@@ -167,7 +163,7 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
           text: `Watch "${video?.title}" on Wingspan Yoga`,
           url,
         })
-      } catch (err) {
+  } catch {
         // User cancelled sharing
       }
     } else {
@@ -335,11 +331,11 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
                   <span>{formatDuration(video.duration)}</span>
                 </div>
                 
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(video.category as any)}`}>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(video.category as VideoCategory)}`}>
                   {VIDEO_CATEGORIES.find(cat => cat.value === video.category)?.label}
                 </span>
                 
-                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(video.difficulty as any)}`}>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(video.difficulty as DifficultyLevel)}`}>
                   {DIFFICULTY_LEVELS.find(diff => diff.value === video.difficulty)?.label}
                 </span>
 
@@ -361,12 +357,32 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
                         {Math.round(currentProgress)}%
                       </span>
                     </div>
-                    <div className="mt-1 w-full bg-sage-200 rounded-full h-2">
-                      <div 
-                        className="bg-sage-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${currentProgress}%` }}
-                      />
-                    </div>
+                    <progress
+                      value={Math.max(0, Math.min(100, Math.round(currentProgress)))}
+                      max={100}
+                      className="mt-1 w-full h-2"
+                    />
+                    
+                    <style jsx>{`
+                      progress {
+                        -webkit-appearance: none;
+                        appearance: none;
+                      }
+                      progress::-webkit-progress-bar {
+                        background-color: #e9efe7;
+                        border-radius: 9999px;
+                      }
+                      progress::-webkit-progress-value {
+                        background-color: #5d8a61;
+                        border-radius: 9999px;
+                        transition: width 0.3s ease;
+                      }
+                      progress::-moz-progress-bar {
+                        background-color: #5d8a61;
+                        border-radius: 9999px;
+                        transition: width 0.3s ease;
+                      }
+                    `}</style>
                   </div>
                 </div>
               )}
@@ -411,11 +427,14 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
               </CardHeader>
               <CardContent>
                 <div className="flex items-start space-x-3">
-                  {video.instructor.avatar ? (
-                    <img
+                    {video.instructor.avatar ? (
+                    <Image
                       src={video.instructor.avatar}
                       alt={video.instructor.name}
-                      className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                      width={48}
+                      height={48}
+                      unoptimized
+                      className="rounded-full object-cover flex-shrink-0"
                     />
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-sage-200 flex items-center justify-center flex-shrink-0">
@@ -467,10 +486,13 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
                 <Card className="overflow-hidden hover:shadow-natural transition-shadow duration-300" variant="elevated">
                   <div className="relative aspect-video bg-charcoal-100 overflow-hidden">
                     {relatedVideo.thumbnailUrl ? (
-                      <img
+                      <Image
                         src={relatedVideo.thumbnailUrl}
                         alt={relatedVideo.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        unoptimized
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-sage-100 to-sage-200">

@@ -39,6 +39,8 @@ async function main() {
 
   // Create sample users
   const hashedPassword = await bcrypt.hash('password123', 12)
+  const adminPassword = await bcrypt.hash('rufus@power0', 12)
+  const instructorPassword = await bcrypt.hash('100%Rufus', 12)
 
   const user1 = await prisma.user.create({
     data: {
@@ -47,6 +49,7 @@ async function main() {
       password: hashedPassword,
       membershipType: 'PREMIUM',
       membershipStatus: 'ACTIVE',
+      role: 'MEMBER',
       bio: 'Yoga enthusiast exploring mindfulness and flexibility.',
     },
   })
@@ -58,20 +61,34 @@ async function main() {
       password: hashedPassword,
       membershipType: 'BASIC',
       membershipStatus: 'ACTIVE',
+      role: 'MEMBER',
       bio: 'New to yoga and excited to learn!',
     },
   })
 
   // Create admin user for system access
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const adminUser = await prisma.user.create({
     data: {
-      email: 'admin@example.com',
+      email: 'admin@wingspan-yoga.com',
       name: 'Admin User',
-      password: hashedPassword,
+      password: adminPassword,
       membershipType: 'ADMIN',
       membershipStatus: 'ACTIVE',
+      role: 'ADMIN',
       bio: 'System administrator for the yoga platform.',
+    },
+  })
+
+  // Create instructor user
+  const instructorUser = await prisma.user.create({
+    data: {
+      email: 'anna@wingspan-yoga.com',
+      name: 'Anna Dorman',
+      password: instructorPassword,
+      membershipType: 'PREMIUM',
+      membershipStatus: 'ACTIVE',
+      role: 'INSTRUCTOR',
+      bio: 'Certified yoga instructor with extensive experience in various yoga styles.',
     },
   })
 

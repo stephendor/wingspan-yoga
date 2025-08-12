@@ -1,9 +1,10 @@
-'use client'
+ 'use client'
 
 import * as React from 'react'
 import { clsx } from 'clsx'
 import { Menu, X, User, LogOut } from 'lucide-react'
 import Link from 'next/link'
+import { useSession, signOut } from 'next-auth/react'
 
 export interface NavItem {
   label: string
@@ -15,21 +16,18 @@ export interface NavigationProps {
   className?: string
   items: NavItem[]
   logo?: React.ReactNode
-  user?: {
-    name: string
-    email: string
-    avatar?: string
-  } | null
-  onLogout?: () => void
 }
 
 const Navigation = ({ 
   className, 
   items, 
-  logo, 
-  user, 
-  onLogout 
+  logo
 }: NavigationProps) => {
+  const { data: session } = useSession()
+  const user = session?.user ? {
+    name: session.user.name || 'User',
+    email: session.user.email || '',
+  } : null
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false)
 
@@ -42,7 +40,9 @@ const Navigation = ({
     }
 
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
   }, [])
 
   // Close menus when clicking outside
@@ -53,7 +53,9 @@ const Navigation = ({
 
     if (isUserMenuOpen) {
       document.addEventListener('click', handleClickOutside)
-      return () => document.removeEventListener('click', handleClickOutside)
+      return () => {
+        document.removeEventListener('click', handleClickOutside)
+      }
     }
   }, [isUserMenuOpen])
 
@@ -108,7 +110,7 @@ const Navigation = ({
                         <p className="text-xs text-charcoal-600">{user.email}</p>
                       </div>
                       <button
-                        onClick={onLogout}
+                        onClick={() => signOut({ callbackUrl: '/' })}
                         className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-charcoal-600 hover:bg-charcoal-50 hover:text-charcoal-900 transition-colors"
                       >
                         <LogOut className="h-4 w-4" />
@@ -120,7 +122,7 @@ const Navigation = ({
             ) : (
               <div className="flex items-center space-x-4">
                 <Link
-                  href="/auth/login"
+                  href="/auth/signin"
                   className="text-charcoal-600 hover:text-sage-600 px-3 py-2 rounded-soft text-sm font-medium transition-colors"
                 >
                   Login
@@ -138,7 +140,9 @@ const Navigation = ({
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
             <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={() => {
+                setIsMobileMenuOpen(!isMobileMenuOpen)
+              }}
               className="text-charcoal-600 hover:text-sage-600 p-2"
               aria-label="Toggle mobile menu"
             >
@@ -177,7 +181,7 @@ const Navigation = ({
                   </div>
                   <button
                     onClick={() => {
-                      onLogout?.()
+                      void signOut({ callbackUrl: '/' })
                       setIsMobileMenuOpen(false)
                     }}
                     className="flex w-full items-center space-x-2 text-charcoal-600 hover:text-sage-600 hover:bg-charcoal-50 px-3 py-2 rounded-soft text-base font-medium transition-colors"
@@ -189,16 +193,20 @@ const Navigation = ({
               ) : (
                 <div className="border-t border-charcoal-200 pt-4 mt-4 space-y-1">
                   <Link
-                    href="/auth/login"
+                    href="/auth/signin"
                     className="block text-charcoal-600 hover:text-sage-600 hover:bg-charcoal-50 px-3 py-2 rounded-soft text-base font-medium transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false)
+                    }}
                   >
                     Login
                   </Link>
                   <Link
                     href="/auth/register"
                     className="block bg-sage-500 hover:bg-sage-600 text-white px-3 py-2 rounded-soft text-base font-medium transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false)
+                    }}
                   >
                     Register
                   </Link>

@@ -1,18 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-// Define admin-only routes
+// Define protected routes and their required roles
 const ADMIN_ROUTES = [
   '/admin',
 ];
 
+const INSTRUCTOR_ROUTES = [
+  '/instructor',
+];
+
+function getRequiredRole(pathname: string): 'ADMIN' | 'INSTRUCTOR' | null {
+  if (ADMIN_ROUTES.some(route => pathname.startsWith(route))) {
+    return 'ADMIN';
+  }
+  if (INSTRUCTOR_ROUTES.some(route => pathname.startsWith(route))) {
+    return 'INSTRUCTOR';
+  }
+  return null;
+}
+
+function hasPermission(userRole: string, requiredRole: 'ADMIN' | 'INSTRUCTOR'): boolean {
+  // Admin can access everything
+  if (userRole.toLowerCase() === 'admin') {
+    return true;
+  }
+  
+  // Instructor can access instructor routes
+  if (requiredRole === 'INSTRUCTOR' && userRole.toLowerCase() === 'instructor') {
+    return true;
+  }
+  
+  return false;
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Only process admin routes
-  const isAdminRoute = ADMIN_ROUTES.some(route => pathname.startsWith(route));
+  // Check if this is a protected route
+  const requiredRole = getRequiredRole(pathname);
   
-  if (!isAdminRoute) {
+  if (!requiredRole) {
     return NextResponse.next();
   }
 
@@ -31,7 +59,7 @@ export async function middleware(request: NextRequest) {
       secret: process.env.NEXTAUTH_SECRET 
     });
 
-    console.log('Middleware: Checking admin access for:', pathname);
+    console.log('Middleware: Checking access for:', pathname, 'Required role:', requiredRole);
 
     if (!token || !token.sub) {
       // Not authenticated - redirect to sign in
@@ -41,21 +69,22 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(signInUrl);
     }
 
-    // Check if user has admin role (case-insensitive)
-    if (token.membershipType?.toLowerCase() !== 'admin') {
-      // Not an admin - redirect to home with error
-      console.log('Middleware: Access denied - not admin, membershipType:', token.membershipType);
+    // Check if user has the required role
+    const userRole = token.role || token.membershipType || 'member';
+    if (!hasPermission(userRole, requiredRole)) {
+      // Not authorized - redirect to home with error
+      console.log('Middleware: Access denied - insufficient role. User role:', userRole, 'Required:', requiredRole);
       const homeUrl = new URL('/', request.url);
       homeUrl.searchParams.set('error', 'access_denied');
       return NextResponse.redirect(homeUrl);
     }
 
-    // User is authenticated and has admin role - allow access
-    console.log('Middleware: Admin access granted to:', pathname);
+    // User is authenticated and has sufficient role - allow access
+    console.log('Middleware: Access granted to:', pathname, 'User role:', userRole);
     return NextResponse.next();
 
   } catch (error) {
-    console.error('Admin middleware authentication error:', error);
+    console.error('Middleware authentication error:', error);
     
     // Fallback to sign in page
     const signInUrl = new URL('/auth/signin', request.url);
@@ -68,8 +97,9 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match admin routes only
+     * Match admin and instructor routes
      */
     '/admin/:path*',
+    '/instructor/:path*',
   ],
 };

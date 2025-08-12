@@ -32,6 +32,7 @@ model User {
   // Subscription & Membership
   membershipType   MembershipType   @default(FREE)
   membershipStatus MembershipStatus @default(ACTIVE)
+  role             Role             @default(MEMBER)
   subscriptionId   String?          @unique
 
   // Relations
@@ -396,6 +397,12 @@ enum MembershipType {
   BASIC
   PREMIUM
   UNLIMITED
+  ADMIN
+}
+
+enum Role {
+  MEMBER
+  INSTRUCTOR
   ADMIN
 }
 

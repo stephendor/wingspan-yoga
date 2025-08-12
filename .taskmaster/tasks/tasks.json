@@ -583,10 +583,66 @@
         "testStrategy": "Log in as an instructor and verify access only to their own schedule. Log in as a different instructor and confirm they cannot see the first instructor's data. Check that the student list for a class is accurate.",
         "priority": "medium",
         "dependencies": [
-          12
+          12,
+          "23"
         ],
         "status": "todo",
-        "subtasks": []
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement Instructor Role-Based Access and Protected Route",
+            "description": "Enhance the authentication system to enforce role-based access. Create a protected route, for example `/instructor/dashboard`, that is only accessible to users with the 'INSTRUCTOR' role.",
+            "dependencies": [],
+            "details": "Update the existing authentication logic (e.g., NextAuth.js callbacks) to include the user's role in the session object, leveraging the `role` field defined in the Prisma schema (Task 2). Implement Next.js middleware (`middleware.ts`) to inspect the user's session on incoming requests to `/instructor/*`. The middleware should redirect unauthenticated users to the login page and non-instructor users (e.g., 'MEMBER') to the homepage.\n<info added on 2025-08-12T16:03:04.369Z>\nThis subtask now depends on the completion of Task 23 (Enhanced RBAC System Setup), as the `INSTRUCTOR` role and user accounts must be properly configured before this instructor-specific route protection can be implemented.\n</info added on 2025-08-12T16:03:04.369Z>",
+            "status": "pending",
+            "testStrategy": "Attempt to access `/instructor/dashboard` as a logged-out user, a 'MEMBER' user, and an 'INSTRUCTOR' user. Verify correct redirection or access for each case. Check that the session object correctly contains the user's role after login."
+          },
+          {
+            "id": 2,
+            "title": "Create API Endpoint for Instructor-Specific Schedule Data",
+            "description": "Develop a backend API route or a server-side data fetching function to retrieve all classes and their associated student bookings for the currently logged-in instructor.",
+            "dependencies": [
+              "13.1"
+            ],
+            "details": "Using Prisma, create a data-fetching function within a Next.js API route (e.g., `/api/instructor/schedule`) or a `getServerSideProps` function. The query should find all `Class` records where `instructorId` matches the ID from the authenticated user's session. The query must also eager-load the related `Booking` records, and for each booking, include the associated `User` (student) details (e.g., name, email). Ensure sensitive student data is handled securely.",
+            "status": "pending",
+            "testStrategy": "Create an integration test for the data-fetching logic. Seed the database with a test instructor, their assigned classes, and student bookings. Call the function/endpoint with the test instructor's credentials and assert that only their classes and the correct students are returned."
+          },
+          {
+            "id": 3,
+            "title": "Develop UI for Instructor's Schedule View",
+            "description": "Create the user interface on the protected instructor page to display the fetched class schedule in a clear, chronological format.",
+            "dependencies": [
+              "13.2"
+            ],
+            "details": "On the `/instructor/dashboard` page, consume the data fetched in the previous subtask. Reuse existing core components from the UI library (Task 3), such as `Card`, to represent each class. Display key class details like title, date, time, and current number of bookings. Arrange the class cards in a list sorted by date. This UI can be inspired by the existing public schedule (Task 7) but tailored for an instructor's needs.",
+            "status": "pending",
+            "testStrategy": "Visually inspect the page using mock data to ensure the layout is correct and responsive. Verify that all class information (title, date, time, booking count) is displayed accurately as per the fetched data. Check the empty state when an instructor has no upcoming classes."
+          },
+          {
+            "id": 4,
+            "title": "Implement Student Roster Display for Each Class",
+            "description": "For each class displayed in the schedule, implement a feature to view a list of students who have booked that class.",
+            "dependencies": [
+              "13.3"
+            ],
+            "details": "Enhance the class `Card` component from the previous subtask. Add a 'View Roster' button. On click, this button should trigger a `Modal` component (from Task 3) to open. The modal will display a list of the students booked for that specific class, showing their names and any other relevant, non-sensitive information. The student data should already be available from the initial data fetch in subtask 13.2.",
+            "status": "pending",
+            "testStrategy": "For a class with a known number of booked students, click the 'View Roster' button and verify that the modal opens and the correct student names are listed. Test a class with zero bookings to ensure it shows an appropriate 'No students booked' message. Test the modal's close functionality."
+          },
+          {
+            "id": 5,
+            "title": "End-to-End Integration and Testing",
+            "description": "Conduct comprehensive end-to-end testing of the entire instructor portal feature, covering access control, data accuracy, and UI functionality from login to roster view.",
+            "dependencies": [
+              "13.1",
+              "13.4"
+            ],
+            "details": "Perform a full user flow test: 1. Log in as an instructor. 2. Navigate to the instructor portal and verify access. 3. Confirm the schedule shows only their assigned classes. 4. Open the roster for a class and verify its accuracy against the database. 5. Log out. 6. Log in as a different instructor and verify they see their own, different schedule. 7. Log in as a regular 'MEMBER' and confirm they are denied access to the instructor portal.",
+            "status": "pending",
+            "testStrategy": "This subtask is the final validation. Document the test cases and their outcomes in the main task ticket (ST-106). Automate these E2E scenarios using a framework like Cypress or Playwright if the project schedule allows."
+          }
+        ]
       },
       {
         "id": 14,
@@ -875,11 +931,26 @@
         ],
         "priority": "medium",
         "subtasks": []
+      },
+      {
+        "id": 23,
+        "title": "Implement Role-Based Access Control (RBAC) for Admin and Instructor Roles",
+        "description": "Enhance the authentication system by introducing an 'INSTRUCTOR' role alongside the existing 'ADMIN' role, seed initial user accounts, and update application middleware to enforce role-based permissions for current and future features.",
+        "details": "1. **Database Schema Enhancement:**\n   - Modify the `User` model in `prisma/schema.prisma` to include a `role` field.\n   - Define a `Role` enum with values: `MEMBER`, `INSTRUCTOR`, `ADMIN`.\n   - Set the default value for the `role` field to `MEMBER`. Example: `role Role @default(MEMBER)`\n   - Generate and apply the new database migration using `npx prisma migrate dev --name add_user_roles`.\n\n2. **Update NextAuth.js Configuration:**\n   - In the NextAuth.js configuration file (e.g., `/app/api/auth/[...nextauth]/route.ts`), update the session and JWT callbacks.\n   - Ensure the `role` from the user's database record is added to the JWT token during the `jwt` callback.\n   - Propagate the `role` from the token to the `session` object in the `session` callback so it's accessible in client and server components.\n\n3. **Seed User Accounts:**\n   - Create or update the `prisma/seed.ts` script.\n   - Use `bcrypt` to hash passwords before seeding.\n   - Create the ADMIN user: `email: 'admin@wingspan-yoga.com'`, `password: (hashed 'rufus@power0')`, `role: 'ADMIN'`.\n   - Create the INSTRUCTOR user: `email: 'anna@wingspan-yoga.com'`, `password: (hashed '100%Rufus')`, `role: 'INSTRUCTOR'`.\n   - Update `package.json` to ensure the seed script runs with `npx prisma db seed`.\n\n4. **Middleware for Route Protection:**\n   - In `middleware.ts`, enhance the logic to perform role-based authorization.\n   - Read the user's role from the `next-auth.token` object.\n   - Protect route groups based on roles: \n     - `/admin/**`: Requires `ADMIN` role.\n     - `/instructor/**`: Requires `INSTRUCTOR` or `ADMIN` role.\n   - Redirect unauthorized users to a login page or a '403 Forbidden' page.\n\n5. **Define Permission Matrix:**\n   - Create a file like `lib/permissions.ts` to document and potentially export the permission structure for easy reference and use in the application.\n   - **ADMIN:** Full CRUD on all data models (Classes, Users, Posts, Videos), access to security settings, full system access.\n   - **INSTRUCTOR:** Read access to assigned classes and rosters. Create/Update/Delete permissions for future content they own (Blog Posts, Videos). No access to other user data or system settings.\n   - **MEMBER:** Read access to public content, booking management for their own account.\n<info added on 2025-08-12T16:16:49.164Z>\n<info added on 2025-08-12T16:15:00Z>\n**Implementation Summary**\n\n1.  **Database Schema Enhancement:** Added a `Role` enum (`MEMBER`, `INSTRUCTOR`, `ADMIN`) and a `role` field to the `User` model, with `MEMBER` as the default. A new migration (`20250812160722_add_user_roles`) was successfully applied.\n2.  **User Account Seeding:** Created an ADMIN user (`admin@wingspan-yoga.com`) and an INSTRUCTOR user (`anna@wingspan-yoga.com`). Both were verified in the database with correct roles and hashed passwords.\n3.  **NextAuth.js Configuration:** The JWT and session callbacks were updated to propagate the user's `role` into the token and session object, making it available throughout the application. OAuth user creation was also updated to assign the default `MEMBER` role.\n4.  **Middleware for Route Protection:** The application middleware was enhanced to protect routes based on roles. `/admin/**` requires the `ADMIN` role, and `/instructor/**` requires either `INSTRUCTOR` or `ADMIN`. Unauthorized users are redirected.\n5.  **Permission Matrix:** A new file, `lib/permissions.ts`, was created to document the permission structure for each role and includes helper functions for permission checking.\n\n**Testing Results**\n- All migration and seeding scripts completed successfully.\n- Role-based access control was verified for both `/admin` and `/instructor` routes. Unauthenticated and unauthorized users are correctly redirected to the sign-in page.\n- The RBAC foundation is now established, satisfying the dependencies for Task 13 (Instructor Portal).\n</info>\n</info added on 2025-08-12T16:16:49.164Z>",
+        "testStrategy": "1. **Migration and Seed Verification:**\n   - Run `prisma migrate dev` and confirm the script executes successfully.\n   - Inspect the `User` table in the database to verify the `role` column exists and is an enum type.\n   - Run `prisma db seed` and query the database to confirm the 'admin@wingspan-yoga.com' and 'anna@wingspan-yoga.com' users exist with their correct roles and hashed passwords.\n\n2. **Role-Based Access Control Tests:**\n   - **Admin User:** Log in as `admin@wingspan-yoga.com`. Navigate to the `/admin` dashboard (from Task 12) and verify access is granted. Attempt to access instructor-only pages (from Task 13, once built) and verify access is granted.\n   - **Instructor User:** Log in as `anna@wingspan-yoga.com`. Attempt to navigate to the `/admin` dashboard and verify you are redirected or shown a 'Forbidden' error. Verify you can access the future `/instructor` portal.\n   - **Standard User:** Register a new user (who will have the default `MEMBER` role). Log in and verify access to both `/admin` and `/instructor` routes is denied.\n   - **Unauthenticated User:** Attempt to access any protected route (`/admin`, `/instructor`) and verify redirection to the login page.\n\n3. **API Endpoint Protection:**\n   - Using an API client like Postman, obtain a JWT for the instructor user.\n   - Attempt to call an admin-only API endpoint (e.g., `DELETE /api/users/:id`) with the instructor's JWT. Verify the server responds with a `403 Forbidden` status code.\n   - Attempt to call an API endpoint the instructor should have access to (e.g., `GET /api/classes/my-schedule`) and verify a `200 OK` response.",
+        "status": "done",
+        "dependencies": [
+          2,
+          4,
+          12
+        ],
+        "priority": "high",
+        "subtasks": []
       }
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-12T13:37:58.372Z",
+      "updated": "2025-08-12T16:16:54.062Z",
       "description": "Tasks for master context"
     }
   }

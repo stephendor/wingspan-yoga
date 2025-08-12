@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { Navigation } from '@/components/ui/navigation';
+import { NextAuthProvider } from '@/components/auth/NextAuthProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,6 +25,10 @@ const navigationItems = [
   { label: 'Meet Anna', href: '/instructor' },
   { label: 'Schedule', href: '/schedule' },
   { label: 'Membership', href: '/membership' },
+  // Only show E2E test page link in development
+  ...(process.env.NODE_ENV === 'development' || process.env.E2E_TEST === 'true' ? [
+    { label: 'E2E Test', href: '/e2e-test' }
+  ] : []),
 ];
 
 export default function RootLayout({
@@ -36,8 +41,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navigation items={navigationItems} />
-        {children}
+        <NextAuthProvider>
+          <Navigation items={navigationItems} />
+          {children}
+        </NextAuthProvider>
       </body>
     </html>
   );
