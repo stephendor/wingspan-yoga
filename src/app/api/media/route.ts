@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth/middleware';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma, MediaAccessLevel } from '@prisma/client';
 
 interface MediaListResponse {
   success: boolean;
@@ -16,6 +16,16 @@ interface MediaListResponse {
     url: string;
     thumbnailUrl?: string;
     createdAt: string;
+    // Organization fields
+    tags?: string[];
+    accessLevel?: string;
+    directory?: string;
+    category?: {
+      id: string;
+      name: string;
+      slug: string;
+      parentId: string | null;
+    } | undefined;
     uploader?: {
       id: string;
       name: string;
@@ -50,7 +60,12 @@ export async function GET(request: NextRequest): Promise<NextResponse<MediaListR
     const page = parseInt(searchParams.get('page') || '1');
     const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100); // Max 100 per page
     const search = searchParams.get('search');
-    const mimeType = searchParams.get('mimeType'); // 'image' or 'video'
+  const mimeType = searchParams.get('mimeType'); // 'image' or 'video'
+  // Organization parameters
+  const categoryId = searchParams.get('categoryId');
+  const accessLevel = searchParams.get('accessLevel');
+  const tags = searchParams.get('tags')?.split(',').map(t => t.trim()).filter(Boolean);
+  const directory = searchParams.get('directory');
 
     // Build where clause
     const whereClause: Prisma.MediaWhereInput = {};
@@ -69,6 +84,11 @@ export async function GET(request: NextRequest): Promise<NextResponse<MediaListR
             mode: 'insensitive',
           },
         },
+        {
+          tags: {
+            hasSome: [search], // Search in tags array
+          },
+        },
       ];
     }
 
@@ -79,6 +99,29 @@ export async function GET(request: NextRequest): Promise<NextResponse<MediaListR
     } else if (mimeType === 'video') {
       whereClause.mimeType = {
         startsWith: 'video/',
+      };
+    }
+
+    // Organization filters
+    if (categoryId) {
+      whereClause.categoryId = categoryId;
+    }
+    if (accessLevel) {
+      // Validate against enum values
+      const valid = Object.values(MediaAccessLevel) as string[];
+      if (valid.includes(accessLevel)) {
+        whereClause.accessLevel = accessLevel as MediaAccessLevel;
+      }
+    }
+    if (tags && tags.length > 0) {
+      whereClause.tags = {
+        hasEvery: tags, // Media must have all specified tags
+      };
+    }
+    if (directory) {
+      whereClause.directory = {
+        contains: directory,
+        mode: 'insensitive',
       };
     }
 
@@ -95,6 +138,14 @@ export async function GET(request: NextRequest): Promise<NextResponse<MediaListR
           select: {
             id: true,
             name: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            parentId: true,
           },
         },
       },
@@ -116,7 +167,20 @@ export async function GET(request: NextRequest): Promise<NextResponse<MediaListR
       url: media.url,
       thumbnailUrl: media.thumbnailUrl || undefined,
       createdAt: media.createdAt.toISOString(),
-      uploader: media.uploader || undefined,
+      tags: media.tags || [],
+      accessLevel: media.accessLevel,
+      directory: media.directory || undefined,
+      category: media.category ? {
+        id: media.category.id,
+        name: media.category.name,
+        slug: media.category.slug,
+        parentId: media.category.parentId,
+      } : undefined,
+      // Include uploader info if available
+      uploader: media.uploader ? {
+        id: media.uploader.id,
+        name: media.uploader.name,
+      } : undefined,
     }));
 
     return NextResponse.json({

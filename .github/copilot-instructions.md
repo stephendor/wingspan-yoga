@@ -40,6 +40,7 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
  - Adding requirements to requirements.txt
  - Adding dependencies to pom.xml
  - Adding dependencies to build.gradle
+ - Adding dependencies to build.gradle
  - Any other package manager operations
 - You MUST run the `codacy_cli_analyze` tool with:
  - `rootPath`: set to the workspace path
@@ -63,15 +64,9 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - Do not try to manually install Codacy CLI using either brew, npm, npx, or any other package manager.
 - If the Codacy CLI is not installed, just run the `codacy_cli_analyze` tool from Codacy's MCP Server.
 - When calling `codacy_cli_analyze`, only send provider, organization and repository if the project is a git repository.
-- If the build is failing, always fix the build issues first before proceeding with any new tasks.
 
 ## Whenever a call to a Codacy tool that uses `repository` or `organization` as a parameter returns a 404 error
 - Offer to run the `codacy_setup_repository` tool to add the repository to Codacy
 - If the user accepts, run the `codacy_setup_repository` tool
 - Do not ever try to run the `codacy_setup_repository` tool on your own
 - After setup, immediately retry the action that failed (only retry once)
-
-## Media Library Organisation
-- The media library must allow organisation of media by tags and by directory (or something similar).
-- Media must be labelled according to their accessibility as well private/memberships/retreats/workshops with subcategories in those.
-- The system must be able to create new (sub) categories.

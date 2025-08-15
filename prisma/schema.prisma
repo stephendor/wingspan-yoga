@@ -361,10 +361,45 @@ model Media {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   
+  // Organization fields
+  tags        String[]  // Array of tags for flexible organization
+  categoryId  String?   // Reference to MediaCategory
+  accessLevel MediaAccessLevel @default(PUBLIC)
+  directory   String?   // Virtual directory path for organization
+  
   // Relations
-  uploader    User?     @relation("MediaUploader", fields: [uploadedBy], references: [id])
+  uploader    User?          @relation("MediaUploader", fields: [uploadedBy], references: [id])
+  category    MediaCategory? @relation(fields: [categoryId], references: [id])
 
   @@map("media")
+}
+
+model MediaCategory {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  description String?
+  parentId    String?   // For hierarchical categories
+  isActive    Boolean   @default(true)
+  sortOrder   Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  parent      MediaCategory? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    MediaCategory[] @relation("CategoryHierarchy")
+  media       Media[]
+
+  @@map("media_categories")
+}
+
+enum MediaAccessLevel {
+  PUBLIC
+  MEMBERS_ONLY
+  PRIVATE
+  RETREATS
+  WORKSHOPS
+  INSTRUCTORS_ONLY
 }
 
 model SiteSettings {
