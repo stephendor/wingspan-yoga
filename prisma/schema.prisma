@@ -530,3 +530,16 @@ enum BlogPostAccessLevel {
   RETREAT_ATTENDEES_ONLY
   MAILCHIMP_SUBSCRIBERS_ONLY
 }
+
+model NewsletterSubscription {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  isActive      Boolean  @default(true)
+  source        String?  // Where they signed up (blog, homepage, etc.)
+  subscribedAt  DateTime @default(now())
+  unsubscribedAt DateTime?
+  preferences   Json?    // Email preferences (frequency, topics, etc.)
+  
+  @@map("newsletter_subscriptions")
+}

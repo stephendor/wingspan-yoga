@@ -178,7 +178,7 @@
         "dependencies": [
           3
         ],
-        "status": "in-progress",
+        "status": "pending",
         "subtasks": [
           {
             "id": 1,
@@ -869,7 +869,7 @@
         "dependencies": [
           12
         ],
-        "status": "todo",
+        "status": "in-progress",
         "subtasks": [
           {
             "id": 1,
@@ -989,8 +989,8 @@
             "title": "Implement Blog Newsletter Signup Integration",
             "description": "Add a newsletter signup form to the blog section (e.g., sidebar or footer) that integrates with Mailchimp (or similar service) to capture subscriber emails. This leverages existing Task 16.",
             "dependencies": [],
-            "details": "Reuse or adapt the API route and logic from Task 16 (`pages/api/newsletter-signup.ts`) for Mailchimp integration. Create a `components/blog/NewsletterSignup.tsx` component and embed it on the blog listing page (`pages/blog/index.tsx`) and individual post pages (`pages/blog/[slug].tsx`). Ensure the form handles submission and displays success/error messages.",
-            "status": "pending",
+            "details": "Reuse or adapt the API route and logic from Task 16 (`pages/api/newsletter-signup.ts`) for Mailchimp integration. Create a `components/blog/NewsletterSignup.tsx` component and embed it on the blog listing page (`pages/blog/index.tsx`) and individual post pages (`pages/blog/[slug].tsx`). Ensure the form handles submission and displays success/error messages.\n<info added on 2025-08-15T10:15:47.275Z>\nThe newsletter signup integration has been completed. Instead of directly reusing Task 16's Mailchimp integration, a robust, internally managed subscription system was implemented. This includes a new `NewsletterSubscription` database model (email, name, isActive, source, subscribedAt, unsubscribedAt, preferences) and dedicated API endpoints: `POST /api/newsletter` for subscription (with Zod validation and `@upstash/ratelimit` for rate limiting), `DELETE /api/newsletter` for unsubscription, and `GET /api/newsletter/unsubscribe/[token]` for JWT-based unsubscription. The `NewsletterSignup` React component was developed with both full and compact modes, featuring form validation, state-based user feedback, responsive design, and handling for new subscriptions and reactivations. The component is ready for embedding on blog pages.\n</info added on 2025-08-15T10:15:47.275Z>",
+            "status": "done",
             "testStrategy": "Submit an email via the blog newsletter form. Verify the email appears in the configured Mailchimp audience list. Test with invalid email formats and ensure appropriate client-side validation and server-side error messages."
           },
           {
@@ -1374,7 +1374,7 @@
     ],
     "metadata": {
       "created": "2025-08-10T04:45:30.301Z",
-      "updated": "2025-08-15T08:25:02.943Z",
+      "updated": "2025-08-15T10:15:51.009Z",
       "description": "Tasks for master context"
     }
   }
