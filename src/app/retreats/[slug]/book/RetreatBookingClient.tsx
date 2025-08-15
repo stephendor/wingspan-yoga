@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { Elements } from '@stripe/react-stripe-js'
@@ -20,8 +20,23 @@ export default function RetreatBookingClient({ retreat }: RetreatBookingClientPr
   const [bookingId, setBookingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isCreatingBooking, setIsCreatingBooking] = useState(false)
+  const [stripeAvailable, setStripeAvailable] = useState<boolean | null>(null)
 
   const stripePromise = getStripe()
+
+  useEffect(() => {
+    let mounted = true
+    stripePromise
+      .then((stripe) => {
+        if (mounted) setStripeAvailable(Boolean(stripe))
+      })
+      .catch(() => {
+        if (mounted) setStripeAvailable(false)
+      })
+    return () => {
+      mounted = false
+    }
+  }, [stripePromise])
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -42,6 +57,10 @@ export default function RetreatBookingClient({ retreat }: RetreatBookingClientPr
     setError(null)
 
     try {
+      if (stripeAvailable === false) {
+        setError('Payments are not enabled in this environment. Please configure NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY and STRIPE_SECRET_KEY.')
+        return
+      }
       const response = await fetch(`/api/retreats/${retreat.id}/book`, {
         method: 'POST',
         headers: {
@@ -73,6 +92,14 @@ export default function RetreatBookingClient({ retreat }: RetreatBookingClientPr
 
   const handleBack = () => {
     router.push(`/retreats/${retreat.slug}`)
+  }
+
+  // Non-async submit wrapper to satisfy lint rule
+  const onSubmitForm: React.FormEventHandler<HTMLFormElement> = (e) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const notes = formData.get('notes') as string
+    void handleCreateBooking({ notes: notes || undefined })
   }
 
   if (clientSecret && bookingId) {
@@ -151,15 +178,7 @@ export default function RetreatBookingClient({ retreat }: RetreatBookingClientPr
           )}
 
           {/* Booking Form */}
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault()
-              const formData = new FormData(e.currentTarget)
-              const notes = formData.get('notes') as string
-              await handleCreateBooking({ notes: notes || undefined })
-            }}
-            className="space-y-6"
-          >
+          <form onSubmit={onSubmitForm} className="space-y-6">
             <div>
               <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
                 Special Requests or Notes (Optional)
@@ -184,13 +203,19 @@ export default function RetreatBookingClient({ retreat }: RetreatBookingClientPr
               
               <button
                 type="submit"
-                disabled={isCreatingBooking}
+                disabled={isCreatingBooking || stripeAvailable === false}
                 className="flex-1 rounded-md bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
               >
                 {isCreatingBooking ? 'Creating Booking...' : 'Continue to Payment'}
               </button>
             </div>
           </form>
+
+          {stripeAvailable === false && (
+            <div className="mt-4 rounded-md border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
+              Payments are disabled: missing Stripe publishable key. Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your env to enable the payment form.
+            </div>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500">

@@ -35,7 +35,12 @@ interface BlogPost {
   featuredImage?: string;
   tags: string[];
   category: string;
-  accessLevel: 'PUBLIC' | 'MEMBER' | 'ADMIN';
+  accessLevel:
+    | 'PUBLIC'
+    | 'MEMBERS_ONLY'
+    | 'PREMIUM_ONLY'
+    | 'RETREAT_ATTENDEES_ONLY'
+    | 'MAILCHIMP_SUBSCRIBERS_ONLY';
   published: boolean;
   publishedAt?: string;
   createdAt: string;
@@ -49,6 +54,12 @@ interface BlogPost {
   authorAvatar?: string;
 }
 
+interface ApiResponse {
+  success: boolean;
+  post?: BlogPost;
+  error?: string;
+}
+
 interface BlogPostClientProps {
   slug: string;
 }
@@ -58,36 +69,52 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  function renderHeadingBlock(block: ContentBlock, index: number) {
+    const level = block.level || 2;
+    let headingClass = 'font-semibold text-gray-900 mb-4 ';
+    if (level === 1) headingClass += 'text-3xl';
+    else if (level === 2) headingClass += 'text-2xl';
+    else if (level === 3) headingClass += 'text-xl';
+    else headingClass += 'text-lg';
+    switch (level) {
+      case 1:
+        return <h1 key={index} className={headingClass}>{block.content}</h1>;
+      case 2:
+        return <h2 key={index} className={headingClass}>{block.content}</h2>;
+      case 3:
+        return <h3 key={index} className={headingClass}>{block.content}</h3>;
+      case 4:
+        return <h4 key={index} className={headingClass}>{block.content}</h4>;
+      case 5:
+        return <h5 key={index} className={headingClass}>{block.content}</h5>;
+      default:
+        return <h6 key={index} className={headingClass}>{block.content}</h6>;
+    }
+  }
+
   useEffect(() => {
     async function fetchPost() {
       try {
         setLoading(true);
         const response = await fetch(`/api/blog-posts/${slug}`);
-        
         if (!response.ok) {
           if (response.status === 404) {
             setError('Blog post not found');
+          } else if (response.status === 403) {
+            setError('Access denied');
           } else {
             setError('Failed to load blog post');
           }
           return;
         }
 
-        const data = await response.json();
-        
-        // Only show published posts to public users
-        if (!data.published) {
-          setError('Blog post not found');
+        const data: ApiResponse = await response.json();
+        if (!data.success || !data.post) {
+          setError(data.error || 'Failed to load blog post');
           return;
         }
 
-        // Only show public or member-accessible posts
-        if (data.accessLevel === 'ADMIN') {
-          setError('Access denied');
-          return;
-        }
-
-        setPost(data);
+        setPost(data.post);
       } catch (err) {
         console.error('Error fetching blog post:', err);
         setError('Failed to load blog post');
@@ -96,7 +123,9 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
       }
     }
 
-    fetchPost();
+    fetchPost().catch(() => {
+      // Error already handled inside fetchPost
+    });
   }, [slug]);
 
   const renderContentBlock = (block: ContentBlock, index: number) => {
@@ -109,27 +138,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
         );
       
       case 'heading':
-        const level = block.level || 2;
-        const headingClass = `font-semibold text-gray-900 mb-4 ${
-          level === 1 ? 'text-3xl' :
-          level === 2 ? 'text-2xl' :
-          level === 3 ? 'text-xl' :
-          'text-lg'
-        }`;
-        
-        if (level === 1) {
-          return <h1 key={index} className={headingClass}>{block.content}</h1>;
-        } else if (level === 2) {
-          return <h2 key={index} className={headingClass}>{block.content}</h2>;
-        } else if (level === 3) {
-          return <h3 key={index} className={headingClass}>{block.content}</h3>;
-        } else if (level === 4) {
-          return <h4 key={index} className={headingClass}>{block.content}</h4>;
-        } else if (level === 5) {
-          return <h5 key={index} className={headingClass}>{block.content}</h5>;
-        } else {
-          return <h6 key={index} className={headingClass}>{block.content}</h6>;
-        }
+        return renderHeadingBlock(block, index);
       
       case 'image':
         return (
@@ -198,6 +207,10 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
     }
     
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
+  };
+
+  const share = (platform: 'twitter' | 'facebook' | 'linkedin' | 'copy') => {
+    void handleShare(platform);
   };
 
   if (loading) {
@@ -290,7 +303,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
           <span className="text-gray-600 font-medium">Share:</span>
           <div className="flex gap-2">
             <button
-              onClick={() => handleShare('twitter')}
+              onClick={() => share('twitter')}
               aria-label="Share on Twitter"
               className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
             >
@@ -299,7 +312,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
               </svg>
             </button>
             <button
-              onClick={() => handleShare('facebook')}
+              onClick={() => share('facebook')}
               aria-label="Share on Facebook"
               className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
             >
@@ -308,7 +321,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
               </svg>
             </button>
             <button
-              onClick={() => handleShare('linkedin')}
+              onClick={() => share('linkedin')}
               aria-label="Share on LinkedIn"
               className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
             >
@@ -317,7 +330,7 @@ export default function BlogPostClient({ slug }: BlogPostClientProps) {
               </svg>
             </button>
             <button
-              onClick={() => handleShare('copy')}
+              onClick={() => share('copy')}
               aria-label="Copy link"
               className="p-2 bg-gray-50 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
             >

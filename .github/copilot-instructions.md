@@ -40,7 +40,6 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
  - Adding requirements to requirements.txt
  - Adding dependencies to pom.xml
  - Adding dependencies to build.gradle
- - Adding dependencies to build.gradle
  - Any other package manager operations
 - You MUST run the `codacy_cli_analyze` tool with:
  - `rootPath`: set to the workspace path
@@ -70,3 +69,7 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - If the user accepts, run the `codacy_setup_repository` tool
 - Do not ever try to run the `codacy_setup_repository` tool on your own
 - After setup, immediately retry the action that failed (only retry once)
+
+## Access Control and Permissions
+- When implementing membership-based access control, ensure that `anna@wingspan-yoga` and `admin@wingspan-yoga` have full permissions.
+- Consider these access routes: `staff`, `public`, `members`, `workshop`, `retreat`, and `course`.

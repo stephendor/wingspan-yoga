@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { isAllowlistedEmail } from '@/lib/auth/allowlist';
 
 // Define protected routes and their required roles
 const ADMIN_ROUTES = [
@@ -71,6 +72,11 @@ export async function middleware(request: NextRequest) {
 
     // Check if user has the required role
     const userRole = token.role || token.membershipType || 'member';
+    const userEmail = (token.email as string | undefined) || '';
+    if (isAllowlistedEmail(userEmail)) {
+      console.log('Middleware: Allowlist bypass for', userEmail);
+      return NextResponse.next();
+    }
     if (!hasPermission(userRole, requiredRole)) {
       // Not authorized - redirect to home with error
       console.log('Middleware: Access denied - insufficient role. User role:', userRole, 'Required:', requiredRole);

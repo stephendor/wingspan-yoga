@@ -2,15 +2,27 @@ import Stripe from 'stripe'
 import { loadStripe } from '@stripe/stripe-js'
 import type { Stripe as StripeJs } from '@stripe/stripe-js'
 
-// Server-side Stripe instance
+// Server-side Stripe instance (dev-safe)
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
-if (!STRIPE_SECRET_KEY) {
-  throw new Error('STRIPE_SECRET_KEY is not set')
-}
-export const stripe = new Stripe(STRIPE_SECRET_KEY, {
-  apiVersion: '2025-07-30.basil',
-  typescript: true,
-})
+
+// Export a flag for feature gating where needed
+export const isStripeConfigured = Boolean(STRIPE_SECRET_KEY)
+
+// Avoid throwing on import in development/test so other features (like sign-in) still work.
+// If Stripe is not configured, we export a Proxy that throws on first method call with a clear message.
+export const stripe: Stripe = isStripeConfigured
+  ? new Stripe(STRIPE_SECRET_KEY as string, {
+      apiVersion: '2025-07-30.basil',
+      typescript: true,
+    })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  : (new Proxy({} as any, {
+      get() {
+        throw new Error(
+          'Stripe is not configured. Set STRIPE_SECRET_KEY to enable payment features.'
+        )
+      },
+    }) as Stripe)
 
 // Client-side Stripe promise (Stripe.js type)
 let stripePromise: Promise<StripeJs | null> | undefined
@@ -18,10 +30,8 @@ let stripePromise: Promise<StripeJs | null> | undefined
 export const getStripe = () => {
   if (typeof stripePromise === 'undefined') {
     const pk = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-    if (!pk) {
-      throw new Error('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set')
-    }
-    stripePromise = loadStripe(pk)
+    // In dev, return a null-resolving promise so <Elements stripe={...}> can safely render disabled state
+    stripePromise = pk ? loadStripe(pk) : Promise.resolve(null)
   }
   return stripePromise
 }

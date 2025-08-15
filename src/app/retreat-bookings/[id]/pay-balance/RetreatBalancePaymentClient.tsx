@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Elements } from '@stripe/react-stripe-js'
 import { getStripe } from '@/lib/stripe'
@@ -38,9 +38,25 @@ export default function RetreatBalancePaymentClient({ booking }: RetreatBalanceP
   const [clientSecret, setClientSecret] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isCreatingIntent, setIsCreatingIntent] = useState(false)
+  const [stripeAvailable, setStripeAvailable] = useState<boolean | null>(null)
 
   const stripePromise = getStripe()
   const remainingBalance = booking.totalPrice - booking.amountPaid
+
+  // Detect whether Stripe.js is available (publishable key configured)
+  useEffect(() => {
+    let mounted = true
+    stripePromise
+      .then((stripe) => {
+        if (mounted) setStripeAvailable(Boolean(stripe))
+      })
+      .catch(() => {
+        if (mounted) setStripeAvailable(false)
+      })
+    return () => {
+      mounted = false
+    }
+  }, [stripePromise])
 
   const formatDate = (date: Date | string) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -64,6 +80,11 @@ export default function RetreatBalancePaymentClient({ booking }: RetreatBalanceP
     setError(null)
 
     try {
+      // Guard: if Stripe is not configured, don't attempt to create a payment intent
+      if (stripeAvailable === false) {
+        setError('Payments are not enabled in this environment. Please configure NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY and STRIPE_SECRET_KEY.')
+        return
+      }
       const response = await fetch(`/api/retreat-bookings/${booking.id}/pay-balance`, {
         method: 'POST',
         headers: {
@@ -97,6 +118,11 @@ export default function RetreatBalancePaymentClient({ booking }: RetreatBalanceP
 
   const daysUntilDue = getDaysUntilDue()
   const isOverdue = daysUntilDue < 0
+
+  // Non-async click wrapper to satisfy lint rule
+  const handlePayClick = () => {
+    void handleCreatePaymentIntent()
+  }
 
   if (clientSecret) {
     return (
@@ -226,13 +252,19 @@ export default function RetreatBalancePaymentClient({ booking }: RetreatBalanceP
             
             <button
               type="button"
-              onClick={handleCreatePaymentIntent}
-              disabled={isCreatingIntent}
+              onClick={handlePayClick}
+              disabled={isCreatingIntent || stripeAvailable === false}
               className="flex-1 rounded-md bg-blue-600 px-6 py-3 text-base font-medium text-white hover:bg-blue-700 disabled:bg-blue-400 transition-colors"
             >
               {isCreatingIntent ? 'Setting up...' : 'Pay Balance'}
             </button>
           </div>
+
+          {stripeAvailable === false && (
+            <div className="mt-4 rounded-md border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
+              Payments are disabled: missing Stripe publishable key. Set NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY in your env to enable the payment form.
+            </div>
+          )}
 
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500">

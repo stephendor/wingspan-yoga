@@ -11,7 +11,7 @@ import {
   useStripe, 
   useElements 
 } from '@stripe/react-stripe-js'
-import { loadStripe } from '@stripe/stripe-js'
+import { getStripe } from '@/lib/stripe'
 import { Button } from '@/components/ui/button'
 import { Input, TextArea } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -19,7 +19,7 @@ import { bookingFormSchema, type BookingFormData } from '@/lib/validation/bookin
 import { formatCurrency } from '@/lib/stripe'
 import { AlertCircle, CreditCard, Lock, CheckCircle } from 'lucide-react'
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
+const stripePromise = getStripe()
 
 export interface BookingFormProps {
   classId: string
@@ -380,7 +380,7 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
         className="w-full py-3 text-base"
         size="lg"
       >
-        {isProcessing ? (
+  {isProcessing ? (
           <div className="flex items-center space-x-2">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             <span>Processing Payment...</span>

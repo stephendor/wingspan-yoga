@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/auth/middleware';
+import { isAllowlistedEmail } from '@/lib/auth/allowlist';
 import { BlogPostAccessLevel } from '@prisma/client';
 import { AuthUser } from '@/lib/auth/types';
 
@@ -62,6 +63,10 @@ function hasAccessToPost(
   user: AuthUser | null,
   hasRetreatBookings: boolean = false
 ): boolean {
+  // Allowlisted users have full access
+  if (user?.email && isAllowlistedEmail(user.email)) {
+    return true;
+  }
   // Unpublished posts are only visible to admins/instructors
   if (!post.published && (!user || (user.role !== 'ADMIN' && user.role !== 'INSTRUCTOR'))) {
     return false;

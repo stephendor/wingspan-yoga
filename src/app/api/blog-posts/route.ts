@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/auth/middleware';
+import { isAllowlistedEmail } from '@/lib/auth/allowlist';
 import { BlogPostAccessLevel, Prisma } from '@prisma/client';
-import { AuthUser } from '@/lib/auth/types';
 
 interface BlogPostsListResponse {
   success: boolean;
@@ -78,39 +79,7 @@ interface CreateBlogPostApiResponse {
   error?: string;
 }
 
-// Utility function to check blog post access
-function hasAccessToPost(
-  post: { accessLevel: BlogPostAccessLevel; published: boolean },
-  user: AuthUser | null,
-  hasRetreatBookings: boolean = false
-): boolean {
-  // Unpublished posts are only visible to admins/instructors
-  if (!post.published && (!user || (user.role !== 'ADMIN' && user.role !== 'INSTRUCTOR'))) {
-    return false;
-  }
-
-  // Check access level
-  switch (post.accessLevel) {
-    case 'PUBLIC':
-      return true;
-      
-    case 'MEMBERS_ONLY':
-      return user !== null && ['BASIC', 'PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType);
-      
-    case 'PREMIUM_ONLY':
-      return user !== null && ['PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType);
-      
-    case 'RETREAT_ATTENDEES_ONLY':
-      return user !== null && (hasRetreatBookings || user.membershipType === 'ADMIN');
-      
-    case 'MAILCHIMP_SUBSCRIBERS_ONLY':
-      // TODO: Implement Mailchimp integration
-      return user !== null && user.membershipType === 'ADMIN'; // Admin only for now
-      
-    default:
-      return false;
-  }
-}
+// (access checks enforced via whereClause + role gating for published)
 
 export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsListResponse>> {
   try {
@@ -131,8 +100,10 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsL
     // Build where clause
     const whereClause: Prisma.BlogPostWhereInput = {};
 
-    // Only show published posts to non-admin users
-    if (!authUser || (authUser.role !== 'ADMIN' && authUser.role !== 'INSTRUCTOR')) {
+  const isAllowlisted = authUser?.email && isAllowlistedEmail(authUser.email);
+
+  // Only show published posts to non-admin users (allowlist bypasses)
+  if (!authUser || (!isAllowlisted && authUser.role !== 'ADMIN' && authUser.role !== 'INSTRUCTOR')) {
       whereClause.published = true;
     } else if (published !== null) {
       whereClause.published = published === 'true';
@@ -174,7 +145,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsL
     }
 
     // Filter by access level (admin only)
-    if (accessLevel && authUser && (authUser.role === 'ADMIN' || authUser.role === 'INSTRUCTOR')) {
+  if (accessLevel && authUser && (isAllowlisted || authUser.role === 'ADMIN' || authUser.role === 'INSTRUCTOR')) {
       whereClause.accessLevel = accessLevel;
     }
 
@@ -199,7 +170,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsL
 
     // Check if user has retreat bookings (for RETREAT_ATTENDEES_ONLY access)
     let hasRetreatBookings = false;
-    if (authUser) {
+  if (authUser) {
       const retreatBookingsCount = await prisma.retreatBooking.count({
         where: {
           userId: authUser.id,
@@ -211,8 +182,29 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsL
       hasRetreatBookings = retreatBookingsCount > 0;
     }
 
-    // Fetch blog posts
-    const posts = await prisma.blogPost.findMany({
+    // For non-admin/instructor users, restrict access levels at the DB layer for accuracy and count correctness
+  if (!authUser || (!isAllowlisted && authUser.role !== 'ADMIN' && authUser.role !== 'INSTRUCTOR')) {
+      const allowedAccess: BlogPostAccessLevel[] = ['PUBLIC'];
+      if (authUser) {
+        if (['BASIC', 'PREMIUM', 'UNLIMITED', 'ADMIN'].includes(authUser.membershipType)) {
+          allowedAccess.push('MEMBERS_ONLY');
+        }
+        if (['PREMIUM', 'UNLIMITED', 'ADMIN'].includes(authUser.membershipType)) {
+          allowedAccess.push('PREMIUM_ONLY');
+        }
+        if (hasRetreatBookings || authUser.membershipType === 'ADMIN') {
+          allowedAccess.push('RETREAT_ATTENDEES_ONLY');
+        }
+        // MAILCHIMP_SUBSCRIBERS_ONLY not supported for general users yet
+      }
+      whereClause.accessLevel = { in: allowedAccess };
+    }
+
+  // Get total count with same whereClause
+  const total = await prisma.blogPost.count({ where: whereClause });
+
+  // Fetch blog posts
+  const posts = await prisma.blogPost.findMany({
       where: whereClause,
       include: {
         author: {
@@ -233,7 +225,6 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsL
 
     // Filter posts based on access control and format response
     const accessiblePosts = posts
-      .filter(post => hasAccessToPost(post, authUser, hasRetreatBookings))
       .map(post => ({
         id: post.id,
         title: post.title,
@@ -257,8 +248,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsL
       pagination: {
         page,
         limit,
-        total: accessiblePosts.length, // Use filtered count
-        totalPages: Math.ceil(accessiblePosts.length / limit),
+        total,
+        totalPages: Math.ceil(total / limit),
       },
     });
 
@@ -309,7 +300,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<CreateBlo
     }
 
     // Create blog post
-    const post = await prisma.blogPost.create({
+  const post = await prisma.blogPost.create({
       data: {
         title: data.title,
         slug,
@@ -335,6 +326,18 @@ export async function POST(request: NextRequest): Promise<NextResponse<CreateBlo
         },
       },
     });
+
+    // Revalidate relevant paths
+    try {
+      revalidatePath('/blog');
+      revalidatePath('/admin/blog');
+      if (post.published) {
+        revalidatePath(`/blog/${post.slug}`);
+      }
+    } catch (e) {
+      // best-effort cache invalidation
+      console.warn('Blog POST revalidatePath failed', e);
+    }
 
     return NextResponse.json({
       success: true,
