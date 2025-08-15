@@ -2,10 +2,25 @@
 
 import { useState } from 'react';
 
+interface MediaUploadResponse {
+  success: boolean;
+  media?: {
+    id: string;
+    url: string;
+    filename: string;
+    mimeType: string;
+    size: number;
+    width?: number;
+    height?: number;
+    thumbnailUrl?: string;
+  };
+  error?: string;
+}
+
 export default function TestUploadPage() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<MediaUploadResponse | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

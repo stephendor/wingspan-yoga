@@ -9,9 +9,17 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Youtube from '@tiptap/extension-youtube';
 import { useState, useCallback } from 'react';
 
+interface ContentBlock {
+  type: 'paragraph' | 'heading' | 'image' | 'quote' | 'list';
+  content: string;
+  level?: number; // for headings
+  items?: string[]; // for lists
+  alt?: string; // for images
+}
+
 interface BlogEditorProps {
-  content?: any;
-  onChange?: (content: any) => void;
+  content?: ContentBlock[] | null;
+  onChange?: (content: ContentBlock[]) => void;
   placeholder?: string;
   editable?: boolean;
 }
@@ -23,6 +31,55 @@ export default function BlogEditor({
   editable = true,
 }: BlogEditorProps) {
   const [isUploading, setIsUploading] = useState(false);
+
+  // Helper function to convert Tiptap JSON to ContentBlock format
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const convertToContentBlocks = (json: any): ContentBlock[] => {
+    if (!json || !json.content) return [];
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return json.content.map((node: any): ContentBlock => {
+      switch (node.type) {
+        case 'heading':
+          return {
+            type: 'heading',
+            content: node.content?.[0]?.text || '',
+            level: node.attrs?.level || 1,
+          };
+        case 'paragraph':
+          return {
+            type: 'paragraph',
+            content: node.content?.[0]?.text || '',
+          };
+        case 'image':
+          return {
+            type: 'image',
+            content: node.attrs?.src || '',
+            alt: node.attrs?.alt || '',
+          };
+        case 'blockquote':
+          return {
+            type: 'quote',
+            content: node.content?.[0]?.content?.[0]?.text || '',
+          };
+        case 'bulletList':
+        case 'orderedList':
+          return {
+            type: 'list',
+            content: '',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            items: node.content?.map((item: any) => 
+              item.content?.[0]?.content?.[0]?.text || ''
+            ) || [],
+          };
+        default:
+          return {
+            type: 'paragraph',
+            content: node.content?.[0]?.text || '',
+          };
+      }
+    });
+  };
 
   const editor = useEditor({
     extensions: [
@@ -49,7 +106,7 @@ export default function BlogEditor({
         placeholder,
       }),
       Youtube.configure({
-        width: '100%',
+        width: 800,
         height: 400,
       }),
     ],
@@ -59,7 +116,8 @@ export default function BlogEditor({
       if (onChange) {
         // Convert to content blocks format
         const json = editor.getJSON();
-        onChange(json);
+        const contentBlocks = convertToContentBlocks(json);
+        onChange(contentBlocks);
       }
     },
   });

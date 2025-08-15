@@ -4,6 +4,7 @@ const navLinks = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/classes', label: 'Class Management' },
   { href: '/admin/blog', label: 'Blog Management' },
+  { href: '/admin/media', label: 'Media Library' },
 ];
 
 export default function AdminSidebar() {

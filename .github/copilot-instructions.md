@@ -2,8 +2,16 @@
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
 ---
+
 # Codacy Rules
 Configuration for AI behavior when interacting with Codacy's MCP Server
+
+## using any tool that accepts the arguments: `provider`, `organization`, or `repository`
+- ALWAYS use:
+ - provider: gh
+ - organization: stephendor
+ - repository: wingspan-yoga
+- Avoid calling `git remote -v` unless really necessary
 
 ## CRITICAL: After ANY successful `edit_file` or `reapply` operation
 - YOU MUST IMMEDIATELY run the `codacy_cli_analyze` tool from Codacy's MCP Server for each file that was edited, with:
@@ -55,9 +63,15 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - Do not try to manually install Codacy CLI using either brew, npm, npx, or any other package manager.
 - If the Codacy CLI is not installed, just run the `codacy_cli_analyze` tool from Codacy's MCP Server.
 - When calling `codacy_cli_analyze`, only send provider, organization and repository if the project is a git repository.
+- If the build is failing, always fix the build issues first before proceeding with any new tasks.
 
 ## Whenever a call to a Codacy tool that uses `repository` or `organization` as a parameter returns a 404 error
 - Offer to run the `codacy_setup_repository` tool to add the repository to Codacy
 - If the user accepts, run the `codacy_setup_repository` tool
 - Do not ever try to run the `codacy_setup_repository` tool on your own
 - After setup, immediately retry the action that failed (only retry once)
+
+## Media Library Organisation
+- The media library must allow organisation of media by tags and by directory (or something similar).
+- Media must be labelled according to their accessibility as well private/memberships/retreats/workshops with subcategories in those.
+- The system must be able to create new (sub) categories.

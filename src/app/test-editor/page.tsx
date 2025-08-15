@@ -4,8 +4,16 @@ import { useState } from 'react';
 import BlogEditor from '@/components/blog/BlogEditor';
 import BlogContent from '@/components/blog/BlogContent';
 
+interface ContentBlock {
+  type: 'paragraph' | 'heading' | 'image' | 'quote' | 'list';
+  content: string;
+  level?: number; // for headings
+  items?: string[]; // for lists
+  alt?: string; // for images
+}
+
 export default function TestEditorPage() {
-  const [content, setContent] = useState<any>(null);
+  const [content, setContent] = useState<ContentBlock[] | null>(null);
   const [viewMode, setViewMode] = useState<'editor' | 'preview'>('editor');
 
   return (
@@ -19,7 +27,7 @@ export default function TestEditorPage() {
         <div className="mb-6">
           <div className="inline-flex rounded-lg border border-gray-300 bg-white p-1">
             <button
-              onClick={() => setViewMode('editor')}
+              onClick={() => { setViewMode('editor'); }}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 viewMode === 'editor'
                   ? 'bg-blue-600 text-white'
@@ -29,7 +37,7 @@ export default function TestEditorPage() {
               Editor
             </button>
             <button
-              onClick={() => setViewMode('preview')}
+              onClick={() => { setViewMode('preview'); }}
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                 viewMode === 'preview'
                   ? 'bg-blue-600 text-white'

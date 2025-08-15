@@ -6,9 +6,9 @@ import { prisma } from '@/lib/prisma'
 import RetreatBookingConfirmation from './RetreatBookingConfirmation'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 async function getRetreatBooking(bookingId: string, userId: string) {
@@ -51,7 +51,8 @@ export default async function RetreatBookingConfirmationPage({ params }: PagePro
     redirect('/auth/signin')
   }
 
-  const booking = await getRetreatBooking(params.id, session.user.id)
+  const { id } = await params
+  const booking = await getRetreatBooking(id, session.user.id)
 
   if (!booking) {
     notFound()

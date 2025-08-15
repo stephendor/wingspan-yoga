@@ -7,8 +7,16 @@ import Link from '@tiptap/extension-link';
 import TextAlign from '@tiptap/extension-text-align';
 import Youtube from '@tiptap/extension-youtube';
 
+interface ContentBlock {
+  type: 'paragraph' | 'heading' | 'image' | 'quote' | 'list';
+  content: string;
+  level?: number; // for headings
+  items?: string[]; // for lists
+  alt?: string; // for images
+}
+
 interface BlogContentProps {
-  content: any;
+  content: ContentBlock[] | string | null;
   className?: string;
 }
 
@@ -37,7 +45,7 @@ export default function BlogContent({ content, className = '' }: BlogContentProp
         types: ['heading', 'paragraph'],
       }),
       Youtube.configure({
-        width: '100%',
+        width: 800,
         height: 400,
         HTMLAttributes: {
           class: 'rounded-lg shadow-sm',

@@ -202,19 +202,19 @@ export default function RetreatBookingConfirmation({ booking }: RetreatBookingCo
 
         {/* Next Steps */}
         <div className="rounded-lg bg-blue-50 p-6 mb-8">
-          <h3 className="text-lg font-medium text-blue-900 mb-3">What's Next?</h3>
+          <h3 className="text-lg font-medium text-blue-900 mb-3">What&apos;s Next?</h3>
           <div className="space-y-2 text-blue-800">
             {isFullyPaid ? (
               <>
                 <p>✅ Your retreat is fully paid and confirmed</p>
-                <p>📧 You'll receive additional details about your retreat via email</p>
+                <p>📧 You&apos;ll receive additional details about your retreat via email</p>
                 <p>📞 Our team will contact you closer to the retreat date with final instructions</p>
               </>
             ) : (
               <>
                 <p>✅ Your spot is secured with your deposit</p>
                 <p>💳 Pay the remaining balance by {formatDate(booking.balanceDueDate)}</p>
-                <p>📧 You'll receive a reminder email about the balance payment</p>
+                <p>📧 You&apos;ll receive a reminder email about the balance payment</p>
                 <p>📞 Our team will contact you closer to the retreat date with final instructions</p>
               </>
             )}

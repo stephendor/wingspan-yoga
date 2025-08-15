@@ -1,18 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-interface Params {
-  params: {
-    id: string
-  }
-}
-
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // Try to find retreat by ID first, then by slug
-    let retreat = await prisma.retreat.findFirst({
+    const retreat = await prisma.retreat.findFirst({
       where: {
         OR: [
           { id: id },

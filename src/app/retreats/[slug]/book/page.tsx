@@ -7,9 +7,9 @@ import { Retreat, ApiResponse } from '@/types'
 import RetreatBookingClient from './RetreatBookingClient'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 async function getRetreat(slug: string): Promise<Retreat | null> {
@@ -34,7 +34,8 @@ async function getRetreat(slug: string): Promise<Retreat | null> {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const retreat = await getRetreat(params.slug)
+  const { slug } = await params
+  const retreat = await getRetreat(slug)
 
   if (!retreat) {
     return {
@@ -49,20 +50,21 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function RetreatBookingPage({ params }: PageProps) {
+  const { slug } = await params
   const session = await getServerSession(authOptions)
   
   if (!session) {
-    redirect('/auth/signin?callbackUrl=' + encodeURIComponent(`/retreats/${params.slug}/book`))
+    redirect('/auth/signin?callbackUrl=' + encodeURIComponent(`/retreats/${slug}/book`))
   }
 
-  const retreat = await getRetreat(params.slug)
+  const retreat = await getRetreat(slug)
 
   if (!retreat) {
     notFound()
   }
 
   if (retreat.isFull) {
-    redirect(`/retreats/${params.slug}?error=fully-booked`)
+    redirect(`/retreats/${slug}?error=fully-booked`)
   }
 
   return <RetreatBookingClient retreat={retreat} />

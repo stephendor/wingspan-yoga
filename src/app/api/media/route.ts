@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth/middleware';
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 interface MediaListResponse {
   success: boolean;
@@ -52,7 +53,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<MediaListR
     const mimeType = searchParams.get('mimeType'); // 'image' or 'video'
 
     // Build where clause
-    const whereClause: any = {};
+    const whereClause: Prisma.MediaWhereInput = {};
 
     if (search) {
       whereClause.OR = [

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, FormEvent } from 'react'
-import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js'
 import { Retreat } from '@/types'
 import { formatCurrency } from '@/lib/stripe'
 
@@ -36,10 +36,18 @@ export default function RetreatBookingForm({
     setError(null)
 
     try {
-      // Confirm payment with Stripe
-      const { error: stripeError, paymentIntent } = await stripe.confirmPayment({
-        elements,
-        redirect: 'if_required',
+      // Get card element
+      const cardElement = elements.getElement('card')
+      if (!cardElement) {
+        setError('Card element not found')
+        return
+      }
+
+      // Confirm payment with Stripe using CardElement
+      const { error: stripeError, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+        }
       })
 
       if (stripeError) {
@@ -77,8 +85,15 @@ export default function RetreatBookingForm({
     }
   }
 
+  const handleFormSubmit = (event: FormEvent) => {
+    handleSubmit(event).catch((error) => {
+      console.error('Form submission error:', error)
+      setError('An unexpected error occurred. Please try again.')
+    })
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleFormSubmit} className="space-y-6">
       {/* Payment Summary */}
       <div className="rounded-lg border p-4 bg-gray-50">
         <h3 className="font-medium text-gray-900 mb-2">Payment Summary</h3>
@@ -110,7 +125,17 @@ export default function RetreatBookingForm({
       {/* Payment Element */}
       <div className="rounded-lg border p-4">
         <h3 className="font-medium text-gray-900 mb-4">Payment Information</h3>
-        <PaymentElement />
+        <CardElement options={{
+          style: {
+            base: {
+              fontSize: '16px',
+              color: '#424770',
+              '::placeholder': {
+                color: '#aab7c4',
+              },
+            },
+          },
+        }} />
       </div>
 
       {/* Action Buttons */}

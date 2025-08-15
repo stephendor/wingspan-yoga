@@ -5,17 +5,14 @@ import { prisma } from '@/lib/prisma'
 import { createPaymentIntent, getOrCreateCustomer } from '@/lib/stripe'
 import { z } from 'zod'
 
-interface Params {
-  params: {
-    id: string
-  }
-}
-
 const retreatBookingSchema = z.object({
   notes: z.string().optional(),
 })
 
-export async function POST(request: NextRequest, { params }: Params) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const session = await getServerSession(authOptions)
     
@@ -26,7 +23,7 @@ export async function POST(request: NextRequest, { params }: Params) {
       )
     }
 
-    const { id: retreatId } = params
+    const { id: retreatId } = await params
     const body = await request.json()
     const { notes } = retreatBookingSchema.parse(body)
 

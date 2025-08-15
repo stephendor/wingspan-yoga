@@ -5,13 +5,16 @@ import { prisma } from '@/lib/prisma'
 import { createPaymentIntent, getOrCreateCustomer } from '@/lib/stripe'
 
 interface Params {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 export async function POST(request: NextRequest, { params }: Params) {
   try {
+    // Await and destructure params
+    const { id: bookingId } = await params;
+    
     const session = await getServerSession(authOptions)
     
     if (!session?.user?.id) {
@@ -20,8 +23,6 @@ export async function POST(request: NextRequest, { params }: Params) {
         { status: 401 }
       )
     }
-
-    const { id: bookingId } = params
 
     // Get the retreat booking
     const booking = await prisma.retreatBooking.findFirst({

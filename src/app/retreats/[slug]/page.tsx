@@ -5,9 +5,9 @@ import { Retreat, ApiResponse } from '@/types'
 import RetreatDetailClient from './RetreatDetailClient'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 async function getRetreat(slug: string): Promise<Retreat | null> {
@@ -32,7 +32,8 @@ async function getRetreat(slug: string): Promise<Retreat | null> {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const retreat = await getRetreat(params.slug)
+  const { slug } = await params
+  const retreat = await getRetreat(slug)
 
   if (!retreat) {
     return {
@@ -47,7 +48,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function RetreatDetailPage({ params }: PageProps) {
-  const retreat = await getRetreat(params.slug)
+  const { slug } = await params
+  const retreat = await getRetreat(slug)
 
   if (!retreat) {
     notFound()

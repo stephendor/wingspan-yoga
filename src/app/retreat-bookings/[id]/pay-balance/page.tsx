@@ -6,9 +6,9 @@ import { prisma } from '@/lib/prisma'
 import RetreatBalancePaymentClient from './RetreatBalancePaymentClient'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string
-  }
+  }>
 }
 
 async function getRetreatBooking(bookingId: string, userId: string) {
@@ -37,13 +37,14 @@ export const metadata: Metadata = {
 }
 
 export default async function RetreatBalancePaymentPage({ params }: PageProps) {
+  const { id } = await params
   const session = await getServerSession(authOptions)
   
   if (!session?.user?.id) {
-    redirect('/auth/signin?callbackUrl=' + encodeURIComponent(`/retreat-bookings/${params.id}/pay-balance`))
+    redirect('/auth/signin?callbackUrl=' + encodeURIComponent(`/retreat-bookings/${id}/pay-balance`))
   }
 
-  const booking = await getRetreatBooking(params.id, session.user.id)
+  const booking = await getRetreatBooking(id, session.user.id)
 
   if (!booking) {
     notFound()
@@ -51,18 +52,18 @@ export default async function RetreatBalancePaymentPage({ params }: PageProps) {
 
   // Check if booking is eligible for balance payment
   if (booking.paymentStatus !== 'DEPOSIT_PAID') {
-    redirect(`/retreat-bookings/${params.id}/confirmation?error=not-eligible`)
+    redirect(`/retreat-bookings/${id}/confirmation?error=not-eligible`)
   }
 
   // Check if retreat has already started
   const now = new Date()
   if (booking.retreat.startDate <= now) {
-    redirect(`/retreat-bookings/${params.id}/confirmation?error=retreat-started`)
+    redirect(`/retreat-bookings/${id}/confirmation?error=retreat-started`)
   }
 
   const remainingBalance = booking.totalPrice - booking.amountPaid
   if (remainingBalance <= 0) {
-    redirect(`/retreat-bookings/${params.id}/confirmation?error=no-balance`)
+    redirect(`/retreat-bookings/${id}/confirmation?error=no-balance`)
   }
 
   return <RetreatBalancePaymentClient booking={booking} />

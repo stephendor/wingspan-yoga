@@ -2,6 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/auth/middleware';
 import { BlogPostAccessLevel } from '@prisma/client';
+import { AuthUser } from '@/lib/auth/types';
+
+interface ContentBlock {
+  type: 'paragraph' | 'heading' | 'image' | 'quote' | 'list';
+  content: string;
+  level?: number; // for headings
+  items?: string[]; // for lists
+  alt?: string; // for images
+}
 
 interface BlogPostResponse {
   success: boolean;
@@ -11,7 +20,7 @@ interface BlogPostResponse {
     slug: string;
     excerpt?: string;
     content?: string; // Legacy field
-    contentBlocks?: any;
+    contentBlocks?: unknown; // Use unknown for Prisma Json type
     metaDescription?: string;
     featuredImage?: string;
     category?: string;
@@ -24,8 +33,10 @@ interface BlogPostResponse {
     author?: {
       id: string;
       name: string;
-      avatar?: string;
+      avatar?: string | null;
     };
+    authorName?: string;
+    authorAvatar?: string;
     hasAccess: boolean;
   };
   error?: string;
@@ -36,7 +47,7 @@ interface UpdateBlogPostRequest {
   slug?: string;
   excerpt?: string;
   content?: string; // Legacy field
-  contentBlocks?: any;
+  contentBlocks?: ContentBlock[];
   metaDescription?: string;
   featuredImage?: string;
   category?: string;
@@ -48,7 +59,7 @@ interface UpdateBlogPostRequest {
 // Utility function to check blog post access (same as in main route)
 function hasAccessToPost(
   post: { accessLevel: BlogPostAccessLevel; published: boolean },
-  user: any,
+  user: AuthUser | null,
   hasRetreatBookings: boolean = false
 ): boolean {
   // Unpublished posts are only visible to admins/instructors
@@ -62,17 +73,17 @@ function hasAccessToPost(
       return true;
       
     case 'MEMBERS_ONLY':
-      return user && ['BASIC', 'PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType);
+      return user ? ['BASIC', 'PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType) : false;
       
     case 'PREMIUM_ONLY':
-      return user && ['PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType);
+      return user ? ['PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType) : false;
       
     case 'RETREAT_ATTENDEES_ONLY':
-      return user && (hasRetreatBookings || user.membershipType === 'ADMIN');
+      return user ? (hasRetreatBookings || user.membershipType === 'ADMIN') : false;
       
     case 'MAILCHIMP_SUBSCRIBERS_ONLY':
       // TODO: Implement Mailchimp integration
-      return user && user.membershipType === 'ADMIN'; // Admin only for now
+      return user ? user.membershipType === 'ADMIN' : false; // Admin only for now
       
     default:
       return false;
@@ -81,11 +92,11 @@ function hasAccessToPost(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<NextResponse<BlogPostResponse>> {
   try {
     const authUser = getAuthenticatedUser(request);
-    const { slug } = params;
+    const { slug } = await params;
 
     // Find the blog post
     const post = await prisma.blogPost.findUnique({
@@ -175,8 +186,8 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { slug: string } }
-): Promise<NextResponse<{ success: boolean; post?: any; error?: string }>> {
+  { params }: { params: Promise<{ slug: string }> }
+): Promise<NextResponse<{ success: boolean; post?: BlogPostResponse['post']; error?: string }>> {
   try {
     const authUser = getAuthenticatedUser(request);
     
@@ -190,7 +201,7 @@ export async function PATCH(
       );
     }
 
-    const { slug } = params;
+    const { slug } = await params;
     const data: UpdateBlogPostRequest = await request.json();
 
     // Find existing post
@@ -220,7 +231,7 @@ export async function PATCH(
     }
 
     // Handle slug change
-    let newSlug = data.slug || existingPost.slug;
+    const newSlug = data.slug || existingPost.slug;
     if (data.slug && data.slug !== existingPost.slug) {
       // Check if new slug is unique
       const slugExists = await prisma.blogPost.findUnique({
@@ -239,7 +250,7 @@ export async function PATCH(
     }
 
     // Prepare update data
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     
     if (data.title !== undefined) updateData.title = data.title;
     if (data.slug !== undefined) updateData.slug = newSlug;
@@ -280,10 +291,29 @@ export async function PATCH(
     return NextResponse.json({
       success: true,
       post: {
-        ...updatedPost,
+        id: updatedPost.id,
+        title: updatedPost.title,
+        slug: updatedPost.slug,
+        excerpt: updatedPost.excerpt || undefined,
+        content: updatedPost.content || undefined,
+        contentBlocks: updatedPost.contentBlocks,
+        metaDescription: updatedPost.metaDescription || undefined,
+        featuredImage: updatedPost.featuredImage || undefined,
+        category: updatedPost.category || undefined,
+        published: updatedPost.published,
         publishedAt: updatedPost.publishedAt?.toISOString(),
+        accessLevel: updatedPost.accessLevel,
+        tags: updatedPost.tags,
         createdAt: updatedPost.createdAt.toISOString(),
         updatedAt: updatedPost.updatedAt.toISOString(),
+        author: updatedPost.author ? {
+          id: updatedPost.author.id,
+          name: updatedPost.author.name,
+          avatar: updatedPost.author.avatar || undefined,
+        } : undefined,
+        authorName: updatedPost.authorName || undefined,
+        authorAvatar: updatedPost.authorAvatar || undefined,
+        hasAccess: true, // User has access if they can update
       },
     });
 
@@ -304,7 +334,7 @@ export const PUT = PATCH;
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ): Promise<NextResponse<{ success: boolean; error?: string }>> {
   try {
     const authUser = getAuthenticatedUser(request);
@@ -319,7 +349,7 @@ export async function DELETE(
       );
     }
 
-    const { slug } = params;
+    const { slug } = await params;
 
     // Find existing post
     const existingPost = await prisma.blogPost.findUnique({

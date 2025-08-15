@@ -5,11 +5,19 @@ import { useRouter } from 'next/navigation';
 import BlogEditor from '@/components/blog/BlogEditor';
 import { BlogPostAccessLevel } from '@prisma/client';
 
+interface ContentBlock {
+  type: 'paragraph' | 'heading' | 'image' | 'quote' | 'list';
+  content: string;
+  level?: number; // for headings
+  items?: string[]; // for lists
+  alt?: string; // for images
+}
+
 interface CreateBlogPostData {
   title: string;
   slug: string;
   excerpt: string;
-  contentBlocks: object;
+  contentBlocks: ContentBlock[];
   metaDescription: string;
   featuredImage: string;
   category: string;
@@ -24,7 +32,7 @@ export default function NewBlogPostPage() {
     title: '',
     slug: '',
     excerpt: '',
-    contentBlocks: null,
+    contentBlocks: [],
     metaDescription: '',
     featuredImage: '',
     category: '',

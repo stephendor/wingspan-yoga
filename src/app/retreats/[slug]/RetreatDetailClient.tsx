@@ -186,7 +186,7 @@ export default function RetreatDetailClient({ retreat }: RetreatDetailClientProp
 
                 {!session && (
                   <p className="mt-3 text-xs text-gray-500 text-center">
-                    You'll need to sign in to complete your booking
+                    You&apos;ll need to sign in to complete your booking
                   </p>
                 )}
               </div>

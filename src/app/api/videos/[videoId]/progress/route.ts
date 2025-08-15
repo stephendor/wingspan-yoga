@@ -5,9 +5,12 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { videoId: string } }
+  { params }: { params: Promise<{ videoId: string }> }
 ) {
   try {
+    // Await and destructure params
+    const { videoId } = await params;
+    
     // Get the authenticated user session
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -31,7 +34,7 @@ export async function POST(
 
     // Get the video to check if it exists and get its duration
     const video = await prisma.video.findUnique({
-      where: { id: params.videoId },
+      where: { id: videoId },
       select: { id: true, duration: true },
     });
 
@@ -62,7 +65,7 @@ export async function POST(
       where: {
         userId_videoId: {
           userId: user.id,
-          videoId: params.videoId,
+          videoId: videoId,
         },
       },
       update: {
@@ -72,7 +75,7 @@ export async function POST(
       },
       create: {
         userId: user.id,
-        videoId: params.videoId,
+        videoId: videoId,
         progress: currentTime,
         completed: isCompleted,
         lastWatched: new Date(),
@@ -98,9 +101,12 @@ export async function POST(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { videoId: string } }
+  { params }: { params: Promise<{ videoId: string }> }
 ) {
   try {
+    // Await and destructure params
+    const { videoId } = await params;
+    
     // Get the authenticated user session
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -127,7 +133,7 @@ export async function GET(
       where: {
         userId_videoId: {
           userId: user.id,
-          videoId: params.videoId,
+          videoId: videoId,
         },
       },
     });

@@ -5,12 +5,12 @@ import { Redis } from '@upstash/redis'
 let redis: Redis;
 try {
   redis = Redis.fromEnv();
-} catch (error) {
+} catch {
   console.warn('Redis not configured, using in-memory rate limiting for development');
   // Use Map for in-memory rate limiting during development
-  const memory = new Map();
+  const memory = new Map<string, { value: unknown; expiry: number | null }>();
   redis = {
-    set: async (key: string, value: any, options?: any) => {
+    set: async (key: string, value: unknown, options?: { ex?: number }) => {
       memory.set(key, { value, expiry: options?.ex ? Date.now() + (options.ex * 1000) : null });
       return 'OK';
     },
@@ -28,7 +28,7 @@ try {
       return 1;
     },
     eval: async () => null // Simplified for development
-  } as any;
+  } as unknown as Redis;
 }
 
 // Rate limiting configurations
@@ -85,7 +85,7 @@ export async function applyRateLimit(
 ): Promise<{ success: boolean; error?: string; remaining?: number }> {
   try {
     const ip = identifier || getClientIP(request)
-    const { success, limit, reset, remaining } = await rateLimit.limit(ip)
+    const { success, reset, remaining } = await rateLimit.limit(ip)
     
     if (!success) {
       const resetTime = Math.round((reset - Date.now()) / 1000)

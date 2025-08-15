@@ -6,12 +6,20 @@ import { useParams } from 'next/navigation';
 import BlogEditor from '@/components/blog/BlogEditor';
 import { BlogPostAccessLevel } from '@prisma/client';
 
+interface ContentBlock {
+  type: 'paragraph' | 'heading' | 'image' | 'quote' | 'list';
+  content: string;
+  level?: number; // for headings
+  items?: string[]; // for lists
+  alt?: string; // for images
+}
+
 interface BlogPost {
   id: string;
   title: string;
   slug: string;
   excerpt?: string;
-  contentBlocks?: object;
+  contentBlocks?: ContentBlock[];
   metaDescription?: string;
   featuredImage?: string;
   category?: string;
@@ -32,7 +40,7 @@ interface UpdateBlogPostData {
   title: string;
   slug: string;
   excerpt: string;
-  contentBlocks: object;
+  contentBlocks: ContentBlock[];
   metaDescription: string;
   featuredImage: string;
   category: string;

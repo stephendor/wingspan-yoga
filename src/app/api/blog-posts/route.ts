@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthenticatedUser } from '@/lib/auth/middleware';
-import { BlogPostAccessLevel, MembershipType } from '@prisma/client';
+import { BlogPostAccessLevel, Prisma } from '@prisma/client';
+import { AuthUser } from '@/lib/auth/types';
 
 interface BlogPostsListResponse {
   success: boolean;
@@ -21,7 +22,7 @@ interface BlogPostsListResponse {
     author?: {
       id: string;
       name: string;
-      avatar?: string;
+      avatar: string | null;
     };
     hasAccess: boolean;
   }>;
@@ -38,7 +39,7 @@ interface CreateBlogPostRequest {
   title: string;
   slug?: string;
   excerpt?: string;
-  contentBlocks?: any;
+  contentBlocks?: Prisma.InputJsonValue;
   metaDescription?: string;
   featuredImage?: string;
   category?: string;
@@ -47,10 +48,40 @@ interface CreateBlogPostRequest {
   tags?: string[];
 }
 
+interface BlogPostResponse {
+  id: string;
+  title: string;
+  slug: string;
+  excerpt: string | null;
+  contentBlocks: Prisma.JsonValue;
+  metaDescription: string | null;
+  featuredImage: string | null;
+  category: string | null;
+  published: boolean;
+  publishedAt: string | null;
+  accessLevel: BlogPostAccessLevel;
+  tags: string[];
+  authorId: string | null;
+  authorName: string;
+  createdAt: string;
+  updatedAt: string;
+  author: {
+    id: string;
+    name: string;
+    avatar: string | null;
+  } | null;
+}
+
+interface CreateBlogPostApiResponse {
+  success: boolean;
+  post?: BlogPostResponse;
+  error?: string;
+}
+
 // Utility function to check blog post access
 function hasAccessToPost(
   post: { accessLevel: BlogPostAccessLevel; published: boolean },
-  user: any,
+  user: AuthUser | null,
   hasRetreatBookings: boolean = false
 ): boolean {
   // Unpublished posts are only visible to admins/instructors
@@ -64,17 +95,17 @@ function hasAccessToPost(
       return true;
       
     case 'MEMBERS_ONLY':
-      return user && ['BASIC', 'PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType);
+      return user !== null && ['BASIC', 'PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType);
       
     case 'PREMIUM_ONLY':
-      return user && ['PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType);
+      return user !== null && ['PREMIUM', 'UNLIMITED', 'ADMIN'].includes(user.membershipType);
       
     case 'RETREAT_ATTENDEES_ONLY':
-      return user && (hasRetreatBookings || user.membershipType === 'ADMIN');
+      return user !== null && (hasRetreatBookings || user.membershipType === 'ADMIN');
       
     case 'MAILCHIMP_SUBSCRIBERS_ONLY':
       // TODO: Implement Mailchimp integration
-      return user && user.membershipType === 'ADMIN'; // Admin only for now
+      return user !== null && user.membershipType === 'ADMIN'; // Admin only for now
       
     default:
       return false;
@@ -94,9 +125,11 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsL
     const tag = searchParams.get('tag');
     const accessLevel = searchParams.get('accessLevel') as BlogPostAccessLevel;
     const published = searchParams.get('published');
+    const year = searchParams.get('year');
+    const month = searchParams.get('month');
 
     // Build where clause
-    const whereClause: any = {};
+    const whereClause: Prisma.BlogPostWhereInput = {};
 
     // Only show published posts to non-admin users
     if (!authUser || (authUser.role !== 'ADMIN' && authUser.role !== 'INSTRUCTOR')) {
@@ -145,9 +178,23 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsL
       whereClause.accessLevel = accessLevel;
     }
 
-    // Get total count for pagination
-    const total = await prisma.blogPost.count({ where: whereClause });
-    const totalPages = Math.ceil(total / limit);
+    // Filter by year and month
+    if (year) {
+      const yearInt = parseInt(year);
+      if (!isNaN(yearInt)) {
+        const startDate = new Date(yearInt, month ? parseInt(month) - 1 : 0, 1);
+        const endDate = month 
+          ? new Date(yearInt, parseInt(month), 0) // Last day of the month
+          : new Date(yearInt + 1, 0, 0); // Last day of the year
+        
+        whereClause.publishedAt = {
+          gte: startDate,
+          lte: endDate,
+        };
+      }
+    }
+
+    // Calculate pagination
     const skip = (page - 1) * limit;
 
     // Check if user has retreat bookings (for RETREAT_ATTENDEES_ONLY access)
@@ -227,7 +274,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<BlogPostsL
   }
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse<{ success: boolean; post?: any; error?: string }>> {
+export async function POST(request: NextRequest): Promise<NextResponse<CreateBlogPostApiResponse>> {
   try {
     const authUser = getAuthenticatedUser(request);
     
@@ -292,10 +339,23 @@ export async function POST(request: NextRequest): Promise<NextResponse<{ success
     return NextResponse.json({
       success: true,
       post: {
-        ...post,
-        publishedAt: post.publishedAt?.toISOString(),
+        id: post.id,
+        title: post.title,
+        slug: post.slug,
+        excerpt: post.excerpt,
+        contentBlocks: post.contentBlocks,
+        metaDescription: post.metaDescription,
+        featuredImage: post.featuredImage,
+        category: post.category,
+        published: post.published,
+        publishedAt: post.publishedAt?.toISOString() || null,
+        accessLevel: post.accessLevel,
+        tags: post.tags,
+        authorId: post.authorId,
+        authorName: post.authorName,
         createdAt: post.createdAt.toISOString(),
         updatedAt: post.updatedAt.toISOString(),
+        author: post.author,
       },
     });
 

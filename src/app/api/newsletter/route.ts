@@ -45,15 +45,20 @@ export async function POST(request: NextRequest) {
         );
       } else {
         // Reactivate if previously unsubscribed
+        const updateData: Record<string, unknown> = {
+          isActive: true,
+          unsubscribedAt: null,
+          name: name || existingSubscription.name,
+          source: source || existingSubscription.source,
+        };
+        
+        if (preferences) {
+          updateData.preferences = preferences;
+        }
+        
         const updatedSubscription = await prisma.newsletterSubscription.update({
           where: { email },
-          data: {
-            isActive: true,
-            unsubscribedAt: null,
-            name: name || existingSubscription.name,
-            source: source || existingSubscription.source,
-            preferences: preferences || (existingSubscription.preferences as Record<string, unknown>),
-          },
+          data: updateData,
         });
 
         return NextResponse.json({
