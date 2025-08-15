@@ -1,37 +1,44 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function InstructorPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sage-50 via-warm-50 to-blush-50">
+    <div className="min-h-screen bg-gradient-to-br from-softyellow-50 via-white to-softblue-50">
       {/* Hero Section */}
       <section className="relative pt-20 pb-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
-                <div className="w-48 h-48 bg-sage-200 rounded-full mx-auto md:mx-0 mb-6 flex items-center justify-center">
-                  <span className="text-8xl">🧘‍♀️</span>
+                <div className="relative w-48 h-48 mx-auto md:mx-0 mb-6">
+                  <Image
+                    src="/uploads/anna-portrait-placeholder.jpg"
+                    alt="Anna Dorman in a peaceful natural setting"
+                    fill
+                    className="rounded-full object-cover shadow-lg"
+                  />
                 </div>
               </div>
               
               <div>
-                <h1 className="text-5xl font-heading font-bold text-charcoal-900 mb-4">
-                  Anna Dorman
+                <h1 className="text-5xl font-playfair font-bold text-gray-900 mb-4">
+                  Meet{' '}
+                  <span className="bg-gradient-to-r from-softyellow-600 to-softblue-600 bg-clip-text text-transparent">
+                    Anna Dorman
+                  </span>
                 </h1>
-                <p className="text-2xl text-sage-600 mb-6 font-medium">
-                  Founder & Lead Instructor
+                <p className="text-2xl text-softgreen-700 mb-6 font-medium font-lato">
+                  Yoga Teacher & Guide
                 </p>
-                <p className="text-lg text-charcoal-600 mb-8 leading-relaxed">
-                  With over 15 years of experience, Anna combines traditional Hatha yoga with 
-                  modern alignment principles, creating a safe and inclusive space for practitioners 
-                  of all levels to explore their yoga journey.
+                <p className="text-lg text-gray-600 mb-8 leading-relaxed font-lato">
+                  Welcome to my world of yoga, where we explore the beautiful practice of connecting 
+                  body, mind and spirit through movement, breath and presence.
                 </p>
                 <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="px-4 py-2 text-sm rounded-full bg-sage-100 text-sage-700">RYT-500</span>
-                  <span className="px-4 py-2 text-sm rounded-full bg-sage-100 text-sage-700">Trauma-Informed Certified</span>
-                  <span className="px-4 py-2 text-sm rounded-full bg-sage-100 text-sage-700">Anatomy Specialist</span>
+                  <span className="px-4 py-2 text-sm rounded-full bg-softgreen-100 text-softgreen-700 font-lato">BWY Accredited</span>
+                  <span className="px-4 py-2 text-sm rounded-full bg-softgreen-100 text-softgreen-700 font-lato">Scaravelli Inspired</span>
+                  <span className="px-4 py-2 text-sm rounded-full bg-softgreen-100 text-softgreen-700 font-lato">30+ Years Practice</span>
                 </div>
               </div>
             </div>
@@ -39,188 +46,123 @@ export default function InstructorPage() {
         </div>
       </section>
 
-      {/* Bio Content */}
+      {/* Anna's Story Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="prose prose-lg max-w-none">
-              <h2 className="text-3xl font-heading font-bold text-charcoal-900 mb-6">My Story</h2>
-              <p className="text-charcoal-600 mb-6">
-                My yoga journey began fifteen years ago during a particularly stressful period in my corporate career. 
-                What started as a way to manage stress quickly became a transformative practice that reshaped my 
-                entire understanding of what it means to be present in my body and connected to my breath.
-              </p>
-              
-              <p className="text-charcoal-600 mb-6">
-                After years of personal practice, I felt called to share the profound benefits of yoga with others. 
-                I completed my first 200-hour teacher training in 2014, followed by my 500-hour certification, 
-                and have since specialized in trauma-informed teaching and anatomical alignment.
-              </p>
-              
-              <p className="text-charcoal-600 mb-8">
-                In 2019, I founded Wingspan Yoga with a vision of creating a studio that truly embodies the 
-                inclusive, healing nature of yoga. The name reflects my belief that yoga gives us the space 
-                to spread our wings—to expand our capacity for strength, flexibility, and compassion.
-              </p>
+              <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-6">Hello, I&apos;m Anna!</h2>
+              <div className="text-gray-600 font-lato space-y-6 text-lg leading-relaxed">
+                <p>
+                  I attended my first yoga class in Osmington, Dorset in 1993 and instantly fell in love with the practice of connecting body, mind and spirit through movement, breath and asana. Ever since then yoga has been a central feature in my life. In my late teens and early adulthood becoming a yoga teacher was my dream and after more than a decade of dedicated practice I found the teacher training course I had been waiting for: the Scaravelli Inspired AIYP London Teacher Training Course (BWY accredited) which gave me a solid grounding in the principles of Vanda Scaravelli&apos;s approach and also inspired me to keep on learning and to develop my own unique style of teaching. I qualified in 2011 and have been on a wonderful journey of teaching groups and individuals since then.
+                </p>
+                
+                <p>
+                  I am ever humbled by the way in which my own yoga and meditation practice helps me to navigate the changing seas and seasons of life. The holistic path of yoga has quite simply been my rock from teenage years to midlife; it has carried me with grace through challenging times. Sharing this beautiful practice with others gives me great joy and I feel incredibly lucky to be able to do what I love each day.
+                </p>
+                
+                <p>
+                  I met my husband Stephen in 2017 and together we moved to North Wales in 2020. The beautiful natural landscape here is a constant inspiration and I love both wild swimming and exploring on land, drawing inspiration from Embodied Presence practices.
+                </p>
+                
+                <p>
+                  Stephen introduced me to Zen meditation and also to the beautiful Mevlevi Order of Sufism. These are now two of the finest threads in the weave of my personal spiritual path, filling me with gratitude, wonder and awe, along with the understanding that I am always a beginner.
+                </p>
+                
+                <p>
+                  Stephen sometimes joins me leading meditation in workshops, retreats and classes, lending his wisdom and many years of experience to our sessions.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Teaching Approach */}
-      <section className="py-16 bg-sage-50">
+      {/* Vanda Scaravelli Teaching Influences */}
+      <section className="py-16 bg-softgreen-50">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-heading font-bold text-charcoal-900 mb-8 text-center">Teaching Approach</h2>
+            <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-8 text-center">Vanda Scaravelli</h2>
             
-            <div className="grid md:grid-cols-2 gap-8">
-              <Card variant="zen">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <span className="text-2xl mr-3">🎯</span>
-                    Alignment-Focused
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-charcoal-600">
-                    I believe that proper alignment is the foundation of a safe and sustainable practice. 
-                    My classes emphasize anatomical awareness and intelligent movement patterns that 
-                    honor your body&apos;s unique structure.
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="prose prose-lg max-w-none font-lato">
+              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                I often wonder what it would have been like to meet and work with Vanda personally. Her approach informed my teacher training and my practice and teaching style to this day. What characterises this practice?
+              </p>
               
-              <Card variant="zen">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <span className="text-2xl mr-3">💚</span>
-                    Trauma-Informed
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-charcoal-600">
-                    Creating a safe container for practice is paramount. I offer choices, modifications, 
-                    and invitations rather than commands, ensuring every student feels empowered to 
-                    honor their body&apos;s needs.
-                  </p>
-                </CardContent>
-              </Card>
+              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                Vanda believed in the natural wisdom of the body and in the unraveling release that we can find through careful practice. Three practice &apos;friends&apos; - Gravity, The Spine & The Breath, make everything possible.
+              </p>
               
-              <Card variant="zen">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <span className="text-2xl mr-3">🌱</span>
-                    Growth-Oriented
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-charcoal-600">
-                    Whether you&apos;re a complete beginner or advanced practitioner, I meet you where you are 
-                    and provide opportunities for growth that feel challenging yet achievable.
-                  </p>
-                </CardContent>
-              </Card>
+              <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+                The lower half of the body learns to root down into the ground and to become anchored and strong. The upper half of the body meanwhile becomes more fluid and free.
+              </p>
               
-              <Card variant="zen">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <span className="text-2xl mr-3">🧠</span>
-                    Mind-Body Connection
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-charcoal-600">
-                    My classes integrate breathwork, mindfulness, and movement to help you develop 
-                    a deeper relationship with your inner wisdom and intuitive body intelligence.
-                  </p>
-                </CardContent>
-              </Card>
+              <div className="bg-white p-8 rounded-lg shadow-sm border-l-4 border-softpink-400">
+                <blockquote className="text-xl font-lato italic text-gray-500 leading-relaxed">
+                  &ldquo;The pull of gravity under our feet makes it possible for us to extend the upper part of the spine, and this extension allows us to release tension between the vertebrae. Gravity is like a magnet attracting us to the earth, but this attraction is not limited to pulling us down, it also allows us to stretch in the opposite direction towards the sky.&rdquo;
+                </blockquote>
+                <cite className="text-sm text-gray-400 mt-4 block">— Vanda Scaravelli, Awakening The Spine, 1991</cite>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Classes I Teach */}
+      {/* What to Expect in a Class */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-heading font-bold text-charcoal-900 mb-8 text-center">Classes I Teach</h2>
+            <h2 className="text-3xl font-playfair font-bold text-gray-900 mb-8 text-center">What to Expect in a Class</h2>
             
-            <div className="space-y-6">
-              <div className="border-l-4 border-sage-500 pl-6">
-                <h3 className="text-xl font-semibold text-charcoal-900 mb-2">Gentle Hatha Yoga</h3>
-                <p className="text-charcoal-600">
-                  Perfect for beginners and those seeking a slower-paced practice. We hold poses 
-                  longer to build strength and flexibility while focusing on proper alignment.
-                </p>
-              </div>
+            <div className="bg-softblue-50 p-8 rounded-lg mb-8">
+              <blockquote className="text-xl font-lato italic text-gray-500 leading-relaxed mb-6">
+                &ldquo;Take a moment where you are right now. Can you feel your feet on the ground? Can you feel the breath moving in your belly or rib cage? Can you feel the natural curves of your spine and the gentle reach of the crown of your head skywards?&rdquo;
+              </blockquote>
+            </div>
+            
+            <div className="prose prose-lg max-w-none font-lato">
+              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                The principles of surrendering to gravity and connecting to the breath are key in the style of yoga that I practice and teach. We work gently, softly, slowly and tend to our bodies with utmost care, compassion and respect.
+              </p>
               
-              <div className="border-l-4 border-sage-500 pl-6">
-                <h3 className="text-xl font-semibold text-charcoal-900 mb-2">Alignment-Based Vinyasa</h3>
-                <p className="text-charcoal-600">
-                  Flowing sequences with detailed alignment cues. These classes combine the 
-                  meditative quality of careful attention with the joy of mindful movement.
-                </p>
-              </div>
+              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                I am most inspired by the pioneering work of female post-lineage yogis such as Vanda Scaravelli, Angela Farmer, Donna Fahri and Donna Martin (Psoma Yoga Therapy). The 2 year teacher training I undertook was led by a faculty of diverse, highly experienced practitioners: Chloe Freemantle, Anne-Marie Zulkahari, Giovanni Felicioni, Pete Blackaby (Intelligent Yoga) & Lisa Mcrory. With respect and gratitude to all of the above.
+              </p>
               
-              <div className="border-l-4 border-sage-500 pl-6">
-                <h3 className="text-xl font-semibold text-charcoal-900 mb-2">Restorative Yoga</h3>
-                <p className="text-charcoal-600">
-                  Deeply nourishing classes where poses are held for longer periods with full prop 
-                  support. Perfect for stress relief and nervous system healing.
-                </p>
-              </div>
+              <p className="text-gray-600 mb-6 text-lg leading-relaxed">
+                In a class you will be encouraged to work at your own pace and to cultivate a friendly curiosity towards the body as you explore different movements and poses.
+              </p>
               
-              <div className="border-l-4 border-sage-500 pl-6">
-                <h3 className="text-xl font-semibold text-charcoal-900 mb-2">Yoga for Healing</h3>
-                <p className="text-charcoal-600">
-                  Specialized classes designed for those recovering from injury or trauma. 
-                  Emphasis on choice, gentleness, and reconnecting with the body in a safe way.
+              <div className="bg-softyellow-50 p-6 rounded-lg">
+                <p className="text-gray-600 text-lg leading-relaxed italic">
+                  As Donna Fahri says, &ldquo;The teacher&apos;s role is to be the agent for guiding the student to their own perception, thoughts, feelings, kinesthesia and insights.&rdquo; My aim is for the class to offer you a space where you feel free to be yourself and to meet yourself exactly where you are.
                 </p>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Personal Touch */}
-      <section className="py-16 bg-sage-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-3xl font-heading font-bold text-charcoal-900 mb-6">Beyond the Mat</h2>
-            <p className="text-lg text-charcoal-600 mb-8">
-              When I&apos;m not teaching or practicing yoga, you can find me hiking in the mountains, 
-              reading philosophy, or spending time with my rescue dog, Buddha. I believe that 
-              yoga is not just what we do on the mat, but how we show up in the world with 
-              kindness, presence, and authenticity.
-            </p>
-            <blockquote className="text-xl italic text-charcoal-700 border-l-4 border-sage-500 pl-6 mb-8">
-              &ldquo;Yoga is not about touching your toes. It is about what you learn on the way down.&rdquo;
-            </blockquote>
           </div>
         </div>
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-gradient-to-r from-sage-500 to-ocean-500 text-white">
+      <section className="py-16 bg-gradient-to-r from-softyellow-500 to-softblue-500 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-heading font-bold mb-4">
-            Practice With Anna
+          <h2 className="text-4xl font-playfair font-bold mb-4">
+            Ready to Begin Your Journey?
           </h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-            Join me on the mat for a practice that honors your body, calms your mind, 
-            and opens your heart. I&apos;d love to support you on your yoga journey.
+          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto font-lato">
+            Join me for classes in North Wales, London, or online. Experience the gentle, 
+            mindful approach of Scaravelli-inspired yoga in a space where you can truly be yourself.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/schedule">
-              <Button size="xl" variant="primary" className="bg-white text-sage-600 hover:bg-charcoal-50">
-                View My Classes
+            <Link href="/classes">
+              <Button size="xl" variant="primary" className="bg-white text-softpink-600 hover:bg-gray-50 font-lato">
+                Explore Classes
               </Button>
             </Link>
-            <Link href="/about">
-              <Button size="xl" variant="outline" className="border-white text-white hover:bg-white/10">
-                Learn More About Me
+            <Link href="/retreats">
+              <Button size="xl" variant="outline" className="border-white text-white hover:bg-white/10 font-lato">
+                View Retreats
               </Button>
             </Link>
           </div>

@@ -4,25 +4,27 @@ const prisma = new PrismaClient()
 
 const sampleRetreats = [
   {
-    title: 'Tropical Paradise Yoga Retreat',
-    slug: 'tropical-paradise-yoga-retreat',
-    description: `Escape to our stunning beachfront retreat in Costa Rica for 7 days of yoga, meditation, and pure bliss. 
+    title: 'Worcestershire Weekend Retreat',
+    slug: 'worcestershire-weekend-retreat',
+    description: `Join Anna for a transformative yoga weekend retreat at The Fold Organic Farm in the beautiful Worcestershire countryside.
     
-Start each day with sunrise yoga on the beach, followed by nourishing breakfast made with fresh local ingredients. Explore the rainforest, practice mindfulness meditation, and enjoy daily yoga sessions designed for all levels.
+Escape the hustle and bustle for a weekend of mindful movement, deep relaxation, and connection with nature. Set in a peaceful organic farm environment, this retreat offers the perfect opportunity to reset and recharge.
 
-Our experienced instructors will guide you through various styles including Vinyasa, Yin, and Restorative yoga. Includes accommodation in beautiful eco-lodges, all meals, airport transfers, and optional excursions to local waterfalls and wildlife reserves.
+The weekend includes daily yoga sessions suitable for all levels, guided meditation, beautiful countryside walks, and delicious organic meals made with ingredients fresh from the farm. Accommodation ranges from cozy glamping options to comfortable farmhouse rooms.
 
-This retreat is perfect for beginners and experienced practitioners alike, offering time for deep personal reflection and connection with nature.`,
-    location: 'Manuel Antonio, Costa Rica',
-    startDate: new Date('2024-12-15'),
-    endDate: new Date('2024-12-22'),
-    totalPrice: 189900, // $1899.00
-    depositPrice: 59900, // $599.00
-    capacity: 16,
+This retreat is designed for anyone seeking to deepen their yoga practice, reduce stress, and enjoy the therapeutic benefits of time spent in nature. Whether you're a beginner or experienced practitioner, you'll find space to grow and unwind.
+
+All yoga props provided. Please bring comfortable clothing suitable for outdoor activities and layers for changeable weather.`,
+    location: 'The Fold Organic Farm, Worcestershire',
+    startDate: new Date('2025-08-22'),
+    endDate: new Date('2025-08-25'),
+    totalPrice: 16800, // £168.00
+    depositPrice: 10000, // £100.00
+    capacity: 12,
     images: [
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-      'https://images.unsplash.com/photo-1545389336-cf090694435e?w=800',
-      'https://images.unsplash.com/photo-1588286840104-8957b019727f?w=800',
+      'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800', // Rolling green countryside
+      'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800', // Organic farm field
+      'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=800', // Peaceful farmhouse
     ],
   },
   {
@@ -38,12 +40,13 @@ Perfect for anyone looking to disconnect from daily stress and reconnect with th
     location: 'Boulder, Colorado',
     startDate: new Date('2025-01-20'),
     endDate: new Date('2025-01-25'),
-    totalPrice: 129900, // $1299.00
-    depositPrice: 39900, // $399.00
+    totalPrice: 89900, // £899.00
+    depositPrice: 29900, // £299.00
     capacity: 12,
     images: [
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
+      'https://images.unsplash.com/photo-1464822759844-d150165c99fd?w=800', // Mountain landscape
+      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800', // Mountain meditation
+      'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800', // Mountain lodge/cabin
     ],
   },
   {
@@ -59,13 +62,13 @@ Includes luxury accommodation, gourmet meals featuring local organic ingredients
     location: 'Chianti, Tuscany, Italy',
     startDate: new Date('2025-05-10'),
     endDate: new Date('2025-05-20'),
-    totalPrice: 349900, // $3499.00
-    depositPrice: 99900, // $999.00
+    totalPrice: 249900, // £2499.00
+    depositPrice: 69900, // £699.00
     capacity: 20,
     images: [
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800',
-      'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=800',
-      'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800',
+      'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=800', // Tuscany vineyard landscape
+      'https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?w=800', // Italian villa
+      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800', // Tuscany hills with cypress trees
     ],
   },
 ]

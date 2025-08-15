@@ -6,14 +6,14 @@ import { clsx } from 'clsx'
 
 const buttonVariants = cva(
   // Base styles
-  "inline-flex items-center justify-center whitespace-nowrap rounded-soft text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-soft text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-softgreen-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        primary: "bg-sage-500 text-white hover:bg-sage-600 active:bg-sage-700",
-        secondary: "bg-ocean-500 text-white hover:bg-ocean-600 active:bg-ocean-700", 
-        outline: "border border-sage-500 text-sage-600 hover:bg-sage-50 active:bg-sage-100",
-        ghost: "text-sage-600 hover:bg-sage-50 active:bg-sage-100",
+        primary: "bg-softgreen-600 text-white hover:bg-softgreen-700 active:bg-softgreen-800 focus:ring-2 focus:ring-softgreen-500 focus:ring-offset-2",
+        secondary: "bg-softblue-500 text-white hover:bg-softblue-600 active:bg-softblue-700 focus:ring-2 focus:ring-softblue-400 focus:ring-offset-2",
+        outline: "border border-softgreen-500 text-softgreen-600 hover:bg-softgreen-50 active:bg-softgreen-100",
+        ghost: "text-softgreen-600 hover:bg-softgreen-50 active:bg-softgreen-100",
         destructive: "bg-red-500 text-white hover:bg-red-600 active:bg-red-700",
         terracotta: "bg-terracotta-500 text-white hover:bg-terracotta-600 active:bg-terracotta-700",
       },

@@ -1,6 +1,6 @@
 # Task ID: 6
 # Title: Homepage and Static Pages Development
-# Status: in-progress
+# Status: pending
 # Dependencies: 3
 # Priority: medium
 # Description: Build the main public-facing pages of the website, including the Homepage and About page, using the established component library.
@@ -11,7 +11,7 @@ Develop the Homepage with a hero section (video/image), featured offerings, test
 Visually inspect pages on multiple devices (desktop, tablet, mobile). Verify all links and CTAs work. Check for content accuracy against the PRD. Run a Lighthouse audit to check initial performance and SEO scores.
 
 # Subtasks:
-## 1. Develop Homepage - Hero Section [pending]
+## 1. Develop Homepage - Hero Section [done]
 ### Dependencies: None
 ### Description: Implement the main "above-the-fold" hero section. This includes integrating the background video or image and adding the primary headline and Call-to-Action (CTA) buttons using the established Button component.
 ### Details:

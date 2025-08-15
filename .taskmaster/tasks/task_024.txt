@@ -1,0 +1,231 @@
+# Task ID: 24
+# Title: Website Design Implementation from Figma Mockup
+# Status: pending
+# Dependencies: 3, 6, 15
+# Priority: high
+# Description: Transform the frontend of the Wingspan Yoga website to precisely match the Figma design and implement all content from the Website Design Brief. This includes building out all static pages, the blog structure, and ensuring a cohesive, responsive brand experience.
+# Details:
+This task involves a complete frontend overhaul based on the provided Figma mockup and design brief. 
+1. **Page Construction:** Build all required pages (Homepage, About/Philosophy, Classes, Retreats, Private Sessions, Blog, Contact) using Next.js 14 with the App Router. Structure each page's layout using Tailwind CSS (Flexbox/Grid) to strictly adhere to the Figma wireframes.
+2. **Component Integration:** Utilize the pre-built, accessible components from the Core Component Library (Task 3) for all UI elements like buttons, cards, and navigation. Do not introduce new one-off styles; extend the design system if necessary.
+3. **Content Implementation:** Methodically transfer all textual content, including specific quotes and philosophical statements from Anna Dorman's Website Design Brief, into the respective pages. Ensure the content is implemented verbatim.
+4. **Visuals & Imagery:** Implement placeholders for all photography specified in the design. Use the `next/image` component for optimization and specify the correct aspect ratios from Figma. Alt text should be descriptive but note that it's a placeholder (e.g., 'Placeholder image of a serene North Wales landscape').
+5. **Blog Structure:** Develop the frontend for the blog index (`/blog`) and dynamic post pages (`/blog/[slug]`). The index page should fetch and display a list of post summaries using the `Card` component. The single post page will render the rich text content provided by the CMS backend (Task 15).
+6. **Brand Identity:** Ensure the implementation consistently reflects the brand's nature-inspired, Scaravelli-influenced style through the correct application of the design system's colors, typography, and spacing tokens.
+7. **Contact & Location:** Build the contact page, ensuring it includes all specified information for North Wales. The contact form can be a simple `mailto:` link initially, with a clear UI. If a map is included in the design, use a static image or a lightweight embed.
+
+# Test Strategy:
+1. **Figma Comparison:** Conduct a visual review of each page on primary breakpoints (e.g., 375px, 768px, 1440px), comparing the implementation directly against the Figma mockup. Use browser extensions or Figma's Dev Mode to verify pixel-perfect alignment, spacing, and typography.
+2. **Content Audit:** Create a checklist of all content snippets from the design brief. Review the live preview of each page and tick off each item to confirm it has been implemented accurately and without modification.
+3. **Responsive Testing:** Use browser developer tools to emulate various devices (iPhone, iPad, standard desktop). Manually resize the browser window from narrow to wide, ensuring the layout adapts smoothly without breaking or causing content overflow.
+4. **Component State Verification:** Interact with all instances of core components (Buttons, Inputs, Cards). Verify that hover, focus, and active states work as expected and match the design system's specifications, including any Framer Motion animations.
+5. **Functional Click-Through:** Navigate the entire site via the main navigation and any in-page links (CTAs). Ensure all links resolve to the correct pages and that there are no dead links. Verify the blog index links correctly to individual post pages.
+6. **Placeholder Validation:** Inspect all images to confirm they are rendered using `next/image` and that each has a non-empty, descriptive `alt` attribute.
+
+# Subtasks:
+## 1. Implement Homepage, Global Navigation, and Footer [pending]
+### Dependencies: None
+### Description: Build the Homepage layout according to the Figma design. Implement the site-wide Navigation Bar and Footer components, ensuring they are responsive and use elements from the Core Component Library (Task 3).
+### Details:
+Construct the Homepage using Next.js 14 App Router and Tailwind CSS. Integrate the pre-built, accessible Navigation and Footer components from the library. Ensure all links in the navigation point to the correct future page routes. The structure must strictly adhere to the Figma wireframes for the primary entry point of the site.
+
+## 2. Build Core Static Pages: About/Philosophy and Contact [pending]
+### Dependencies: 24.1
+### Description: Create the 'About/Philosophy' and 'Contact' pages. Populate them with the verbatim text and quotes from the Website Design Brief. Implement the contact information and a simple `mailto:` link for the contact form.
+### Details:
+Using the established layout from the global navigation/footer, build the `/about` and `/contact` pages. Transfer all textual content from the Design Brief precisely. For the contact page, if a map is included in the design, use a static image placeholder. Ensure all content sections match the Figma layout.
+
+## 3. Develop Service Offering Pages: Classes, Retreats, Private Sessions [pending]
+### Dependencies: 24.1
+### Description: Construct the static pages for 'Classes', 'Retreats', and 'Private Sessions'. Use the `Card` component from the library to display individual offerings and structure the content as specified in the Figma design.
+### Details:
+Create the page routes for `/classes`, `/retreats`, and `/private-sessions`. Implement the page layouts using Tailwind CSS Grid or Flexbox to arrange the service listings. All content for these pages should be pulled from the Design Brief. These pages will be static for the initial implementation.
+
+## 4. Implement Blog Frontend: Index and Single Post Pages [pending]
+### Dependencies: 24.1
+### Description: Develop the frontend for the blog, including the index page (`/blog`) that lists post summaries and the dynamic single post page (`/blog/[slug]`) that renders full post content from the CMS (Task 15).
+### Details:
+Create the `/blog` page to fetch and display a list of post summaries using the `Card` component. Create the dynamic route `app/blog/[slug]/page.tsx` to fetch and render a single post's rich text content. The data fetching logic will connect to the backend API provided by Task 15. Use mock data for development until the API is ready.
+
+## 5. Integrate Image Placeholders and Finalize Responsiveness [pending]
+### Dependencies: 24.1, 24.2, 24.3, 24.4
+### Description: Conduct a site-wide pass to integrate all specified photography as placeholders using the `next/image` component. Perform a thorough responsive design audit and apply necessary fixes to ensure pixel-perfect alignment across all pages and key breakpoints.
+### Details:
+Go through each completed page and replace any temporary image blocks with the `next/image` component. Set the `src` to a placeholder service, and configure the `width`, `height`, and `alt` text as specified. Systematically review every page at 375px, 768px, and 1440px viewports, comparing against Figma and fixing any spacing, alignment, or wrapping issues with Tailwind's responsive modifiers.
+
+## 6. Hero Section - Visual Design Implementation [pending]
+### Dependencies: None
+### Description: Implement the hero section with soft gradient (pink → blue) background, forest/lake image overlay, "Flow, Breathe, Belong" headline, "Yoga inspired by nature's rhythm" subheadline, and primary/secondary CTA buttons for "Book a Class" and "Explore Retreats".
+### Details:
+- Use Tailwind gradient utilities for the pink to blue background
+- Implement Next.js Image component for forest/lake overlay
+- Use Typography system (Heading1 style) for main headline
+- Create responsive button layout using existing Button component
+- Ensure proper contrast and accessibility
+- Implement proper z-index layering for text over image
+
+## 7. Featured Offerings Cards Section [pending]
+### Dependencies: None
+### Description: Create the Featured Offerings section with 5 cards (North Wales Classes, London Classes, Online, Private Sessions, Retreats) in a responsive grid layout that showcases key services with proper spacing and visual hierarchy.
+### Details:
+- Use existing Card component from the design system
+- Implement responsive grid layout (mobile: 1 col, tablet: 2 cols, desktop: 3-5 cols)
+- Add hover effects and transitions for better interactivity
+- Ensure each card has consistent spacing and typography
+- Link each card to respective service pages
+- Add appropriate icons or placeholder images for each service
+- Implement proper loading states
+
+## 8. Philosophy Quote Pullout Section [pending]
+### Dependencies: None
+### Description: Implement the Philosophy Quote pullout section with the specific quote from 'What to Expect in a Class': 'Take a moment where you are right now. Can you feel your feet on the ground?...' using custom QuoteText styling.
+### Details:
+- Create a visually distinct quote component with QuoteText styling
+- Use proper typography hierarchy (Lato Italic, 20px, soft grey #555)
+- Add subtle background or border treatment to make it stand out
+- Implement proper spacing and centering
+- Consider adding quotation marks or other visual indicators
+- Ensure the quote is accessible and readable across all devices
+- Source the full quote text from the provided content
+
+## 9. About Anna Page - Complete Biography Implementation [pending]
+### Dependencies: None
+### Description: Build the About Anna page with hero image, biography section using the provided quote 'Hello, I'm Anna! I attended my first yoga class in Osmington, Dorset in 1993...', teaching influences from Vanda Scaravelli section, and personal inspiration content.
+### Details:
+- Implement hero section with Anna portrait in nature setting
+- Create biography section with proper typography and layout
+- Add Vanda Scaravelli teaching influences section with quoted content
+- Include personal life and inspiration section about Stephen and North Wales
+- Add philosophy quote section
+- Ensure responsive design across all devices
+- Use proper heading hierarchy (H1, H2, etc.)
+- Implement proper image optimization and loading
+
+## 10. North Wales Classes Page [pending]
+### Dependencies: None
+### Description: Create North Wales Classes page with Snowdonia/coastal hero image, class details section with schedule and pricing, and private sessions promotional section with booking links.
+### Details:
+- Implement hero section with Snowdonia or coastal scene imagery
+- Create class information layout with schedule, pricing, and descriptions
+- Add booking integration connecting to existing class booking system (Task 8)
+- Include private sessions promotional section with call-to-action
+- Ensure responsive design and proper content hierarchy
+- Add location information and directions if needed
+- Implement proper SEO optimization for local search
+
+## 11. London Classes Page [pending]
+### Dependencies: None
+### Description: Build London Classes page with same format as North Wales but featuring London imagery, availability information, and studio-specific details.
+### Details:
+- Mirror the North Wales classes layout structure
+- Implement London-specific hero imagery (studio or urban yoga setting)
+- Add London class schedule and availability information
+- Include studio location details and transportation options
+- Connect to existing booking system with London class filtering
+- Ensure consistent design language with North Wales page
+- Add any London-specific class offerings or specialties
+
+## 12. Online Classes Page [pending]
+### Dependencies: None
+### Description: Create Online Classes page with calm indoor yoga space hero image, detailed description of how online classes work, Zoom integration information, and schedule/booking functionality.
+### Details:
+- Implement hero section with indoor yoga space featuring plants
+- Create comprehensive description of online class format and experience
+- Add technical requirements section (Zoom, internet, equipment needed)
+- Include scheduling and booking integration for online classes
+- Add FAQ section for common online class questions
+- Implement proper call-to-action buttons for joining classes
+- Ensure accessibility for online class information
+
+## 13. Private Sessions Page [pending]
+### Dependencies: None
+### Description: Build Private Sessions page with quiet yoga space hero image and the complete quoted text from 'Private Sessions': 'Private sessions can be taken on an ongoing basis, as a short series...' plus booking CTA.
+### Details:
+- Implement hero section with Anna in quiet, peaceful yoga space
+- Add the complete quoted text from Private Sessions content
+- Create compelling layout that emphasizes personalized nature of sessions
+- Include pricing information and session duration options
+- Add booking call-to-action that connects to contact or booking system
+- Include testimonials or benefits of private sessions
+- Ensure the content highlights the personalized approach
+
+## 14. Retreats & Workshops Page [pending]
+### Dependencies: None
+### Description: Create Retreats & Workshops page with scenic retreat location hero image, retreat description blocks for Snowdonia and Worcestershire locations, booking links, and optional testimonials section.
+### Details:
+- Implement hero section with scenic retreat location imagery
+- Add retreat description blocks with quoted content for Snowdonia retreat
+- Add retreat description blocks with quoted content for Worcestershire retreat
+- Connect to existing retreat booking system (Task 14)
+- Include retreat dates, pricing, and what's included information
+- Add testimonials section structure for future content
+- Implement proper call-to-action buttons for retreat bookings
+- Ensure responsive design for retreat information cards
+
+## 15. Enhanced Contact Page [pending]
+### Dependencies: None
+### Description: Enhance the Contact page with contact form, North Wales map embed, email and phone links, plus any additional contact information and location details.
+### Details:
+- Implement contact form with proper validation and submission handling
+- Add North Wales location map embed (Google Maps or alternative)
+- Include email and phone contact information with clickable links
+- Add address and location details
+- Include office hours or availability information
+- Ensure form accessibility and proper error handling
+- Add confirmation messaging for form submissions
+- Implement responsive design for all contact elements
+
+## 16. Brand Color Palette Implementation [pending]
+### Dependencies: None
+### Description: Implement the custom color palette from the design brief: SoftPink (#F9E1E8), SoftGreen (#D9EAD3), SoftBlue (#D6EAF8), and GradientPinkBlue, ensuring they are properly configured in Tailwind CSS and consistently applied across all components.
+### Details:
+- Update tailwind.config.ts with the custom color palette
+- Create CSS custom properties for the gradient combinations
+- Audit existing components to use new color system
+- Ensure proper contrast ratios for accessibility (WCAG AA)
+- Create color utility classes for consistent usage
+- Update design system documentation
+- Test color combinations across different screen types and lighting
+- Implement hover and focus states using the new palette
+
+## 17. Typography System Configuration [pending]
+### Dependencies: None
+### Description: Configure the typography system with Playfair Display for headings (Heading1: 48px bold, Heading2: 32px semi-bold) and Lato for body text (BodyText: 18px regular, QuoteText: 20px italic, soft grey #555) ensuring proper font loading and fallbacks.
+### Details:
+- Install and configure Playfair Display and Lato fonts via Google Fonts or local hosting
+- Update tailwind.config.ts with custom font family definitions
+- Create typography utility classes for consistent heading styles
+- Implement proper font loading strategy (preload, display: swap)
+- Set up font fallbacks for better performance and accessibility
+- Create component-level typography styles for quotes and special text
+- Test typography scaling across different screen sizes
+- Ensure proper line height and letter spacing for readability
+
+## 18. Image Management and Optimization System [pending]
+### Dependencies: None
+### Description: Create a comprehensive image management system with optimized placeholders for all specified images: hero backgrounds, instructor portraits, location imagery, and service illustrations, using Next.js Image component for optimal performance.
+### Details:
+- Set up image directory structure for different image categories
+- Implement placeholder images for: forest/lake hero, Anna portraits, Snowdonia/coastal scenes, London studios, indoor yoga spaces, retreat locations
+- Configure Next.js Image component with proper sizing and lazy loading
+- Set up responsive image breakpoints for different screen sizes
+- Implement alt text standards for accessibility
+- Add image optimization pipeline (compression, format conversion)
+- Create image loading states and error handling
+- Document image specifications and naming conventions
+
+## 19. Comprehensive Responsive Design Testing and Fixes [pending]
+### Dependencies: None
+### Description: Perform comprehensive responsive design testing and fixes across all breakpoints (mobile, tablet, desktop) ensuring the website maintains visual integrity and usability on all devices, with special attention to navigation, cards, and content layout.
+### Details:
+- Test all pages across mobile (320px-768px), tablet (768px-1024px), and desktop (1024px+) breakpoints
+- Fix navigation collapse/expand behavior on mobile devices
+- Ensure card layouts adapt properly across screen sizes
+- Test touch interactions and hover states appropriately
+- Verify text readability and button sizing on small screens
+- Check image scaling and aspect ratios across devices
+- Test form usability on mobile devices
+- Validate accessibility features across all breakpoints
+- Conduct cross-browser testing (Chrome, Safari, Firefox)
+- Document responsive design standards and breakpoint strategy
+

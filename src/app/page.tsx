@@ -1,49 +1,74 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Hero, HeroContent, HeroTitle, HeroSubtitle, HeroDescription, HeroActions } from '@/components/ui/hero'
+import { Hero, HeroContent, HeroTitle, HeroDescription, HeroActions } from '@/components/ui/hero'
 import Link from 'next/link'
 
 export default function HomePage() {
+  const featuredOfferings = [
+    {
+      title: 'North Wales Classes',
+      description: 'In-person yoga classes in the beautiful landscapes of North Wales.',
+      href: '/classes/north-wales',
+      image: '/images/north-wales-placeholder.jpg',
+    },
+    {
+      title: 'London Classes',
+      description: 'Urban yoga sessions in the heart of London.',
+      href: '/classes/london',
+      image: '/images/london-placeholder.jpg',
+    },
+    {
+      title: 'Online Classes',
+      description: 'Join from anywhere with our live online yoga sessions.',
+      href: '/classes/online',
+      image: '/images/online-placeholder.jpg',
+    },
+    {
+      title: 'Private Sessions',
+      description: 'Personalized one-on-one yoga sessions tailored to your needs.',
+      href: '/private-sessions',
+      image: '/images/private-placeholder.jpg',
+    },
+    {
+      title: 'Retreats',
+      description: 'Immersive yoga retreats in stunning natural locations.',
+      href: '/retreats',
+      image: '/images/retreats-placeholder.jpg',
+    },
+  ];
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section with Figma Design */}
       <Hero
         variant="gradient"
-        overlay="gradient"
-        backgroundImage="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2520&q=80"
+        overlay="light"
+        className="bg-gradient-to-b from-softyellow-300 to-softblue-300 min-h-screen"
         minHeight="100vh"
         contentAlignment="center"
       >
         <HeroContent maxWidth="4xl">
-          <div className="space-y-8">
+          <div className="space-y-8 text-center">
             <div className="space-y-4">
-              <HeroTitle size="xl" gradient={false}>
-                Welcome to{' '}
-                <span className="bg-gradient-to-r from-sage-200 to-ocean-200 bg-clip-text text-transparent">
-                  Wingspan Yoga
-                </span>
+              <HeroTitle size="xl" className="font-playfair font-bold text-charcoal-800">
+                Flow, Breathe, Belong
               </HeroTitle>
-              <HeroSubtitle size="md" className="text-sage-200">
-                with Anna Dorman
-              </HeroSubtitle>
             </div>
             
-            <HeroDescription size="lg" className="max-w-3xl mx-auto">
-              Transform your practice with personalized yoga instruction that honors your body, 
-              calms your mind, and opens your heart. Join Anna for classes that blend traditional 
-              wisdom with modern alignment principles in a safe, inclusive environment.
+            <HeroDescription size="lg" className="text-charcoal-700 font-lato max-w-3xl mx-auto">
+              Yoga inspired by nature&apos;s rhythm, for body, mind, and spirit.
             </HeroDescription>
             
             <HeroActions spacing="lg" justify="center">
-              <Link href="/schedule">
-                <Button size="xl" variant="primary" className="bg-sage-500 hover:bg-sage-600 text-white shadow-lg">
-                  Book Your First Class
+              <Link href="/classes">
+                <Button size="xl" variant="primary" className="font-lato">
+                  Book a Class
                 </Button>
               </Link>
-              <Link href="/about">
-                <Button size="xl" variant="outline" className="border-white text-white hover:bg-white/10 backdrop-blur-sm">
-                  Meet Anna
+              <Link href="/retreats">
+                <Button size="xl" variant="secondary" className="font-lato">
+                  Explore Retreats
                 </Button>
               </Link>
             </HeroActions>
@@ -51,189 +76,130 @@ export default function HomePage() {
         </HeroContent>
       </Hero>
 
-      {/* Featured Offerings */}
+      {/* Welcome Message */}
       <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-4xl font-heading font-bold text-charcoal-900 text-center mb-12">
-              Your Yoga Journey Starts Here
-            </h2>
-            
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card variant="zen">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <span className="text-3xl mr-3">🧘‍♀️</span>
-                    Gentle Hatha
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-charcoal-600 mb-4">
-                    Perfect for beginners and those seeking a slower-paced practice. 
-                    Build strength and flexibility with mindful attention to alignment.
-                  </p>
-                  <Link href="/schedule">
-                    <Button variant="outline" size="sm">View Classes</Button>
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <p className="text-lg text-charcoal-600 leading-relaxed font-lato">
+            Welcome to Wingspan Yoga, where movement meets mindfulness in harmony with nature&apos;s wisdom. 
+            Anna Dorman brings over 15 years of experience in trauma-informed, alignment-focused yoga, 
+            creating a safe and inclusive space for practitioners of all levels to explore their practice.
+          </p>
+        </div>
+      </section>
+
+      {/* Featured Offerings - 5 Cards Layout */}
+      <section className="py-16 bg-softgreen-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-4xl font-playfair font-bold text-center text-charcoal-800 mb-12">
+            Featured Offerings
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+            {featuredOfferings.map((offering) => (
+              <Card key={offering.title} variant="organic" className="group hover:shadow-organic transition-shadow overflow-hidden">
+                <div className="bg-gradient-to-b from-softyellow-300 to-softblue-300">
+                  <Link href={offering.href} className="block">
+                    <div className="aspect-square bg-white/20 flex items-center justify-center">
+                      <span className="text-white font-lato text-sm font-medium shadow-sm">Image Placeholder</span>
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="text-lg font-playfair font-semibold text-white mb-2">
+                        {offering.title}
+                      </h3>
+                      <p className="text-white/90 text-sm font-lato leading-relaxed">
+                        {offering.description}
+                      </p>
+                    </CardContent>
                   </Link>
-                </CardContent>
+                </div>
               </Card>
-              
-              <Card variant="zen">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <span className="text-3xl mr-3">🌊</span>
-                    Alignment Vinyasa
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-charcoal-600 mb-4">
-                    Flowing sequences with detailed alignment cues. Experience the 
-                    meditative quality of careful attention with mindful movement.
-                  </p>
-                  <Link href="/schedule">
-                    <Button variant="outline" size="sm">View Classes</Button>
-                  </Link>
-                </CardContent>
-              </Card>
-              
-              <Card variant="zen">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <span className="text-3xl mr-3">🌸</span>
-                    Restorative Yoga
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-charcoal-600 mb-4">
-                    Deeply nourishing practice with full prop support. 
-                    Perfect for stress relief and nervous system healing.
-                  </p>
-                  <Link href="/schedule">
-                    <Button variant="outline" size="sm">View Classes</Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* About Anna Preview */}
-      <section className="py-16 bg-sage-50">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
-              <div>
-                <div className="w-64 h-64 bg-sage-200 rounded-full mx-auto md:mx-0 mb-6 flex items-center justify-center">
-                  <span className="text-9xl">🧘‍♀️</span>
+      {/* Philosophy Quote Pull-out */}
+      <section className="py-16 bg-softyellow-100">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <blockquote className="text-2xl font-lato italic text-charcoal-700 leading-relaxed">
+            &ldquo;Take a moment where you are right now. Can you feel your feet on the ground? 
+            Can you soften your jaw, your shoulders, your belly? Can you allow your breath to deepen 
+            and slow down? This is where yoga begins – not in a perfect pose, but in the simple 
+            act of returning to yourself.&rdquo;
+          </blockquote>
+          <cite className="block mt-6 text-charcoal-600 font-playfair">
+            — Anna Dorman, on What to Expect in a Class
+          </cite>
+        </div>
+      </section>
+
+      {/* Upcoming Events Preview */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-4xl font-playfair font-bold text-center text-charcoal-800 mb-12">
+            Upcoming Retreats
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <Card variant="organic" className="p-0 overflow-hidden">
+              <div className="p-8 bg-gradient-to-b from-softyellow-300 to-softblue-300">
+                <div className="aspect-video bg-white/20 rounded-natural mb-6">
+                  <span className="flex items-center justify-center h-full text-white font-lato">
+                    Snowdonia Retreat Image
+                  </span>
                 </div>
-              </div>
-              
-              <div>
-                <h2 className="text-4xl font-heading font-bold text-charcoal-900 mb-6">
-                  Meet Anna Dorman
-                </h2>
-                <p className="text-lg text-charcoal-600 mb-6 leading-relaxed">
-                  With over 15 years of experience and RYT-500 certification, Anna brings 
-                  a unique blend of traditional Hatha yoga and trauma-informed teaching 
-                  to create a safe, inclusive space for all practitioners.
+                <h3 className="text-2xl font-playfair font-semibold text-white mb-4">
+                  Snowdonia Retreat
+                </h3>
+                <p className="text-white/90 font-lato mb-6">
+                  A weekend of yoga and mindfulness nestled in the heart of Snowdonia National Park.
                 </p>
-                <div className="flex flex-wrap gap-2 mb-6">
-                  <span className="px-4 py-2 text-sm rounded-full bg-sage-100 text-sage-700">RYT-500 Certified</span>
-                  <span className="px-4 py-2 text-sm rounded-full bg-sage-100 text-sage-700">Trauma-Informed</span>
-                  <span className="px-4 py-2 text-sm rounded-full bg-sage-100 text-sage-700">15+ Years Experience</span>
-                </div>
-                <Link href="/instructor">
-                  <Button variant="outline">
-                    Learn About Anna&apos;s Approach
-                  </Button>
-                </Link>
+                <Button variant="primary" className="font-lato">
+                  <Link href="/retreats">Learn More</Link>
+                </Button>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
+            </Card>
 
-      {/* Testimonials */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-heading font-bold text-charcoal-900 mb-12">
-              What Students Say
-            </h2>
-            
-            <div className="grid md:grid-cols-2 gap-8">
-              <Card variant="organic">
-                <CardContent className="p-8">
-                  <blockquote className="text-lg italic text-charcoal-700 mb-4">
-                    &ldquo;Anna&apos;s classes are exactly what I needed. Her trauma-informed approach 
-                    helped me reconnect with my body in a way I never thought possible.&rdquo;
-                  </blockquote>
-                  <p className="text-sm font-medium text-sage-600">— Sarah M.</p>
-                </CardContent>
-              </Card>
-              
-              <Card variant="organic">
-                <CardContent className="p-8">
-                  <blockquote className="text-lg italic text-charcoal-700 mb-4">
-                    &ldquo;The alignment focus has completely transformed my practice. 
-                    I finally understand how to move safely and mindfully.&rdquo;
-                  </blockquote>
-                  <p className="text-sm font-medium text-sage-600">— Michael R.</p>
-                </CardContent>
-              </Card>
-            </div>
+            <Card variant="organic" className="p-0 overflow-hidden">
+              <div className="p-8 bg-gradient-to-b from-softyellow-300 to-softblue-300">
+                <div className="aspect-video bg-white/20 rounded-natural mb-6">
+                  <span className="flex items-center justify-center h-full text-white font-lato">
+                    Worcestershire Retreat Image
+                  </span>
+                </div>
+                <h3 className="text-2xl font-playfair font-semibold text-white mb-4">
+                  Worcestershire Escape
+                </h3>
+                <p className="text-white/90 font-lato mb-6">
+                  Reconnect with nature and yourself in the peaceful countryside of Worcestershire.
+                </p>
+                <Button variant="primary" className="font-lato">
+                  <Link href="/retreats">Learn More</Link>
+                </Button>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* Newsletter Signup */}
-      <section className="py-16 bg-charcoal-900 text-white">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl font-heading font-bold mb-4">
-              Stay Connected
-            </h2>
-            <p className="text-charcoal-200 mb-8">
-              Receive yoga tips, class updates, and mindfulness practices delivered to your inbox.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+      <section className="py-16 bg-softblue-50">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-4xl font-playfair font-bold text-charcoal-800 mb-6">
+            Stay Connected
+          </h2>
+          <p className="text-lg text-charcoal-600 mb-8 font-lato">
+            Join our community for updates on classes, retreats, and mindful living insights.
+          </p>
+          <div className="max-w-md mx-auto">
+            <div className="flex gap-4">
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 bg-white border-charcoal-300"
+                className="flex-1 px-4 py-3 rounded-lg border border-softgreen-300 focus:outline-none focus:ring-2 focus:ring-softgreen-500 font-lato"
               />
-              <Button variant="primary">
+              <Button variant="primary" className="font-lato">
                 Subscribe
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="py-16 bg-gradient-to-r from-sage-500 to-ocean-500 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-heading font-bold mb-4">
-            Ready to Spread Your Wings?
-          </h2>
-          <p className="text-lg opacity-90 mb-8 max-w-2xl mx-auto">
-            Join Anna for a practice that honors your body, calms your mind, and opens your heart. 
-            Your journey toward greater strength, flexibility, and inner peace starts here.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/schedule">
-              <Button size="xl" variant="primary" className="bg-white text-sage-600 hover:bg-charcoal-50">
-                Book Your First Class
-              </Button>
-            </Link>
-            <Link href="/membership">
-              <Button size="xl" variant="outline" className="border-white text-white hover:bg-white/10">
-                Explore Memberships
-              </Button>
-            </Link>
           </div>
         </div>
       </section>

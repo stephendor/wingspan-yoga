@@ -5,15 +5,15 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { clsx } from 'clsx'
 
 const cardVariants = cva(
-  "rounded-natural border bg-white text-charcoal-900",
+  "rounded-natural border text-charcoal-900",
   {
     variants: {
       variant: {
-        default: "border-charcoal-200 shadow-soft",
-        elevated: "border-charcoal-200 shadow-natural",
+        default: "border-charcoal-200 shadow-soft bg-white",
+        elevated: "border-charcoal-200 shadow-natural bg-white",
         organic: "border-charcoal-200 shadow-organic",
-        zen: "border-charcoal-200 shadow-zen",
-        outlined: "border-charcoal-300 shadow-none",
+        zen: "border-charcoal-200 shadow-zen bg-white",
+        outlined: "border-charcoal-300 shadow-none bg-white",
       },
       padding: {
         none: "",

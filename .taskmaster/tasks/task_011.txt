@@ -1,6 +1,6 @@
 # Task ID: 11
 # Title: Video Progress Tracking
-# Status: todo
+# Status: done
 # Dependencies: 10
 # Priority: medium
 # Description: Implement functionality to track and display a member's viewing progress for each video.
@@ -9,3 +9,41 @@ Create a `VideoProgress` table in the database linked to `User` and `Video` mode
 
 # Test Strategy:
 Watch a portion of a video, navigate away, and return to verify the video resumes from the correct timestamp. Check the library view to confirm the progress bar accurately reflects the watched percentage.
+
+# Subtasks:
+## 1. Define `VideoProgress` Model and Database Migration [done]
+### Dependencies: None
+### Description: Add the `VideoProgress` model to the Prisma schema to store user-specific video progress, including the last watched timestamp and completion status.
+### Details:
+In the `schema.prisma` file, define a `VideoProgress` model. It should include fields for `progress` (Float, to store seconds), `completed` (Boolean), and establish many-to-one relationships with the `User` and `Video` models using `userId` and `videoId` foreign keys. Create a unique composite key on `userId` and `videoId`. Generate and apply the new database migration using `prisma migrate dev`.
+
+## 2. Create API Endpoint for Updating Video Progress [done]
+### Dependencies: 11.1
+### Description: Implement a secure backend API route that allows authenticated users to save their viewing progress for a specific video.
+### Details:
+Create a protected API route, e.g., `POST /api/videos/[videoId]/progress`. This endpoint will receive a JSON body with the `currentTime`. It should perform an 'upsert' operation: find a `VideoProgress` record for the authenticated user and `videoId`, and update the `progress` field. If no record exists, create one. If `currentTime` is within a threshold of the video's total duration (e.g., 95%), set the `completed` flag to true.
+
+## 3. Implement Client-Side Progress Tracking with Video Player [done]
+### Dependencies: 11.2
+### Description: Integrate with the client-side video player to capture the current playback time and periodically send it to the backend API.
+### Details:
+On the video playback page, use the video player's API (e.g., HTML5 `<video>` element events). Add an event listener for the `timeupdate` event. To prevent excessive API calls, throttle the function that sends the progress update to the backend (e.g., once every 15 seconds). Also, trigger a final update on `pause` and `beforeunload` events to ensure the latest progress is saved.
+<info added on 2025-08-13T23:35:37.968Z>
+The `saveProgress` function sends the current time to `/api/videos/[videoId]/progress`. In addition to `timeupdate` (throttled to 15s), `pause`, and `beforeunload` events, progress is also saved on video `end` and component unmount events. A smart saving mechanism prevents unnecessary updates by only saving if progress has changed by more than 15 seconds from the last saved position. Error handling and logging are implemented for failed saves. This functionality is integrated with the Plyr video player.
+</info added on 2025-08-13T23:35:37.968Z>
+
+## 4. Implement Resume Playback Functionality [done]
+### Dependencies: 11.2
+### Description: Fetch the user's last known progress when a video loads and configure the player to start from that specific timestamp.
+### Details:
+When loading the video player page, fetch the video's data along with the associated `VideoProgress` for the current user. This may require modifying the data-fetching logic for a single video. If a `VideoProgress` record exists, pass the `progress` value (in seconds) to the video player component and set its initial `currentTime` property to resume playback.
+
+## 5. Develop UI Component for Progress Bar Visualization [done]
+### Dependencies: 11.4
+### Description: Create a visual progress bar overlay on video thumbnails in the library to show users how much of each video they have watched.
+### Details:
+Modify the data fetching for the video library to include the `VideoProgress` for each video. Create a new React component that accepts `progress` and `videoDuration` as props. This component will render a progress bar (e.g., a `div` with its width calculated as `(progress / videoDuration) * 100%`) as an overlay on the video thumbnail. If `completed` is true, display a checkmark icon or a similar indicator.
+<info added on 2025-08-13T23:40:05.493Z>
+The progress bar is positioned at the bottom of the thumbnail and uses a sage green color. For completed videos (95%+ watched), a checkmark icon and "Completed" text are displayed. For partially watched videos, the percentage watched is shown. The progress bar is only visible for videos with `progress > 0` and is responsively designed to adapt to thumbnail dimensions.
+</info added on 2025-08-13T23:40:05.493Z>
+

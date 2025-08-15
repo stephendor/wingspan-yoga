@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import lineClamp from '@tailwindcss/line-clamp'
 
 const config: Config = {
   content: [
@@ -6,10 +7,106 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  safelist: [
+    // Ensure gradient classes are always generated
+    'from-softyellow-300',
+    'to-softblue-300',
+    'from-softorange-300',
+    'to-softblue-300',
+    'from-softpink-300',
+    'to-softblue-300',
+    'from-softgreen-300',
+    'to-softblue-300',
+    'bg-gradient-to-b',
+    'bg-gradient-to-br',
+    'bg-gradient-to-r',
+    // Background colors
+    'bg-softyellow-50',
+    'bg-softyellow-100',
+    'bg-softyellow-200',
+    'bg-softyellow-300',
+    'bg-softorange-50',
+    'bg-softorange-100',
+    'bg-softorange-200',
+    'bg-softorange-300',
+    'bg-softblue-50',
+    'bg-softblue-100',
+    'bg-softblue-200',
+    'bg-softblue-300',
+    'bg-softgreen-50',
+    'bg-softgreen-100',
+    'bg-softgreen-200',
+    'bg-softgreen-300',
+    'bg-softpink-50',
+    'bg-softpink-100',
+    'bg-softpink-200',
+    'bg-softpink-300',
+  ] as const,
   theme: {
     extend: {
       colors: {
-        // Primary Palette - Brand Colors
+        // New Brand Colors (Figma Design) - Updated with softer, more muted tones
+        softorange: {
+        50: '#fffaf7',
+        100: '#fef3e8',
+        200: '#fde7d0',
+        300: '#FFDD99', // Brighter, sunnier orange
+        400: '#f8d5a6',
+        500: '#f5c484',
+        600: '#f2b462',
+        700: '#efa340',
+        800: '#ec931e',
+        900: '#d4830c',
+      },
+      softyellow: {
+        50: '#fffef7',
+        100: '#fefce8',
+        200: '#fef9c3',
+        300: '#FFF2A1', // Brighter, sunnier yellow
+        400: '#fde68a',
+        500: '#fcd34d',
+        600: '#f59e0b',
+        700: '#d97706',
+        800: '#b45309',
+        900: '#92400e',
+      },
+        softpink: {
+          50: '#fef8f9',
+          100: '#fdf1f3',
+          200: '#fceaed',
+          300: '#F9E1E8', // Primary soft pink from Figma - kept same
+          400: '#f5d0d7',
+          500: '#f1bfc6',
+          600: '#edaeb5',
+          700: '#e99da4',
+          800: '#e58c93',
+          900: '#e17b82',
+        },
+        softgreen: {
+          50: '#f8fcf6',
+          100: '#f1f9ed',
+          200: '#eaf6e4',
+          300: '#D9EAD3', // Primary soft green from Figma - kept same
+          400: '#cbe0c2',
+          500: '#bdd6b1',
+          600: '#afcca0',
+          700: '#a1c28f',
+          800: '#93b87e',
+          900: '#85ae6d',
+        },
+        softblue: {
+          50: '#f7fbfe',
+          100: '#eff7fc',
+          200: '#e7f3fa',
+          300: '#B3E5FC', // Brighter, sunnier blue
+          400: '#c6dff4',
+          500: '#b6d4f0',
+          600: '#a6c9ec',
+          700: '#96bee8',
+          800: '#86b3e4',
+          900: '#76a8e0',
+        },
+        // Original Brand Colors (preserved for existing components)
         sage: {
           50: '#f6f7f4',
           100: '#e9ebe3',
@@ -99,15 +196,18 @@ const config: Config = {
         },
       },
       fontFamily: {
-        // Header fonts
+        // Header fonts (Figma Design Typography)
+        'playfair': ['Playfair Display', 'serif'],
+        lato: ['Lato', 'sans-serif'],
+        // Original header fonts (preserved)
         montserrat: ['Montserrat', 'sans-serif'],
         raleway: ['Raleway', 'sans-serif'],
         // Body fonts
         'open-sans': ['Open Sans', 'sans-serif'],
-        lato: ['Lato', 'sans-serif'],
         // Default font stack
-        sans: ['Open Sans', 'Lato', 'system-ui', 'sans-serif'],
-        heading: ['Montserrat', 'Raleway', 'system-ui', 'sans-serif'],
+        sans: ['Lato', 'Open Sans', 'system-ui', 'sans-serif'],
+        heading: ['Playfair Display', 'Montserrat', 'serif'],
+        serif: ['Playfair Display', 'serif'],
       },
       fontSize: {
         // Extended typography scale
@@ -177,7 +277,7 @@ const config: Config = {
     },
   },
   plugins: [
-    require('@tailwindcss/line-clamp'),
+    lineClamp,
   ],
 }
 

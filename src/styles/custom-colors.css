@@ -1,0 +1,152 @@
+/* 
+Force include custom brand colors for Turbopack/Next.js 15
+*/
+
+/* Soft Pink Colors */
+.bg-softpink-50 { background-color: #fef7f9; }
+.bg-softpink-100 { background-color: #fdeee8; }
+.bg-softpink-200 { background-color: #fbdde0; }
+.bg-softpink-300 { background-color: #F9E1E8; }
+.bg-softpink-400 { background-color: #f5c6d0; }
+.bg-softpink-500 { background-color: #f1a6b8; }
+.bg-softpink-600 { background-color: #ed86a0; }
+.bg-softpink-700 { background-color: #e96688; }
+.bg-softpink-800 { background-color: #e54670; }
+.bg-softpink-900 { background-color: #e12658; }
+
+/* Soft Green Colors */
+.bg-softgreen-50 { background-color: #f5faf5; }
+.bg-softgreen-100 { background-color: #ecf5eb; }
+.bg-softgreen-200 { background-color: #e2f0df; }
+.bg-softgreen-300 { background-color: #D9EAD3; }
+.bg-softgreen-400 { background-color: #c9e0bf; }
+.bg-softgreen-500 { background-color: #b9d6ab; }
+.bg-softgreen-600 { background-color: #a9cc97; }
+.bg-softgreen-700 { background-color: #99c283; }
+.bg-softgreen-800 { background-color: #89b86f; }
+.bg-softgreen-900 { background-color: #79ae5b; }
+
+/* Soft Blue Colors */
+.bg-softblue-50 { background-color: #f6fbfe; }
+.bg-softblue-100 { background-color: #ecf7fd; }
+.bg-softblue-200 { background-color: #e2f3fc; }
+.bg-softblue-300 { background-color: #B3E5FC; }
+.bg-softblue-400 { background-color: #c4e0f5; }
+.bg-softblue-500 { background-color: #b2d6f2; }
+.bg-softblue-600 { background-color: #a0ccef; }
+.bg-softblue-700 { background-color: #8ec2ec; }
+.bg-softblue-800 { background-color: #7cb8e9; }
+.bg-softblue-900 { background-color: #6aaee6; }
+
+/* Soft Orange Colors */
+.bg-softorange-50 { background-color: #fffaf7; }
+.bg-softorange-100 { background-color: #fef3e8; }
+.bg-softorange-200 { background-color: #fde7d0; }
+.bg-softorange-300 { background-color: #FFDD99; }
+.bg-softorange-400 { background-color: #f8d5a6; }
+.bg-softorange-500 { background-color: #f5c484; }
+.bg-softorange-600 { background-color: #f2b462; }
+.bg-softorange-700 { background-color: #efa340; }
+.bg-softorange-800 { background-color: #ec931e; }
+.bg-softorange-900 { background-color: #d4830c; }
+
+/* Soft Yellow Colors */
+.bg-softyellow-50 { background-color: #fffef7; }
+.bg-softyellow-100 { background-color: #fefce8; }
+.bg-softyellow-200 { background-color: #fef9c3; }
+.bg-softyellow-300 { background-color: #FFF2A1; }
+.bg-softyellow-400 { background-color: #fde68a; }
+.bg-softyellow-500 { background-color: #fcd34d; }
+.bg-softyellow-600 { background-color: #f59e0b; }
+.bg-softyellow-700 { background-color: #d97706; }
+.bg-softyellow-800 { background-color: #b45309; }
+.bg-softyellow-900 { background-color: #92400e; }
+
+/* Text Colors */
+.text-softpink-300 { color: #F9E1E8; }
+.text-softpink-600 { color: #ed86a0; }
+.text-softpink-700 { color: #e96688; }
+.text-softpink-800 { color: #e54670; }
+
+.text-softgreen-300 { color: #D9EAD3; }
+.text-softgreen-600 { color: #a9cc97; }
+.text-softgreen-700 { color: #99c283; }
+.text-softgreen-800 { color: #89b86f; }
+
+.text-softblue-300 { color: #B3E5FC; }
+.text-softblue-600 { color: #a0ccef; }
+.text-softblue-700 { color: #8ec2ec; }
+.text-softblue-800 { color: #7cb8e9; }
+
+.text-softorange-300 { color: #FFDD99; }
+.text-softorange-600 { color: #f2b462; }
+.text-softorange-700 { color: #efa340; }
+.text-softorange-800 { color: #ec931e; }
+
+.text-softyellow-300 { color: #FFF2A1; }
+.text-softyellow-600 { color: #fcd34d; }
+.text-softyellow-700 { color: #d97706; }
+.text-softyellow-800 { color: #b45309; }
+
+/* Border Colors */
+.border-softpink-300 { border-color: #F9E1E8; }
+.border-softgreen-300 { border-color: #D9EAD3; }
+.border-softblue-300 { border-color: #B3E5FC; }
+.border-softorange-300 { border-color: #FFDD99; }
+.border-softyellow-300 { border-color: #FFF2A1; }
+
+/* Hover States */
+.hover\:bg-softpink-200:hover { background-color: #fbdde0; }
+.hover\:bg-softgreen-600:hover { background-color: #a9cc97; }
+.hover\:bg-softgreen-700:hover { background-color: #99c283; }
+
+/* Focus States */
+.focus\:border-softgreen-500:focus { border-color: #b9d6ab; }
+.focus\:ring-softgreen-500:focus { --tw-ring-color: #b9d6ab; }
+
+/* Custom Gradients */
+.bg-gradient-to-br.from-softpink-300.to-softblue-300 {
+  background: linear-gradient(to bottom right, #F9E1E8, #D6EAF8);
+}
+
+.bg-gradient-to-b.from-softpink-300.to-softblue-300 {
+  background: linear-gradient(to bottom, #F9E1E8, #D6EAF8);
+}
+
+.bg-gradient-to-r.from-softpink-300.to-softblue-300 {
+  background: linear-gradient(to right, #F9E1E8, #D6EAF8);
+}
+
+.bg-gradient-to-t.from-softpink-300.to-softblue-300 {
+  background: linear-gradient(to top, #F9E1E8, #D6EAF8);
+}
+
+/* Orange-Yellow to Blue Gradients */
+.bg-gradient-to-br.from-softorange-300.to-softblue-300 {
+  background: linear-gradient(to bottom right, #FFDD99, #B3E5FC);
+}
+
+.bg-gradient-to-b.from-softyellow-300.to-softblue-300 {
+  background: linear-gradient(to bottom, #FFF2A1, #B3E5FC);
+}
+
+.bg-gradient-to-r.from-softyellow-300.to-softblue-300 {
+  background: linear-gradient(to right, #FFF2A1, #B3E5FC);
+}
+
+.bg-gradient-to-t.from-softyellow-300.to-softblue-300 {
+  background: linear-gradient(to top, #FFF2A1, #B3E5FC);
+}
+
+/* Custom Border Radius - Organic, natural styling */
+.rounded-soft {
+  border-radius: 0.375rem; /* 6px */
+}
+
+.rounded-natural {
+  border-radius: 0.75rem; /* 12px */
+}
+
+.rounded-organic {
+  border-radius: 1.5rem; /* 24px */
+}

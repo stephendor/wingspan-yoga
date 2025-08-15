@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Retreat } from '@/types'
 import { formatCurrency } from '@/lib/stripe'
+import { Card } from '@/components/ui/card'
 
 interface RetreatListClientProps {
   retreats: Retreat[]
@@ -11,12 +12,20 @@ interface RetreatListClientProps {
 
 export default function RetreatListClient({ retreats }: RetreatListClientProps) {
   const [filteredRetreats, setFilteredRetreats] = useState(retreats)
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const formatDate = (date: Date | string) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    const dateObj = new Date(date)
+    // Use UTC to ensure consistent rendering between server and client
+    return dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      timeZone: 'UTC'
     })
   }
 
@@ -56,7 +65,7 @@ export default function RetreatListClient({ retreats }: RetreatListClientProps) 
         {filteredRetreats.map((retreat) => (
           <div
             key={retreat.id}
-            className="group relative overflow-hidden rounded-lg bg-white shadow-lg transition-transform hover:scale-105"
+            className="group relative overflow-hidden rounded-lg bg-gradient-to-br from-softyellow-50 via-white to-softblue-100 shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
           >
             {/* Image */}
             <div className="aspect-w-16 aspect-h-9 relative h-48 w-full">

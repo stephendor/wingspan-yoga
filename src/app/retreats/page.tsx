@@ -30,8 +30,8 @@ export default async function RetreatsPage() {
   const retreats = await getRetreats()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-softyellow-50 via-white to-softblue-50">
+      <div className="bg-gradient-to-br from-softyellow-100 via-white to-softblue-100">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">

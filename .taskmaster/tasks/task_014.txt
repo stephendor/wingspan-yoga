@@ -1,6 +1,6 @@
 # Task ID: 14
 # Title: Retreats Module with Partial Payments (ST-107)
-# Status: todo
+# Status: done
 # Dependencies: 8
 # Priority: medium
 # Description: Build the retreat showcase pages and a booking system that supports deposit payments.
@@ -9,3 +9,53 @@ Develop dynamic pages for each retreat, pulling content from the database. For b
 
 # Test Strategy:
 Book a retreat and pay the deposit using a test card. Verify the booking is recorded with the correct partial payment status. Manually trigger the scheduled job to ensure a reminder email is sent. Test the flow for paying the remaining balance.
+
+# Subtasks:
+## 1. Define Database Schema for Retreats and Bookings [done]
+### Dependencies: None
+### Description: Create and migrate the necessary database tables for storing retreat details and user bookings, including fields for partial payments.
+### Details:
+Define schemas for a `Retreat` table (e.g., title, description, location, start_date, end_date, total_price, deposit_price, images) and a `RetreatBooking` table (e.g., userId, retreatId, total_price, amount_paid, payment_status, stripe_payment_intent_id). Use a database ORM like Prisma to generate and apply the migration.
+
+## 2. Develop API Endpoints for Retreat Data [done]
+### Dependencies: 14.1
+### Description: Create server-side logic and API routes to fetch retreat information from the database for public display.
+### Details:
+Implement two Next.js API routes or server actions: 1) A public endpoint to list all active retreats (`GET /api/retreats`). 2) A public endpoint to fetch detailed information for a single retreat by its slug or ID (`GET /api/retreats/[id]`). Ensure data fetching is efficient and secure.
+
+## 3. Build Frontend UI for Retreat Showcase [done]
+### Dependencies: 14.2
+### Description: Develop the user-facing pages to display all available retreats and the detailed information for a selected retreat.
+### Details:
+Create a `/retreats` page that fetches and displays a grid or list of retreats from the API. Create a dynamic route `/retreats/[slug]` that fetches and renders the full details for a specific retreat, including description, itinerary, pricing, and a 'Book Now' button.
+
+## 4. Implement Booking Initiation and Deposit Payment Intent [done]
+### Dependencies: 14.1, 14.3
+### Description: Create the booking form and the backend logic to initiate a booking and create a Stripe Payment Intent for the deposit amount.
+### Details:
+On the retreat detail page, add a booking form using React Hook Form and Zod for validation. On submission, a server action or API route will create a `RetreatBooking` record with a 'pending' status and then use the Stripe API to create a Payment Intent for the `deposit_price`. The `client_secret` from the Payment Intent is returned to the client.
+
+## 5. Integrate Stripe Elements for Deposit Payment [done]
+### Dependencies: 14.4
+### Description: Implement the client-side Stripe Elements to securely collect payment information and confirm the deposit payment.
+### Details:
+Use the `client_secret` from the previous step to initialize the Stripe Payment Element on the client. Use `@stripe/react-stripe-js` to handle the payment form UI and submission. On successful payment confirmation, redirect the user to a success page.
+
+## 6. Create Stripe Webhook for Payment Confirmation [done]
+### Dependencies: 14.4
+### Description: Implement a Stripe webhook handler to listen for successful payment events, update the booking record, and send a confirmation email.
+### Details:
+Create a dedicated API route (`/api/webhooks/stripe`) to handle incoming Stripe events, specifically `payment_intent.succeeded`. When this event is received, verify its authenticity, find the corresponding `RetreatBooking`, update its `payment_status` to 'deposit_paid', and update the `amount_paid` field. Send a deposit confirmation email to the user.
+
+## 7. Set Up Scheduled Job for Balance Reminders [done]
+### Dependencies: 14.6
+### Description: Implement a scheduled task that runs periodically to send email reminders to users whose final payment is approaching its due date.
+### Details:
+Use a serverless scheduler like Vercel Cron Jobs to trigger a specific API route on a daily schedule. This route will query the `RetreatBooking` table for bookings with `payment_status = 'deposit_paid'` and where the retreat's final payment due date is near. For each matching booking, send a reminder email with a link to pay the balance.
+
+## 8. Implement Final Balance Payment Flow [done]
+### Dependencies: 14.7
+### Description: Create the page and backend logic for users to pay their remaining balance.
+### Details:
+Create a protected page (e.g., `/my-bookings/[bookingId]/pay-balance`) accessible via the link in the reminder email. This page will display the remaining amount and a payment form. The backend will create a new Stripe Payment Intent for the remaining balance. The webhook will be updated to handle this payment, updating the booking status to 'paid_in_full' and sending a final confirmation email.
+
