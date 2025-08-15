@@ -343,6 +343,77 @@ export async function POST(req: Request) {
         })
         break
       }
+      case 'payment_intent.succeeded': {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent
+        const metadata = paymentIntent.metadata
+        
+        // Handle retreat payments
+        if (metadata?.type === 'retreat_deposit' || metadata?.type === 'retreat_balance') {
+          const { retreatBookingId, userId } = metadata
+          
+          if (retreatBookingId && userId) {
+            try {
+              await prisma.$transaction(async (tx) => {
+                // Get the retreat booking
+                const booking = await tx.retreatBooking.findUnique({
+                  where: { id: retreatBookingId },
+                  include: { retreat: true },
+                })
+                
+                if (!booking) {
+                  throw new Error(`Retreat booking ${retreatBookingId} not found`)
+                }
+                
+                // Update payment record
+                await tx.payment.updateMany({
+                  where: {
+                    stripePaymentId: paymentIntent.id,
+                    retreatBookingId,
+                  },
+                  data: {
+                    status: $Enums.PaymentStatus.SUCCEEDED,
+                  },
+                })
+                
+                // Update booking based on payment type
+                if (metadata.type === 'retreat_deposit') {
+                  await tx.retreatBooking.update({
+                    where: { id: retreatBookingId },
+                    data: {
+                      paymentStatus: 'DEPOSIT_PAID',
+                      amountPaid: booking.retreat.depositPrice,
+                      depositPaidAt: new Date(),
+                    },
+                  })
+                } else if (metadata.type === 'retreat_balance') {
+                  await tx.retreatBooking.update({
+                    where: { id: retreatBookingId },
+                    data: {
+                      paymentStatus: 'PAID_IN_FULL',
+                      amountPaid: booking.totalPrice,
+                      finalPaidAt: new Date(),
+                    },
+                  })
+                }
+              })
+              
+              // TODO: Send confirmation email based on payment type
+              
+              logEvent({
+                eventId: event.id,
+                eventType: event.type,
+                userId,
+                phase: 'handled',
+                message: `Processed retreat ${metadata.type} payment`,
+                extra: { retreatBookingId, paymentIntentId: paymentIntent.id },
+              })
+            } catch (err) {
+              console.error('Error processing retreat payment webhook:', err)
+            }
+          }
+        }
+        break
+      }
       default:
         break
     }

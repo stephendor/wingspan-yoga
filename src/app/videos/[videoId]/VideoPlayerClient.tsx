@@ -92,7 +92,11 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
       }
 
       setVideo(data.video)
-      setCurrentProgress(data.video.progress?.progress || 0)
+      // Convert seconds to percentage for UI display
+      const progressPercentage = data.video.progress?.progress 
+        ? Math.round((data.video.progress.progress / data.video.duration) * 100)
+        : 0
+      setCurrentProgress(progressPercentage)
       
       // Fetch related videos (same category or instructor)
   fetchRelatedVideos(data.video.category)
@@ -105,17 +109,20 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
     }
   }, [videoId, isAuthenticated, authLoading, fetchRelatedVideos])
 
-  // Update progress in database
-  const updateProgress = useCallback(async (progress: number, completed = false) => {
+  // Update progress in database using the new progress endpoint
+  const updateProgress = useCallback(async (progress: number) => {
     if (!video || !hasStartedWatching) return
 
     try {
-      await fetch(`/api/videos/${videoId}`, {
-        method: 'PATCH',
+      // Convert percentage to seconds for the new API
+      const currentTimeInSeconds = Math.floor((progress / 100) * video.duration)
+      
+      await fetch(`/api/videos/${videoId}/progress`, {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ progress, completed }),
+        body: JSON.stringify({ currentTime: currentTimeInSeconds }),
       })
     } catch (err) {
       console.error('Error updating progress:', err)
@@ -137,19 +144,18 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
     }
 
     progressUpdateRef.current = setTimeout(() => {
-      const completed = progress >= 90
-      updateProgress(progress, completed)
+      updateProgress(progress)
     }, 10000) // Update every 10 seconds
 
     // Immediate update for completion
     if (progress >= 90 && hasStartedWatching) {
-      updateProgress(progress, true)
+      updateProgress(progress)
     }
   }, [updateProgress, hasStartedWatching])
 
   // Handle video end
   const handleVideoEnd = useCallback(() => {
-    updateProgress(100, true)
+    updateProgress(100)
   }, [updateProgress])
 
   // Share functionality
@@ -310,7 +316,7 @@ export function VideoPlayerClient({ videoId }: VideoPlayerClientProps) {
           videoId={video.id}
           title={video.title}
           posterUrl={video.thumbnailUrl}
-          startTime={video.progress ? Math.floor((video.progress.progress / 100) * video.duration) : 0}
+          startTime={video.progress ? video.progress.progress : 0}
           onProgress={handleProgressUpdate}
           onEnd={handleVideoEnd}
         />

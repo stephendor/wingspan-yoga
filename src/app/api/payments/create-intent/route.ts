@@ -6,6 +6,7 @@ import { createPaymentIntent, getOrCreateCustomer } from '@/lib/stripe'
 import { randomUUID } from 'crypto'
 import { createPaymentIntentSchema } from '@/lib/validation/booking'
 import { ClassStatus } from '@prisma/client'
+import { applyRateLimit, paymentRateLimit } from '@/lib/ratelimit'
 
 export interface CreatePaymentIntentResponse {
   success: boolean
@@ -16,6 +17,15 @@ export interface CreatePaymentIntentResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting
+    const rateLimitResult = await applyRateLimit(request, paymentRateLimit);
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { success: false, message: rateLimitResult.error },
+        { status: 429 }
+      );
+    }
+
     // Get user session
     const session = await getServerSession(authOptions)
     if (!session?.user?.id) {

@@ -21,6 +21,7 @@ export function getAuthenticatedUser(request: NextRequest): AuthUser | null {
     name: '', // Name is not passed in headers for security, fetch from DB if needed
     membershipType: userMembership,
     membershipStatus: userStatus,
+    role: '', // Role not passed in headers, fetch from DB if needed
   };
 }
 

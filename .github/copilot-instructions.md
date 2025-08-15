@@ -2,16 +2,8 @@
 description: AI rules derived by SpecStory from the project AI interaction history
 globs: *
 ---
-
 # Codacy Rules
 Configuration for AI behavior when interacting with Codacy's MCP Server
-
-## using any tool that accepts the arguments: `provider`, `organization`, or `repository`
-- ALWAYS use:
- - provider: gh
- - organization: stephendor
- - repository: wingspan-yoga
-- Avoid calling `git remote -v` unless really necessary
 
 ## CRITICAL: After ANY successful `edit_file` or `reapply` operation
 - YOU MUST IMMEDIATELY run the `codacy_cli_analyze` tool from Codacy's MCP Server for each file that was edited, with:
@@ -69,7 +61,3 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - If the user accepts, run the `codacy_setup_repository` tool
 - Do not ever try to run the `codacy_setup_repository` tool on your own
 - After setup, immediately retry the action that failed (only retry once)
-
-## Code Quality
-- Always fix any linting errors that arise during development.
-- After making code changes, always run Codacy analysis on the changed files.

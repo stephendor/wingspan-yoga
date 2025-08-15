@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useSession, signIn, signOut } from 'next-auth/react';
 import type { AuthUser } from '@/lib/auth/types';
 
 interface UseAuthReturn {
@@ -11,64 +11,31 @@ interface UseAuthReturn {
 }
 
 export function useAuth(): UseAuthReturn {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: session, status, update } = useSession();
 
-  // Check if user is authenticated on component mount
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
+  // Transform NextAuth session to match AuthUser interface
+  const user: AuthUser | null = session?.user ? {
+    id: session.user.id || '',
+    email: session.user.email || '',
+    name: session.user.name || '',
+    membershipType: session.user.membershipType || 'FREE',
+    membershipStatus: session.user.membershipStatus || 'ACTIVE',
+    role: session.user.role || 'MEMBER',
+  } : null;
 
-  const checkAuthStatus = async () => {
-    try {
-      const token = localStorage.getItem('authToken');
-      if (!token) {
-        setIsLoading(false);
-        return;
-      }
-
-      // Verify token with a protected endpoint
-      const response = await fetch('/api/user/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData.user);
-      } else {
-        // Token is invalid, remove it
-        localStorage.removeItem('authToken');
-        setUser(null);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      localStorage.removeItem('authToken');
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const login = async (email: string, password: string) => {
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        localStorage.setItem('authToken', data.token);
-        setUser(data.user);
-        return { success: true };
+      if (result?.error) {
+        return { success: false, error: 'Invalid email or password' };
       } else {
-        return { success: false, error: data.error };
+        return { success: true };
       }
     } catch (error) {
       console.error('Login failed:', error);
@@ -78,33 +45,24 @@ export function useAuth(): UseAuthReturn {
 
   const logout = async () => {
     try {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        // Call logout endpoint to invalidate session
-        await fetch('/api/auth/logout', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-      }
+      await signOut({ redirect: false });
     } catch (error) {
-      console.error('Logout request failed:', error);
-    } finally {
-      // Always clear local state regardless of API call result
-      localStorage.removeItem('authToken');
-      setUser(null);
+      console.error('Logout failed:', error);
     }
   };
 
   const refreshUser = async () => {
-    await checkAuthStatus();
+    try {
+      await update();
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+    }
   };
 
   return {
     user,
-    isLoading,
-    isAuthenticated: !!user,
+    isLoading: status === 'loading',
+    isAuthenticated: !!session,
     login,
     logout,
     refreshUser,

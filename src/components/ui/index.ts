@@ -33,3 +33,13 @@ export type { NavigationProps, NavItem } from './navigation'
 
 export { LogoutButton } from './logout-button'
 export type { LogoutButtonProps } from './logout-button'
+
+export { 
+  Hero, 
+  HeroContent, 
+  HeroTitle, 
+  HeroSubtitle, 
+  HeroDescription, 
+  HeroActions 
+} from './hero'
+export type { HeroProps } from './hero'

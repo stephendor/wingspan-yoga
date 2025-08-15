@@ -3,6 +3,7 @@ import Link from 'next/link';
 const navLinks = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/classes', label: 'Class Management' },
+  { href: '/admin/blog', label: 'Blog Management' },
 ];
 
 export default function AdminSidebar() {

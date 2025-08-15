@@ -22,6 +22,11 @@ interface VideosListResponse {
       name: string;
       avatar: string | null;
     };
+    progress?: {
+      progress: number; // Progress in seconds
+      completed: boolean;
+      lastWatched: string;
+    };
   }>;
   error?: string;
 }
@@ -139,6 +144,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<VideosList
             avatar: true,
           },
         },
+
       },
       orderBy: [
         { createdAt: 'desc' }, // Most recent first
@@ -156,9 +162,35 @@ export async function GET(request: NextRequest): Promise<NextResponse<VideosList
       };
     });
 
+    // Fetch progress data for all videos for the authenticated user
+    const progressData = await prisma.videoProgress.findMany({
+      where: { userId: authUser.id },
+      select: {
+        videoId: true,
+        progress: true,
+        completed: true,
+        lastWatched: true,
+      },
+    });
+
+    // Create a map of videoId to progress data
+    const progressMap = new Map(
+      progressData.map(p => [p.videoId, {
+        progress: p.progress,
+        completed: p.completed,
+        lastWatched: p.lastWatched.toISOString(),
+      }])
+    );
+
+    // Add progress data to videos
+    const videosWithProgress = videosWithAccess.map(video => ({
+      ...video,
+      progress: progressMap.get(video.id),
+    }));
+
     return NextResponse.json({
       success: true,
-      videos: videosWithAccess,
+      videos: videosWithProgress,
     });
 
   } catch (error) {

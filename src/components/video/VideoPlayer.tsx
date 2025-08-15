@@ -45,8 +45,9 @@ export function VideoPlayer({
   const [retryCount, setRetryCount] = useState(0)
 
   // Progress tracking
-  // Removed unused timeout ref to satisfy lint rules
   const lastProgressRef = useRef(0)
+  const progressUpdateTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const lastSavedProgressRef = useRef(0)
 
   // Fetch playback information
   const fetchPlaybackInfo = useCallback(async () => {
@@ -67,6 +68,33 @@ export function VideoPlayer({
       setError(err instanceof Error ? err.message : 'Failed to load video')
     } finally {
       setLoading(false)
+    }
+  }, [videoId])
+
+  // Save progress to backend
+  const saveProgress = useCallback(async (currentTime: number) => {
+    try {
+      // Only save if progress has changed significantly (more than 15 seconds)
+      if (Math.abs(currentTime - lastSavedProgressRef.current) < 15) {
+        return
+      }
+
+      const response = await fetch(`/api/videos/${videoId}/progress`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ currentTime }),
+      })
+
+      if (response.ok) {
+        lastSavedProgressRef.current = currentTime
+        console.log('Progress saved:', currentTime)
+      } else {
+        console.error('Failed to save progress:', response.statusText)
+      }
+    } catch (error) {
+      console.error('Error saving progress:', error)
     }
   }, [videoId])
 
@@ -162,13 +190,30 @@ export function VideoPlayer({
             onProgress(progress)
           }
         }
+
+        // Save progress periodically (every 15 seconds)
+        const currentTime = player.currentTime
+        if (progressUpdateTimeoutRef.current) {
+          clearTimeout(progressUpdateTimeoutRef.current)
+        }
+        
+        progressUpdateTimeoutRef.current = setTimeout(() => {
+          saveProgress(currentTime)
+        }, 15000) // 15 second delay
       })
 
       player.on('ended', () => {
         console.log('Video ended')
+        // Save final progress when video ends
+        saveProgress(player.currentTime)
         if (onEnd) {
           onEnd()
         }
+      })
+
+      player.on('pause', () => {
+        // Save progress when video is paused
+        saveProgress(player.currentTime)
       })
 
   player.on('error', (event: unknown) => {
@@ -229,9 +274,29 @@ export function VideoPlayer({
     return () => clearInterval(checkInterval)
   }, [playbackInfo, checkTokenExpiration])
 
+  // Save progress before page unload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (playerRef.current) {
+        saveProgress(playerRef.current.currentTime)
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+    }
+  }, [saveProgress])
+
   // Cleanup on unmount
   useEffect(() => {
-  return () => {
+    return () => {
+      // Save progress before unmounting
+      if (playerRef.current) {
+        saveProgress(playerRef.current.currentTime)
+      }
+      
       if (playerRef.current) {
         try {
           playerRef.current.destroy()

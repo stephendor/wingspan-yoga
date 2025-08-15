@@ -58,7 +58,7 @@ async function testBasicLogin() {
     });
 
   } catch (error) {
-    console.error('❌ Test failed:', error.message);
+    console.error('❌ Test failed:', error instanceof Error ? error.message : error);
   } finally {
     await prisma.$disconnect();
   }

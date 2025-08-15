@@ -4,6 +4,7 @@ import { Play, Lock, Clock, User } from 'lucide-react'
 import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 import Link from 'next/link'
+import { ProgressBar } from './ProgressBar'
 
 // Types
 interface VideoData {
@@ -22,6 +23,11 @@ interface VideoData {
     id: string
     name: string
     avatar: string | null
+  }
+  progress?: {
+    progress: number // Progress in seconds
+    completed: boolean
+    lastWatched: string
   }
 }
 
@@ -145,6 +151,14 @@ export function VideoCard({ video }: VideoCardProps) {
               <Lock className="h-3 w-3 mr-1" />
               Premium
             </div>
+          )}
+
+          {/* Progress bar for watched videos */}
+          {video.progress && video.hasAccess && (
+            <ProgressBar 
+              progress={video.progress.progress} 
+              duration={video.duration}
+            />
           )}
         </div>
 

@@ -50,6 +50,7 @@ export interface AuthUser {
   name: string;
   membershipType: string;
   membershipStatus: string;
+  role: string;
 }
 
 export interface JWTPayload {

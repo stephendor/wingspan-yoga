@@ -19,7 +19,7 @@ A modern, subscription-based yoga website built with Next.js 14+, featuring vide
 - **Database**: PostgreSQL with Prisma ORM
 - **Authentication**: NextAuth.js/Clerk
 - **Payments**: Stripe
-- **Video**: Vimeo/Mux integration
+- **Video**: Mux integration with JWT-signed streaming
 - **Deployment**: Vercel/Netlify
 
 ## Getting Started
@@ -34,6 +34,17 @@ A modern, subscription-based yoga website built with Next.js 14+, featuring vide
 
    ```bash
    cp .env.example .env.local
+   ```
+
+   **⚠️ CRITICAL**: You must configure the following environment variables for the video library to function:
+
+   ```env
+   # Mux Video Streaming (REQUIRED for video library)
+   MUX_TOKEN_ID=your_mux_token_id
+   MUX_TOKEN_SECRET=your_mux_token_secret
+   MUX_SIGNING_KEY_ID=your_signing_key_id
+   MUX_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\nYour private key content here\n-----END PRIVATE KEY-----
+   MUX_TOKEN_TTL_SECONDS=28800
    ```
 
 3. Run the development server:

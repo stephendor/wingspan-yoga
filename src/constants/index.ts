@@ -142,6 +142,10 @@ export const MAIN_NAV = [
     href: '/pricing',
   },
   {
+    title: 'Retreats',
+    href: '/retreats',
+  },
+  {
     title: 'About',
     href: '/about',
   },
@@ -176,9 +180,7 @@ export const FOOTER_LINKS = {
 // API Routes
 export const API_ROUTES = {
   auth: {
-    login: '/api/auth/login',
-    signup: '/api/auth/signup',
-    logout: '/api/auth/logout',
+    signup: '/api/auth/register', // Updated to match actual route
     verify: '/api/auth/verify',
   },
   user: {
@@ -200,6 +202,11 @@ export const API_ROUTES = {
     createSubscription: '/api/payments/subscription',
     cancelSubscription: '/api/payments/subscription/cancel',
     updatePaymentMethod: '/api/payments/payment-method',
+  },
+  retreats: {
+    list: '/api/retreats',
+    single: (id: string) => `/api/retreats/${id}`,
+    book: (id: string) => `/api/retreats/${id}/book`,
   },
 } as const;
 

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,59 +7,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// User Management
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  avatar    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // Authentication
-  password      String?
-  emailVerified DateTime?
-
-  // Profile Information
-  bio              String?
-  phone            String?
-  dateOfBirth      DateTime?
-  emergencyContact String?
-
-  // Subscription & Membership
-  membershipType   MembershipType   @default(FREE)
-  membershipStatus MembershipStatus @default(ACTIVE)
-  role             Role             @default(MEMBER)
-  subscriptionId   String?          @unique
-
-  // Relations
+  id                 String            @id @default(cuid())
+  email              String            @unique
+  name               String
+  avatar             String?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  password           String?
+  emailVerified      DateTime?
+  bio                String?
+  phone              String?
+  dateOfBirth        DateTime?
+  emergencyContact   String?
+  membershipType     MembershipType    @default(FREE)
+  membershipStatus   MembershipStatus  @default(ACTIVE)
+  subscriptionId     String?           @unique
+  role               Role              @default(MEMBER)
   accounts           Account[]
+  bookings           Booking[]
+  retreatBookings    RetreatBooking[]
+  payments           Payment[]
+  reviews            Review[]
   sessions           Session[]
   activeSubscription UserSubscription? @relation(fields: [subscriptionId], references: [id])
-  bookings           Booking[]
   videoProgress      VideoProgress[]
-  reviews            Review[]
-  payments           Payment[]
+  blogPosts          BlogPost[]
+  uploadedMedia      Media[]           @relation("MediaUploader")
 
   @@map("users")
 }
 
-// Authentication Models (NextAuth.js compatible)
 model Account {
   id                String  @id @default(cuid())
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -87,20 +76,17 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-// Subscription & Payment Models (refactored)
 model SubscriptionPlan {
-  id            String          @id @default(cuid())
-  stripePriceId String          @unique
-  interval      BillingInterval
-  amount        Int // stored in smallest currency unit (e.g. cents)
-  currency      String          @default("usd")
-  name          String // display name (e.g. Basic, Premium)
-  description   String?
-  active        Boolean         @default(true)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-
-  // Relations
+  id                String             @id @default(cuid())
+  stripePriceId     String             @unique
+  interval          BillingInterval
+  amount            Int
+  currency          String             @default("usd")
+  name              String
+  description       String?
+  active            Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
   userSubscriptions UserSubscription[]
 
   @@map("subscription_plans")
@@ -118,82 +104,74 @@ model UserSubscription {
   rawStripeData        Json?
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
+  payments             Payment[]
+  plan                 SubscriptionPlan @relation(fields: [planId], references: [id])
+  user                 User?
 
-  // Relations
-  plan     SubscriptionPlan @relation(fields: [planId], references: [id])
-  user     User?
-  payments Payment[]
-
-  @@map("subscriptions") // Preserve existing table name
+  @@map("subscriptions")
 }
 
 model Payment {
-  id              String        @id @default(cuid())
-  stripePaymentId String        @unique
-  amount          Int // Amount in pence (GBP)
-  currency        String        @default("gbp")
-  status          PaymentStatus
-  description     String?
-  paymentMethod   String? // card, bank_transfer, etc.
-  createdAt       DateTime      @default(now())
-
-  // Relations - supports both legacy classes and new class instances
+  id                 String            @id @default(cuid())
+  stripePaymentId    String            @unique
+  amount             Int
+  currency           String            @default("gbp")
+  status             PaymentStatus
+  description        String?
+  paymentMethod      String?
+  createdAt          DateTime          @default(now())
   userId             String
-  userSubscriptionId String? @map("subscriptionId") // keep underlying column for now
-  classId            String? // Legacy class payment
-  classInstanceId    String? // New instance payment
-
-  user             User              @relation(fields: [userId], references: [id])
-  userSubscription UserSubscription? @relation(fields: [userSubscriptionId], references: [id])
-  class            Class?            @relation(fields: [classId], references: [id])
-  classInstance    ClassInstance?    @relation(fields: [classInstanceId], references: [id])
+  userSubscriptionId String?           @map("subscriptionId")
+  classId            String?
+  classInstanceId    String?
+  retreatBookingId   String?
+  class              Class?            @relation(fields: [classId], references: [id])
+  classInstance      ClassInstance?    @relation(fields: [classInstanceId], references: [id])
+  retreatBooking     RetreatBooking?   @relation(fields: [retreatBookingId], references: [id])
+  userSubscription   UserSubscription? @relation(fields: [userSubscriptionId], references: [id])
+  user               User              @relation(fields: [userId], references: [id])
 
   @@map("payments")
 }
 
-// Webhook event idempotency tracking (Stripe events processed)
 model WebhookEvent {
-  id          String   @id // Stripe event id
+  id          String    @id
   type        String
-  createdAt   DateTime @default(now())
-  processedAt DateTime? // reserved for future granular state
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
 
   @@map("webhook_events")
 }
 
-// Instructor Model
 model Instructor {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  bio           String?
-  avatar        String?
-  specialties   String[] // Array of specialties
-  isActive      Boolean  @default(true)
-  yearsExp      Int? // Years of experience
-  certification String?
-  socialLinks   Json? // JSON object for social media links
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Relations
-  classes         Class[]
-  classTemplates  ClassTemplate[]
-  classInstances  ClassInstance[]
-  videos          Video[]
+  id             String          @id @default(cuid())
+  name           String
+  email          String          @unique
+  bio            String?
+  avatar         String?
+  specialties    String[]
+  isActive       Boolean         @default(true)
+  yearsExp       Int?
+  certification  String?
+  socialLinks    Json?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  classInstances ClassInstance[]
+  classTemplates ClassTemplate[]
+  classes        Class[]
+  videos         Video[]
 
   @@map("instructors")
 }
 
-// Video Library Models
 model Video {
   id                 String          @id @default(cuid())
   title              String
   description        String?
-  duration           Int // Duration in seconds
+  duration           Int
   thumbnailUrl       String?
   videoUrl           String
-  streamingUrl       String? // For streaming services like Vimeo/Mux
+  streamingUrl       String?
   category           VideoCategory
   difficulty         DifficultyLevel
   tags               String[]
@@ -202,12 +180,10 @@ model Video {
   viewCount          Int             @default(0)
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
-
-  // Relations
-  instructorId String
-  instructor   Instructor      @relation(fields: [instructorId], references: [id])
-  progress     VideoProgress[]
-  reviews      Review[]
+  instructorId       String
+  reviews            Review[]
+  progress           VideoProgress[]
+  instructor         Instructor      @relation(fields: [instructorId], references: [id])
 
   @@map("videos")
 }
@@ -216,65 +192,58 @@ model VideoProgress {
   id          String   @id @default(cuid())
   userId      String
   videoId     String
-  progress    Float    @default(0) // Percentage completed (0-100)
+  progress    Int      @default(0) // Progress in seconds from start of video
   completed   Boolean  @default(false)
   lastWatched DateTime @default(now())
-
-  // Relations
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video       Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@unique([userId, videoId])
   @@map("video_progress")
 }
 
-// Class Booking Models - Recurring Class System
 model ClassTemplate {
-  id          String         @id @default(cuid())
-  title       String
-  description String?
-  dayOfWeek   Int // 0 = Sunday, 1 = Monday, etc.
-  startTime   String // Time in HH:MM format (e.g., "18:00")
-  endTime     String // Time in HH:MM format (e.g., "19:00")
-  capacity    Int
-  price       Int // Price in pence (GBP)
-  difficulty  DifficultyLevel
-  category    ClassCategory
-  location    ClassLocation
-  meetingUrl  String? // For online classes
-  notes       String? // Special instructions
-  isActive    Boolean        @default(true) // Can disable template without deleting
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-
-  // Relations
+  id           String           @id @default(cuid())
+  title        String
+  description  String?
+  dayOfWeek    Int
+  startTime    String
+  endTime      String
+  capacity     Int
+  price        Int
+  difficulty   DifficultyLevel
+  category     ClassCategory
+  location     ClassLocation
+  meetingUrl   String?
+  notes        String?
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
   instructorId String
-  instructor   Instructor      @relation(fields: [instructorId], references: [id])
-  instances    ClassInstance[]
   exceptions   ClassException[]
+  instances    ClassInstance[]
+  instructor   Instructor       @relation(fields: [instructorId], references: [id])
 
   @@map("class_templates")
 }
 
 model ClassInstance {
-  id               String          @id @default(cuid())
-  date             DateTime // Specific date for this instance
-  startTime        DateTime // Full datetime for this instance
-  endTime          DateTime // Full datetime for this instance
-  capacity         Int? // Override template capacity if needed
-  price            Int? // Override template price if needed
-  status           ClassStatus     @default(SCHEDULED)
-  notes            String? // Instance-specific notes
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-
-  // Relations
-  templateId       String
-  template         ClassTemplate   @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  instructorId     String? // Override template instructor if needed
-  instructor       Instructor?     @relation(fields: [instructorId], references: [id])
-  bookings         Booking[]
-  payments         Payment[]
+  id           String        @id @default(cuid())
+  date         DateTime
+  startTime    DateTime
+  endTime      DateTime
+  capacity     Int?
+  price        Int?
+  status       ClassStatus   @default(SCHEDULED)
+  notes        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  templateId   String
+  instructorId String?
+  bookings     Booking[]
+  instructor   Instructor?   @relation(fields: [instructorId], references: [id])
+  template     ClassTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  payments     Payment[]
 
   @@unique([templateId, date])
   @@map("class_instances")
@@ -282,11 +251,9 @@ model ClassInstance {
 
 model ClassException {
   id         String        @id @default(cuid())
-  date       DateTime // Date when class is cancelled/modified
-  reason     String? // Why was it cancelled/modified
+  date       DateTime
+  reason     String?
   createdAt  DateTime      @default(now())
-
-  // Relations
   templateId String
   template   ClassTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
@@ -294,93 +261,112 @@ model ClassException {
   @@map("class_exceptions")
 }
 
-// Legacy model for backwards compatibility - will be migrated
 model Class {
-  id          String          @id @default(cuid())
-  title       String
-  description String?
-  startTime   DateTime
-  endTime     DateTime
-  capacity    Int
-  price       Int // Price in pence (GBP)
-  difficulty  DifficultyLevel
-  category    ClassCategory
-  location    ClassLocation
-  status      ClassStatus     @default(SCHEDULED)
-  meetingUrl  String? // For online classes
-  notes       String? // Special instructions
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
-
-  // Relations
+  id           String          @id @default(cuid())
+  title        String
+  description  String?
+  startTime    DateTime
+  endTime      DateTime
+  capacity     Int
+  price        Int
+  difficulty   DifficultyLevel
+  location     ClassLocation
+  status       ClassStatus     @default(SCHEDULED)
+  meetingUrl   String?
+  notes        String?
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   instructorId String
-  instructor   Instructor @relation(fields: [instructorId], references: [id])
+  category     ClassCategory
   bookings     Booking[]
+  instructor   Instructor      @relation(fields: [instructorId], references: [id])
   payments     Payment[]
 
   @@map("classes")
 }
 
 model Booking {
-  id          String        @id @default(cuid())
-  status      BookingStatus @default(CONFIRMED)
-  bookedAt    DateTime      @default(now())
-  cancelledAt DateTime?
-  notes       String? // Special requests or notes
-
-  // Relations - supports both legacy classes and new class instances
+  id              String         @id @default(cuid())
+  status          BookingStatus  @default(CONFIRMED)
+  bookedAt        DateTime       @default(now())
+  cancelledAt     DateTime?
+  notes           String?
   userId          String
-  classId         String? // Legacy class booking
-  classInstanceId String? // New instance booking
-  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  classId         String?
+  classInstanceId String?
   class           Class?         @relation(fields: [classId], references: [id], onDelete: Cascade)
   classInstance   ClassInstance? @relation(fields: [classInstanceId], references: [id], onDelete: Cascade)
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, classId])
   @@unique([userId, classInstanceId])
   @@map("bookings")
 }
 
-// Review & Rating Models
 model Review {
   id        String   @id @default(cuid())
-  rating    Int // 1-5 stars
+  rating    Int
   title     String?
   content   String?
   isPublic  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Relations - can review either videos or classes
-  userId  String
-  videoId String?
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video   Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  userId    String
+  videoId   String?
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video     Video?   @relation(fields: [videoId], references: [id], onDelete: Cascade)
 
   @@map("reviews")
 }
 
-// Content Management
 model BlogPost {
-  id           String    @id @default(cuid())
-  title        String
-  slug         String    @unique
-  excerpt      String?
-  content      String
-  featured     Boolean   @default(false)
-  published    Boolean   @default(false)
-  publishedAt  DateTime?
-  tags         String[]
-  authorName   String
-  authorAvatar String?
-  imageUrl     String?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id              String              @id @default(cuid())
+  title           String
+  slug            String              @unique
+  excerpt         String?
+  content         String?             // Legacy field, kept for migration
+  contentBlocks   Json?               // Rich content blocks structure
+  metaDescription String?
+  featuredImage   String?
+  category        String?
+  featured        Boolean             @default(false)
+  published       Boolean             @default(false)
+  publishedAt     DateTime?
+  accessLevel     BlogPostAccessLevel @default(PUBLIC)
+  tags            String[]
+  authorId        String?
+  authorName      String              // Legacy field, kept for migration
+  authorAvatar    String?             // Legacy field, kept for migration
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  
+  // Relations
+  author          User?               @relation(fields: [authorId], references: [id])
 
   @@map("blog_posts")
 }
 
-// System Settings
+model Media {
+  id          String    @id @default(cuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int       // File size in bytes
+  width       Int?      // For images/videos
+  height      Int?      // For images/videos
+  duration    Int?      // For videos (in seconds)
+  url         String    // Storage URL
+  thumbnailUrl String?  // Thumbnail URL for videos
+  uploadedBy  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relations
+  uploader    User?     @relation("MediaUploader", fields: [uploadedBy], references: [id])
+
+  @@map("media")
+}
+
 model SiteSettings {
   id          String   @id @default(cuid())
   key         String   @unique
@@ -391,7 +377,6 @@ model SiteSettings {
   @@map("site_settings")
 }
 
-// Enums
 enum MembershipType {
   FREE
   BASIC
@@ -482,4 +467,66 @@ enum BookingStatus {
   COMPLETED
   NO_SHOW
   WAITLIST
+}
+
+// Retreat Models
+model Retreat {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  description  String
+  location     String
+  startDate    DateTime
+  endDate      DateTime
+  totalPrice   Int      // in cents
+  depositPrice Int      // in cents  
+  capacity     Int
+  images       String[] // Array of image URLs
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  bookings     RetreatBooking[]
+  
+  @@map("retreats")
+}
+
+model RetreatBooking {
+  id                String               @id @default(cuid())
+  userId            String
+  retreatId         String
+  totalPrice        Int                 // in cents
+  amountPaid        Int                 @default(0) // in cents
+  paymentStatus     RetreatPaymentStatus @default(PENDING)
+  depositPaidAt     DateTime?
+  balanceDueDate    DateTime
+  finalPaidAt       DateTime?
+  notes             String?             // Special requests or notes
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  // Relations
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  retreat           Retreat             @relation(fields: [retreatId], references: [id], onDelete: Cascade)
+  payments          Payment[]
+  
+  @@unique([userId, retreatId])
+  @@map("retreat_bookings")
+}
+
+enum RetreatPaymentStatus {
+  PENDING
+  DEPOSIT_PAID
+  PAID_IN_FULL
+  CANCELLED
+  REFUNDED
+}
+
+enum BlogPostAccessLevel {
+  PUBLIC
+  MEMBERS_ONLY
+  PREMIUM_ONLY
+  RETREAT_ATTENDEES_ONLY
+  MAILCHIMP_SUBSCRIBERS_ONLY
 }

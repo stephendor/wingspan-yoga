@@ -160,3 +160,50 @@ export interface ContactForm {
   subject: string;
   message: string;
 }
+
+// Retreat Types
+export interface Retreat {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  location: string;
+  startDate: Date;
+  endDate: Date;
+  totalPrice: number; // in cents
+  depositPrice: number; // in cents
+  capacity: number;
+  images: string[];
+  availableSpots: number;
+  isFull: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface RetreatBooking {
+  id: string;
+  userId: string;
+  retreatId: string;
+  totalPrice: number; // in cents
+  amountPaid: number; // in cents
+  paymentStatus: RetreatPaymentStatus;
+  depositPaidAt?: Date;
+  balanceDueDate: Date;
+  finalPaidAt?: Date;
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  retreat?: Retreat;
+}
+
+export type RetreatPaymentStatus = 
+  | 'PENDING'
+  | 'DEPOSIT_PAID'
+  | 'PAID_IN_FULL'
+  | 'CANCELLED'
+  | 'REFUNDED';
+
+export interface RetreatBookingForm {
+  retreatId: string;
+  notes?: string;
+}

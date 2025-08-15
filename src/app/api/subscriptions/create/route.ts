@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth/nextauth'
 import { getOrCreateCustomer, stripe } from '@/lib/stripe'
 import { getPlanByKey, PLAN_KEYS, type PlanKey } from '@/lib/stripe/plans'
 import { z } from 'zod'
+import { applyRateLimit, paymentRateLimit } from '@/lib/ratelimit'
 
 // Derive plan key values for zod enum without using `any`
 const PLAN_KEY_VALUES = Object.values(PLAN_KEYS) as [PlanKey, ...PlanKey[]]
@@ -26,6 +27,15 @@ interface CreateSubscriptionResponse {
 // POST /api/subscriptions/create
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting
+    const rateLimitResult = await applyRateLimit(request, paymentRateLimit);
+    if (!rateLimitResult.success) {
+      return NextResponse.json<CreateSubscriptionResponse>(
+        { success: false, message: rateLimitResult.error, code: 'rate_limit_exceeded' },
+        { status: 429 }
+      );
+    }
+
     const session = await getServerSession(authOptions)
     if (!session?.user?.id || !session.user.email) {
       return NextResponse.json<CreateSubscriptionResponse>(

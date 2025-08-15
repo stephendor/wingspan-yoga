@@ -25,13 +25,9 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        console.log('=== AUTHORIZE FUNCTION CALLED ===')
-        console.log('Received credentials:', JSON.stringify(credentials, null, 2))
-        
         try {
           // Simple validation
           if (!credentials?.email || !credentials?.password) {
-            console.log('Missing credentials - returning null')
             return null
           }
           
@@ -49,19 +45,16 @@ export const authOptions: NextAuthOptions = {
           })
           
           if (!user) {
-            console.log('User not found in database - returning null')
             return null
           }
           
           if (!user.password) {
-            console.log('User has no password set - returning null')
             return null
           }
           
           // Check password using bcrypt
           const isPasswordValid = await bcrypt.compare(credentials.password, user.password)
           if (!isPasswordValid) {
-            console.log('Invalid password - returning null')
             return null
           }
           
@@ -73,8 +66,6 @@ export const authOptions: NextAuthOptions = {
             role: user.role.toLowerCase()
           }
           
-          console.log('Valid credentials - returning user object:', JSON.stringify(returnUser, null, 2))
-          console.log('=== END AUTHORIZE ===')
           return returnUser
         } catch (error) {
           console.error('Authorize error:', error)
@@ -160,11 +151,7 @@ export const authOptions: NextAuthOptions = {
     maxAge: 24 * 60 * 60, // 24 hours
   },
   callbacks: {
-    async signIn({ user, account, profile }) {
-      console.log('=== SIGNIN CALLBACK ===')
-      console.log('Account provider:', account?.provider)
-      console.log('User from provider:', JSON.stringify(user, null, 2))
-      console.log('Profile from provider:', JSON.stringify(profile, null, 2))
+    async signIn({ user, account }) {
       
       // For OAuth providers, ensure user exists in database
       if (account?.provider && account.provider !== 'credentials' && user.email) {
@@ -174,7 +161,6 @@ export const authOptions: NextAuthOptions = {
           })
           
           if (!existingUser) {
-            console.log('Creating new OAuth user:', user.email)
             await prisma.user.create({
               data: {
                 name: user.name || 'OAuth User',
@@ -184,9 +170,6 @@ export const authOptions: NextAuthOptions = {
                 // No password needed for OAuth users
               }
             })
-            console.log('OAuth user created successfully')
-          } else {
-            console.log('OAuth user already exists:', user.email)
           }
         } catch (error) {
           console.error('Error creating OAuth user:', error)
@@ -194,42 +177,27 @@ export const authOptions: NextAuthOptions = {
         }
       }
       
-      console.log('=== END SIGNIN CALLBACK ===')
       return true
     },
-    async jwt({ token, user, trigger, account }) {
-      console.log('=== JWT CALLBACK ===')
-      console.log('Trigger:', trigger)
-      console.log('Account:', account?.provider)
-      console.log('User:', JSON.stringify(user, null, 2))
-      console.log('Token before:', JSON.stringify(token, null, 2))
+    async jwt({ token, user, account }) {
       
       if (user?.membershipType) {
         ;(token as AugmentedToken).membershipType = user.membershipType
-        console.log('Added membershipType to token:', user.membershipType)
       } else if (account?.provider && account.provider !== 'credentials') {
         // For OAuth providers (Google, Facebook, Twitter, Instagram), set default membershipType
         ;(token as AugmentedToken).membershipType = 'member'
-        console.log('Added default membershipType for OAuth provider:', account.provider)
       }
 
       if (user?.role) {
         ;(token as AugmentedToken).role = user.role
-        console.log('Added role to token:', user.role)
       } else if (account?.provider && account.provider !== 'credentials') {
         // For OAuth providers, set default role
         ;(token as AugmentedToken).role = 'member'
-        console.log('Added default role for OAuth provider:', account.provider)
       }
       
-      console.log('Token after:', JSON.stringify(token, null, 2))
-      console.log('=== END JWT CALLBACK ===')
       return token
     },
     async session({ session, token }) {
-      console.log('=== SESSION CALLBACK ===')
-      console.log('Session before:', JSON.stringify(session, null, 2))
-      console.log('Token:', JSON.stringify(token, null, 2))
       
       if (session.user) {
         const u = session.user as typeof session.user & {
@@ -242,17 +210,11 @@ export const authOptions: NextAuthOptions = {
         u.membershipType = t.membershipType || 'member' // Default to 'member' for OAuth users
         u.role = t.role || 'member' // Default to 'member' role for OAuth users
         u.membershipStatus = 'ACTIVE'
-        console.log('Session user after modification:', JSON.stringify(u, null, 2))
       }
       
-      console.log('Session after:', JSON.stringify(session, null, 2))
-      console.log('=== END SESSION CALLBACK ===')
       return session
     },
     async redirect({ url, baseUrl }) {
-      console.log('=== REDIRECT CALLBACK ===')
-      console.log('URL:', url)
-      console.log('BaseURL:', baseUrl)
       
       let finalUrl = baseUrl
       
@@ -265,8 +227,6 @@ export const authOptions: NextAuthOptions = {
         finalUrl = url
       }
       
-      console.log('Final redirect URL:', finalUrl)
-      console.log('=== END REDIRECT CALLBACK ===')
       return finalUrl
     },
   },
@@ -274,7 +234,7 @@ export const authOptions: NextAuthOptions = {
     signIn: '/auth/signin',
     error: '/auth/error',
   },
-  debug: true, // Enable debug mode to see more detailed logs
+  debug: false, // Disable debug mode for production
   cookies: {
     sessionToken: {
       name: 'next-auth.session-token',
@@ -282,7 +242,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: false, // Set to false for development on localhost
+        secure: process.env.NODE_ENV === 'production', // Secure cookies in production
         domain: undefined, // Let it use the default domain
       },
     },

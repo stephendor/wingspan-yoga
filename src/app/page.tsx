@@ -1,45 +1,55 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { Hero, HeroContent, HeroTitle, HeroSubtitle, HeroDescription, HeroActions } from '@/components/ui/hero'
 import Link from 'next/link'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sage-50 via-warm-50 to-blush-50">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative pt-20 pb-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-6xl font-heading font-bold text-charcoal-900 mb-6">
-              Welcome to{' '}
-              <span className="bg-gradient-to-r from-sage-600 to-ocean-600 bg-clip-text text-transparent">
-                Wingspan Yoga
-              </span>
-            </h1>
-            <p className="text-2xl text-sage-600 mb-6 font-medium">
-              with Anna Dorman
-            </p>
-            <p className="text-xl text-charcoal-600 mb-8 leading-relaxed max-w-3xl mx-auto">
+      <Hero
+        variant="gradient"
+        overlay="gradient"
+        backgroundImage="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2520&q=80"
+        minHeight="100vh"
+        contentAlignment="center"
+      >
+        <HeroContent maxWidth="4xl">
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <HeroTitle size="xl" gradient={false}>
+                Welcome to{' '}
+                <span className="bg-gradient-to-r from-sage-200 to-ocean-200 bg-clip-text text-transparent">
+                  Wingspan Yoga
+                </span>
+              </HeroTitle>
+              <HeroSubtitle size="md" className="text-sage-200">
+                with Anna Dorman
+              </HeroSubtitle>
+            </div>
+            
+            <HeroDescription size="lg" className="max-w-3xl mx-auto">
               Transform your practice with personalized yoga instruction that honors your body, 
               calms your mind, and opens your heart. Join Anna for classes that blend traditional 
               wisdom with modern alignment principles in a safe, inclusive environment.
-            </p>
+            </HeroDescription>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <HeroActions spacing="lg" justify="center">
               <Link href="/schedule">
-                <Button size="xl" variant="primary">
+                <Button size="xl" variant="primary" className="bg-sage-500 hover:bg-sage-600 text-white shadow-lg">
                   Book Your First Class
                 </Button>
               </Link>
               <Link href="/about">
-                <Button size="xl" variant="outline">
+                <Button size="xl" variant="outline" className="border-white text-white hover:bg-white/10 backdrop-blur-sm">
                   Meet Anna
                 </Button>
               </Link>
-            </div>
+            </HeroActions>
           </div>
-        </div>
-      </section>
+        </HeroContent>
+      </Hero>
 
       {/* Featured Offerings */}
       <section className="py-16 bg-white">
