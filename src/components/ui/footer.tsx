@@ -46,7 +46,7 @@ const Footer = ({ className }: FooterProps) => {
                 <Link
                   key={social.label}
                   href={social.href}
-                  className="text-charcoal-600 hover:text-charcoal-800 transition-colors"
+                  className="text-charcoal-600 hover:text-softgreen-700 transition-colors"
                   aria-label={social.label}
                 >
                   {social.icon === 'instagram' && (
@@ -77,7 +77,7 @@ const Footer = ({ className }: FooterProps) => {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-charcoal-600 hover:text-charcoal-800 transition-colors font-lato"
+                    className="text-charcoal-600 hover:text-softgreen-700 transition-colors font-lato"
                   >
                     {link.label}
                   </Link>
@@ -91,7 +91,7 @@ const Footer = ({ className }: FooterProps) => {
             <h3 className="font-playfair font-semibold text-charcoal-800 mb-4">Contact</h3>
             <div className="space-y-2 text-charcoal-600 font-lato">
               <p>
-                <a href="mailto:anna@wingspan-yoga.com" className="hover:text-charcoal-800 transition-colors">
+                <a href="mailto:anna@wingspan-yoga.com" className="hover:text-softgreen-700 transition-colors">
                   anna@wingspan-yoga.com
                 </a>
               </p>
@@ -110,13 +110,13 @@ const Footer = ({ className }: FooterProps) => {
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link
                 href="/privacy"
-                className="text-charcoal-600 hover:text-charcoal-800 text-sm transition-colors font-lato"
+                className="text-charcoal-600 hover:text-softgreen-700 text-sm transition-colors font-lato"
               >
                 Privacy Policy
               </Link>
               <Link
                 href="/terms"
-                className="text-charcoal-600 hover:text-charcoal-800 text-sm transition-colors font-lato"
+                className="text-charcoal-600 hover:text-softgreen-700 text-sm transition-colors font-lato"
               >
                 Terms of Service
               </Link>

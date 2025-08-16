@@ -17,11 +17,11 @@ function useSSRSafeId(prefix: string = 'input') {
 }
 
 const inputVariants = cva(
-  "flex w-full rounded-soft border bg-white px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-charcoal-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+  "flex w-full rounded-soft border bg-white px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-charcoal-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-softgreen-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
-        default: "border-charcoal-200 hover:border-charcoal-300 focus:border-sage-500",
+        default: "border-charcoal-200 hover:border-charcoal-300 focus:border-softgreen-500",
         error: "border-red-500 focus:border-red-500 focus-visible:ring-red-500",
         success: "border-green-500 focus:border-green-500 focus-visible:ring-green-500",
       },

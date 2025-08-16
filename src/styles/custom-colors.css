@@ -1,6 +1,17 @@
 /* 
 Force include custom brand colors for Turbopack/Next.js 15
+Brand Color Palette: SoftPink (#F9E1E8), SoftGreen (#D9EAD3), SoftBlue (#D6EAF8)
 */
+
+/* CSS Custom Properties for Brand Colors */
+:root {
+  --color-softpink-primary: #F9E1E8;
+  --color-softgreen-primary: #D9EAD3;
+  --color-softblue-primary: #D6EAF8;
+  --gradient-pink-blue: linear-gradient(to bottom right, var(--color-softpink-primary), var(--color-softblue-primary));
+  --gradient-green-blue: linear-gradient(to bottom right, var(--color-softgreen-primary), var(--color-softblue-primary));
+  --gradient-pink-green: linear-gradient(to bottom right, var(--color-softpink-primary), var(--color-softgreen-primary));
+}
 
 /* Soft Pink Colors */
 .bg-softpink-50 { background-color: #fef7f9; }
@@ -30,7 +41,7 @@ Force include custom brand colors for Turbopack/Next.js 15
 .bg-softblue-50 { background-color: #f6fbfe; }
 .bg-softblue-100 { background-color: #ecf7fd; }
 .bg-softblue-200 { background-color: #e2f3fc; }
-.bg-softblue-300 { background-color: #B3E5FC; }
+.bg-softblue-300 { background-color: #D6EAF8; }
 .bg-softblue-400 { background-color: #c4e0f5; }
 .bg-softblue-500 { background-color: #b2d6f2; }
 .bg-softblue-600 { background-color: #a0ccef; }
@@ -73,7 +84,7 @@ Force include custom brand colors for Turbopack/Next.js 15
 .text-softgreen-700 { color: #99c283; }
 .text-softgreen-800 { color: #89b86f; }
 
-.text-softblue-300 { color: #B3E5FC; }
+.text-softblue-300 { color: #D6EAF8; }
 .text-softblue-600 { color: #a0ccef; }
 .text-softblue-700 { color: #8ec2ec; }
 .text-softblue-800 { color: #7cb8e9; }
@@ -91,7 +102,7 @@ Force include custom brand colors for Turbopack/Next.js 15
 /* Border Colors */
 .border-softpink-300 { border-color: #F9E1E8; }
 .border-softgreen-300 { border-color: #D9EAD3; }
-.border-softblue-300 { border-color: #B3E5FC; }
+.border-softblue-300 { border-color: #D6EAF8; }
 .border-softorange-300 { border-color: #FFDD99; }
 .border-softyellow-300 { border-color: #FFF2A1; }
 
@@ -123,19 +134,19 @@ Force include custom brand colors for Turbopack/Next.js 15
 
 /* Orange-Yellow to Blue Gradients */
 .bg-gradient-to-br.from-softorange-300.to-softblue-300 {
-  background: linear-gradient(to bottom right, #FFDD99, #B3E5FC);
+  background: linear-gradient(to bottom right, #FFDD99, #D6EAF8);
 }
 
 .bg-gradient-to-b.from-softyellow-300.to-softblue-300 {
-  background: linear-gradient(to bottom, #FFF2A1, #B3E5FC);
+  background: linear-gradient(to bottom, #FFF2A1, #D6EAF8);
 }
 
 .bg-gradient-to-r.from-softyellow-300.to-softblue-300 {
-  background: linear-gradient(to right, #FFF2A1, #B3E5FC);
+  background: linear-gradient(to right, #FFF2A1, #D6EAF8);
 }
 
 .bg-gradient-to-t.from-softyellow-300.to-softblue-300 {
-  background: linear-gradient(to top, #FFF2A1, #B3E5FC);
+  background: linear-gradient(to top, #FFF2A1, #D6EAF8);
 }
 
 /* Custom Border Radius - Organic, natural styling */
@@ -150,3 +161,34 @@ Force include custom brand colors for Turbopack/Next.js 15
 .rounded-organic {
   border-radius: 1.5rem; /* 24px */
 }
+
+/* Additional Brand Gradient Utilities */
+.bg-gradient-pink-blue {
+  background: var(--gradient-pink-blue);
+}
+
+.bg-gradient-green-blue {
+  background: var(--gradient-green-blue);
+}
+
+.bg-gradient-pink-green {
+  background: var(--gradient-pink-green);
+}
+
+/* Hover and Focus States with New Colors */
+.hover\:bg-softpink-100:hover { background-color: #fdeee8; }
+.hover\:bg-softgreen-100:hover { background-color: #ecf5eb; }
+.hover\:bg-softblue-100:hover { background-color: #ecf7fd; }
+
+.focus\:border-softpink-300:focus { border-color: #F9E1E8; }
+.focus\:border-softgreen-300:focus { border-color: #D9EAD3; }
+.focus\:border-softblue-300:focus { border-color: #D6EAF8; }
+
+.focus\:ring-softpink-300:focus { --tw-ring-color: #F9E1E8; }
+.focus\:ring-softgreen-300:focus { --tw-ring-color: #D9EAD3; }
+.focus\:ring-softblue-300:focus { --tw-ring-color: #D6EAF8; }
+
+/* Text color utilities for better contrast */
+.text-softpink-dark { color: #c7a2b8; } /* Darker version for better contrast */
+.text-softgreen-dark { color: #a9cc97; } /* Darker version for better contrast */
+.text-softblue-dark { color: #a6c9ec; } /* Darker version for better contrast */

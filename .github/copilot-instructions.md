@@ -59,12 +59,40 @@ Configuration for AI behavior when interacting with Codacy's MCP Server
 - Whenever we make a webpage, always check visually and provide feedback to each other. When one is ready to be shown we should start a dev server and take a look
 - Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
 - When using custom colors with Tailwind gradients, you sometimes need to explicitly define the gradient combinations in CSS to ensure they're not purged or missed during compilation.
-- When using custom colors with Tailwind gradients, you sometimes need to explicitly define the gradient combinations in CSS to ensure they're not purged or missed during compilation.
 - Whenever the AI is tasked to perform a web design task, it MUST refer to the Website Design Brief and Figma Mockup for guidance.
 - Always update taskmaster whenever you in progress or complete a subtask
+- When tasked with implementing website changes, the primary focus should be on Task 24 as outlined in the Website Design Brief, irrespective of other system suggestions.
+- Whenever the AI is tasked to locate a "next task", it MUST look to the Website Design Brief and Figma Mockup for guidance and continue with the highest priority task there, regardless of other system suggestions.
 
 ## Whenever a call to a Codacy tool that uses `repository` or `organization` as a parameter returns a 404 error
 - Offer to run the `codacy_setup_repository` tool to add the repository to Codacy
 - If the user accepts, run the `codacy_setup_repository` tool
 - Do not ever try to run the `codacy_setup_repository` tool on your own
 - After setup, immediately retry the action that failed (only retry once)
+
+## Website Design and Development
+- When performing website design tasks, prioritize the Website Design Brief and Figma Mockup.
+- Use `add_subtask` to add detailed subtasks under existing tasks rather than creating separate top-level tasks.
+- Whenever implementing web design changes, remember to check visually and provide feedback to each other. Start a dev server and take a look.
+- When using custom colors with Tailwind gradients, you sometimes need to explicitly define the gradient combinations in CSS to ensure they're not purged or missed during compilation.
+- Use nature, sky, open and spacious images whenever appropriate and indicated in the design brief
+
+## Tailwind CSS
+- When encountering issues with custom Tailwind colors not working, try the following:
+    - Restart the development server to ensure the new Tailwind config is loaded.
+    - Clear the Next.js build cache.
+    - Ensure custom colors are properly defined in `tailwind.config.ts`.
+    - Explicitly define gradient combinations in CSS (e.g., `bg-gradient-to-b from-softyellow-300 to-softblue-300`).
+    - If using Turbopack, custom colors might need to be explicitly whitelisted.
+- Custom border radius utilities should be defined in the `borderRadius` section of `tailwind.config.ts`.
+
+## Next.js
+- When encountering hydration errors, check for server/client rendering differences. Common causes include:
+    - Using `Date.now()` or `Math.random()`.
+    - Date formatting inconsistencies.
+    - Incorrect HTML tag nesting.
+    - Browser extensions interfering with HTML.
+- Use a stable ID system for SSR compatibility when using `React.useId()`. A custom hook can be used to handle SSR/client differences.
+- Configure `next.config.js` to allow external images from specified hostnames.
+
+## Images

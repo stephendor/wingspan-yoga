@@ -211,15 +211,15 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Class Summary */}
-      <Card className="bg-sage-50 border-sage-200">
+      <Card className="bg-softgreen-50 border-softgreen-200">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg text-sage-800">Booking Summary</CardTitle>
+          <CardTitle className="text-lg text-softgreen-800">Booking Summary</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <span className="text-sage-700">{className}</span>
-              <span className="font-semibold text-sage-800">{formatCurrency(price)}</span>
+              <span className="text-softgreen-700">{className}</span>
+              <span className="font-semibold text-softgreen-800">{formatCurrency(price)}</span>
             </div>
           </div>
         </CardContent>
@@ -328,16 +328,16 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
               <input
                 type="checkbox"
                 {...register('acceptTerms')}
-                className="mt-1 h-4 w-4 text-sage-600 border-gray-300 rounded focus:ring-sage-500"
+                className="mt-1 h-4 w-4 text-softgreen-600 border-gray-300 rounded focus:ring-softgreen-500"
                 disabled={isProcessing}
               />
               <label className="text-sm text-gray-700">
                 I accept the{' '}
-                <a href="/terms" className="text-sage-600 hover:text-sage-800 underline">
+                <a href="/terms" className="text-softgreen-600 hover:text-softgreen-800 underline">
                   Terms of Service
                 </a>{' '}
                 and{' '}
-                <a href="/privacy" className="text-sage-600 hover:text-sage-800 underline">
+                <a href="/privacy" className="text-softgreen-600 hover:text-softgreen-800 underline">
                   Privacy Policy
                 </a>
                 <span className="text-red-500 ml-1">*</span>
@@ -351,7 +351,7 @@ function BookingFormInner({ classId, price, className, onSuccess, onError }: Boo
               <input
                 type="checkbox"
                 {...register('marketingConsent')}
-                className="mt-1 h-4 w-4 text-sage-600 border-gray-300 rounded focus:ring-sage-500"
+                className="mt-1 h-4 w-4 text-softgreen-600 border-gray-300 rounded focus:ring-softgreen-500"
                 disabled={isProcessing}
               />
               <label className="text-sm text-gray-700">

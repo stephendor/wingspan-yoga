@@ -7,41 +7,6 @@ const config: Config = {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  safelist: [
-    // Ensure gradient classes are always generated
-    'from-softyellow-300',
-    'to-softblue-300',
-    'from-softorange-300',
-    'to-softblue-300',
-    'from-softpink-300',
-    'to-softblue-300',
-    'from-softgreen-300',
-    'to-softblue-300',
-    'bg-gradient-to-b',
-    'bg-gradient-to-br',
-    'bg-gradient-to-r',
-    // Background colors
-    'bg-softyellow-50',
-    'bg-softyellow-100',
-    'bg-softyellow-200',
-    'bg-softyellow-300',
-    'bg-softorange-50',
-    'bg-softorange-100',
-    'bg-softorange-200',
-    'bg-softorange-300',
-    'bg-softblue-50',
-    'bg-softblue-100',
-    'bg-softblue-200',
-    'bg-softblue-300',
-    'bg-softgreen-50',
-    'bg-softgreen-100',
-    'bg-softgreen-200',
-    'bg-softgreen-300',
-    'bg-softpink-50',
-    'bg-softpink-100',
-    'bg-softpink-200',
-    'bg-softpink-300',
-  ] as const,
   theme: {
     extend: {
       colors: {
@@ -98,7 +63,7 @@ const config: Config = {
           50: '#f7fbfe',
           100: '#eff7fc',
           200: '#e7f3fa',
-          300: '#B3E5FC', // Brighter, sunnier blue
+          300: '#D6EAF8', // Primary soft blue from Figma design brief
           400: '#c6dff4',
           500: '#b6d4f0',
           600: '#a6c9ec',
@@ -210,7 +175,17 @@ const config: Config = {
         serif: ['Playfair Display', 'serif'],
       },
       fontSize: {
-        // Extended typography scale
+        // Design Brief Typography Scale
+        // Heading1: 48px bold (Playfair Display)
+        'heading1': ['3rem', { lineHeight: '1.2', fontWeight: '700' }],
+        // Heading2: 32px semi-bold (Playfair Display)  
+        'heading2': ['2rem', { lineHeight: '1.3', fontWeight: '600' }],
+        // BodyText: 18px regular (Lato)
+        'body': ['1.125rem', { lineHeight: '1.6', fontWeight: '400' }],
+        // QuoteText: 20px italic, soft grey #555 (Lato)
+        'quote': ['1.25rem', { lineHeight: '1.5', fontWeight: '400', fontStyle: 'italic' }],
+        
+        // Extended typography scale (preserved)
         'xs': ['0.75rem', { lineHeight: '1rem' }],
         'sm': ['0.875rem', { lineHeight: '1.25rem' }],
         'base': ['1rem', { lineHeight: '1.5rem' }],

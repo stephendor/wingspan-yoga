@@ -88,9 +88,9 @@ Go through each completed page and replace any temporary image blocks with the `
 - Ensure the quote is accessible and readable across all devices
 - Source the full quote text from the provided content
 
-## 9. About Anna Page - Complete Biography Implementation [pending]
+## 9. Meet Anna Page - Complete Biography Implementation [pending]
 ### Dependencies: None
-### Description: Build the About Anna page with hero image, biography section using the provided quote 'Hello, I'm Anna! I attended my first yoga class in Osmington, Dorset in 1993...', teaching influences from Vanda Scaravelli section, and personal inspiration content.
+### Description: Build the Meet Anna page with hero image, biography section using the provided quote 'Hello, I'm Anna! I attended my first yoga class in Osmington, Dorset in 1993...', teaching influences from Vanda Scaravelli section, and personal inspiration content.
 ### Details:
 - Implement hero section with Anna portrait in nature setting
 - Create biography section with proper typography and layout
