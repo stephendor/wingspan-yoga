@@ -119,9 +119,8 @@ export default function PrivateSessionsPage() {
             </HeroTitle>
             
             <HeroDescription size="lg" className="text-charcoal-700 font-lato max-w-3xl mx-auto">
-              Experience yoga designed exclusively for you. Whether you&apos;re healing from injury, 
-              new to practice, or seeking to deepen your journey - private sessions offer the personalized 
-              attention and customization that group classes simply cannot provide.
+              Private sessions can be taken on an ongoing basis, as a short series or even as a one-off treat. 
+              A blend of Scaravelli-inspired Yoga & Gentle Somatic Movement tailored to your individual needs.
             </HeroDescription>
             
             <HeroActions spacing="lg" justify="center">
@@ -139,6 +138,25 @@ export default function PrivateSessionsPage() {
           </div>
         </HeroContent>
       </Hero>
+
+      {/* Private Sessions Description */}
+      <section className="py-16 bg-gradient-to-r from-softpink-50 to-softblue-50">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="bg-white p-8 rounded-natural shadow-soft">
+            <h2 className="text-3xl font-playfair font-semibold text-charcoal-800 mb-6 text-center">
+              About Private Sessions
+            </h2>
+            <div className="prose prose-lg mx-auto text-charcoal-700 font-lato">
+              <p>
+                Private sessions can be taken on an ongoing basis, as a short series or even as a one-off treat. A blend of Scaravelli-inspired Yoga & Gentle Somatic Movement tailored to your individual needs.
+              </p>
+              <p>
+                Weekly availability in Colwyn Bay and surrounding areas, North Wales. Monthly availability in London. I come to you, so that you can practice in the comfort of your own home. Alternatively you are welcome to come to my cosy dedicated yoga space in Old Colwyn. Either have a solo session, or get together with a friend or two and split the cost below. Also available online via zoom.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Why Choose Private Sessions */}
       <section className="py-16 bg-white">
@@ -232,24 +250,24 @@ export default function PrivateSessionsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {sessionTypes.map((session, index) => (
               <Card key={index} variant="organic" className="p-0 overflow-hidden">
-                <div className="p-8 bg-gradient-to-b from-softyellow-300 to-softblue-300">
-                  <h3 className="text-2xl font-playfair font-semibold text-white mb-2">
+                <div className="p-8 bg-white">
+                  <h3 className="text-2xl font-playfair font-semibold text-gray-900 mb-2">
                     {session.title}
                   </h3>
                   
-                  <div className="flex justify-between items-center text-white/90 text-sm font-lato mb-4">
+                  <div className="flex justify-between items-center text-gray-700 text-sm font-lato mb-4">
                     <span>⏱️ {session.duration}</span>
                     <span className="text-lg font-semibold">💰 {session.price}</span>
                   </div>
 
-                  <p className="text-white/90 font-lato mb-6">
+                  <p className="text-gray-700 font-lato mb-6">
                     {session.description}
                   </p>
 
                   <div className="space-y-2 mb-6">
-                    <h4 className="text-white font-semibold font-lato text-sm mb-2">Includes:</h4>
+                    <h4 className="text-gray-900 font-semibold font-lato text-sm mb-2">Includes:</h4>
                     {session.benefits.map((benefit, idx) => (
-                      <div key={idx} className="flex items-start text-white/90 text-sm font-lato">
+                      <div key={idx} className="flex items-start text-gray-700 text-sm font-lato">
                         <span className="mr-2 mt-0.5">✓</span>
                         {benefit}
                       </div>

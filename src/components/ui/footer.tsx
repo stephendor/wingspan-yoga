@@ -16,6 +16,7 @@ const Footer = ({ className }: FooterProps) => {
     { label: 'Classes', href: '/classes' },
     { label: 'Membership', href: '/membership' },
     { label: 'Retreats', href: '/retreats' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Contact', href: '/contact' },
   ]
 

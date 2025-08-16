@@ -1,21 +1,23 @@
-import { Button } from '@/components/ui/button'
-import Link from 'next/link'
+import { Hero, HeroContent, HeroTitle, HeroDescription } from '@/components/ui/hero'
+import { Card } from '@/components/ui/card'
 import { OptimizedImage } from '@/components/ui/optimized-image'
-import { portraitImages } from '@/lib/images'
+import { imageConfig } from '@/config/images'
 
-export default function InstructorPage() {
+export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-softyellow-50 via-white to-softblue-50">
+    <div className="min-h-screen bg-gradient-to-br from-softpink-50 via-white to-softblue-50">
       {/* Hero Section */}
       <section className="relative pt-20 pb-16">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
-                <div className="relative w-48 h-48 mx-auto md:mx-0 mb-6 rounded-full overflow-hidden shadow-lg">
-                  <OptimizedImage
-                    config={portraitImages.anna}
-                    className="w-full h-full object-cover"
+                <div className="relative w-48 h-48 mx-auto md:mx-0 mb-6">
+                  <Image
+                    src="/uploads/anna-portrait-placeholder.jpg"
+                    alt="Anna Dorman in a peaceful natural setting"
+                    fill
+                    className="rounded-full object-cover shadow-lg"
                   />
                 </div>
               </div>
@@ -23,7 +25,7 @@ export default function InstructorPage() {
               <div>
                 <h1 className="text-5xl font-playfair font-bold text-gray-900 mb-4">
                   Meet{' '}
-                  <span className="bg-gradient-to-r from-softyellow-600 to-softblue-600 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-softpink-600 to-softblue-600 bg-clip-text text-transparent">
                     Anna Dorman
                   </span>
                 </h1>
@@ -132,7 +134,7 @@ export default function InstructorPage() {
                 In a class you will be encouraged to work at your own pace and to cultivate a friendly curiosity towards the body as you explore different movements and poses.
               </p>
               
-              <div className="bg-softyellow-50 p-6 rounded-lg">
+              <div className="bg-softpink-50 p-6 rounded-lg">
                 <p className="text-gray-600 text-lg leading-relaxed italic">
                   As Donna Fahri says, &ldquo;The teacher&apos;s role is to be the agent for guiding the student to their own perception, thoughts, feelings, kinesthesia and insights.&rdquo; My aim is for the class to offer you a space where you feel free to be yourself and to meet yourself exactly where you are.
                 </p>
@@ -143,7 +145,7 @@ export default function InstructorPage() {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-gradient-to-r from-softyellow-500 to-softblue-500 text-white">
+      <section className="py-16 bg-gradient-to-r from-softpink-500 to-softblue-500 text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl font-playfair font-bold mb-4">
             Ready to Begin Your Journey?

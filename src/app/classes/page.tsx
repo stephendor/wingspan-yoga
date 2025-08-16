@@ -1,6 +1,8 @@
 import { Hero, HeroContent, HeroTitle, HeroDescription, HeroActions } from '@/components/ui/hero'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { OptimizedImage } from '@/components/ui/optimized-image'
+import { offeringImages } from '@/lib/images'
 import Link from 'next/link'
 
 export default function ClassesPage() {
@@ -12,7 +14,7 @@ export default function ClassesPage() {
       schedule: 'Tuesdays & Thursdays, 10:00 AM',
       price: 'From £18 per class',
       href: '/classes/north-wales',
-      image: '/images/north-wales-placeholder.jpg',
+      imageKey: 'northWalesClasses',
       highlights: ['Mountain Views', 'Small Groups', 'All Levels Welcome']
     },
     {
@@ -22,7 +24,7 @@ export default function ClassesPage() {
       schedule: 'Weekday Evenings & Weekend Mornings',
       price: 'From £25 per class',
       href: '/classes/london',
-      image: '/images/london-placeholder.jpg',
+      imageKey: 'londonClasses',
       highlights: ['City Centre', 'After Work Sessions', 'Weekend Options']
     },
     {
@@ -32,35 +34,8 @@ export default function ClassesPage() {
       schedule: 'Multiple times daily',
       price: 'From £15 per class',
       href: '/classes/online',
-      image: '/images/online-placeholder.jpg',
+      imageKey: 'onlineClasses',
       highlights: ['Join From Anywhere', 'Replay Available', 'Interactive Experience']
-    }
-  ];
-
-  const classStyles = [
-    {
-      name: 'Hatha Yoga',
-      description: 'Gentle, slower-paced practice focusing on alignment and breath awareness.',
-      duration: '75 minutes',
-      level: 'All Levels'
-    },
-    {
-      name: 'Vinyasa Flow',
-      description: 'Dynamic, flowing sequences that connect breath with movement.',
-      duration: '60 minutes',
-      level: 'Beginner to Intermediate'
-    },
-    {
-      name: 'Restorative Yoga',
-      description: 'Deep relaxation using props to support the body in restful poses.',
-      duration: '90 minutes',
-      level: 'All Levels'
-    },
-    {
-      name: 'Trauma-Informed Yoga',
-      description: 'Safe, inclusive practice with emphasis on choice and body autonomy.',
-      duration: '60-75 minutes',
-      level: 'All Levels'
     }
   ];
 
@@ -117,32 +92,33 @@ export default function ClassesPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {classTypes.map((classType, index) => (
               <Card key={index} variant="organic" className="p-0 overflow-hidden">
-                <div className="p-8 bg-gradient-to-b from-softyellow-300 to-softblue-300">
-                  {/* Image Placeholder */}
-                  <div className="aspect-video bg-white/20 rounded-natural mb-6 flex items-center justify-center">
-                    <span className="text-white font-lato text-sm">
-                      {classType.title} Image
-                    </span>
+                <div className="p-8 bg-white">
+                  {/* Class Image */}
+                  <div className="aspect-video rounded-natural mb-6 overflow-hidden">
+                    <OptimizedImage
+                      config={offeringImages[classType.imageKey as keyof typeof offeringImages]}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
-                  <h3 className="text-2xl font-playfair font-semibold text-white mb-3">
+                  <h3 className="text-2xl font-playfair font-semibold text-gray-900 mb-3">
                     {classType.title}
                   </h3>
                   
-                  <p className="text-white/90 font-lato mb-4">
+                  <p className="text-gray-700 font-lato mb-4">
                     {classType.description}
                   </p>
 
                   <div className="space-y-2 mb-6">
-                    <div className="flex items-center text-white/90 font-lato text-sm">
+                    <div className="flex items-center text-gray-700 font-lato text-sm">
                       <span className="font-semibold mr-2">📍</span>
                       {classType.location}
                     </div>
-                    <div className="flex items-center text-white/90 font-lato text-sm">
+                    <div className="flex items-center text-gray-700 font-lato text-sm">
                       <span className="font-semibold mr-2">⏰</span>
                       {classType.schedule}
                     </div>
-                    <div className="flex items-center text-white/90 font-lato text-sm">
+                    <div className="flex items-center text-gray-700 font-lato text-sm">
                       <span className="font-semibold mr-2">💰</span>
                       {classType.price}
                     </div>
@@ -152,7 +128,7 @@ export default function ClassesPage() {
                     {classType.highlights.map((highlight, idx) => (
                       <span 
                         key={idx} 
-                        className="px-3 py-1 bg-white/20 rounded-full text-white text-xs font-lato"
+                        className="px-3 py-1 bg-gray-100 rounded-full text-gray-700 text-xs font-lato"
                       >
                         {highlight}
                       </span>
@@ -171,34 +147,31 @@ export default function ClassesPage() {
         </div>
       </section>
 
-      {/* Class Styles Section */}
+      {/* What to Expect Section */}
       <section className="py-16 bg-softblue-50">
-        <div className="max-w-7xl mx-auto px-6">
+        <div className="max-w-4xl mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-playfair font-bold text-charcoal-800 mb-4">
-              Yoga Styles Offered
+              What to Expect in a Class
             </h2>
-            <p className="text-lg text-charcoal-600 font-lato max-w-3xl mx-auto">
-              Each class is thoughtfully designed to meet you where you are in your practice, 
-              with modifications and variations offered for every body and ability.
-            </p>
+          </div>
+          
+          <div className="bg-white p-8 rounded-natural shadow-soft mb-12">
+            <blockquote className="text-lg md:text-xl font-lato italic text-gray-600 leading-relaxed text-center">
+              &ldquo;Take a moment where you are right now. Can you feel your feet on the ground? Can you feel the breath moving in your belly or rib cage? Can you feel the natural curves of your spine and the gentle reach of the crown of your head skywards? The principles of surrendering to gravity and connecting to the breath are key in the style of yoga that I practice and teach. We work gently, softly, slowly and tend to our bodies with utmost care, compassion and respect.&rdquo;
+            </blockquote>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {classStyles.map((style, index) => (
-              <Card key={index} variant="default" className="p-6">
-                <h3 className="text-xl font-playfair font-semibold text-charcoal-800 mb-2">
-                  {style.name}
-                </h3>
-                <p className="text-charcoal-600 font-lato mb-4">
-                  {style.description}
-                </p>
-                <div className="flex justify-between text-sm text-charcoal-500 font-lato">
-                  <span><strong>Duration:</strong> {style.duration}</span>
-                  <span><strong>Level:</strong> {style.level}</span>
-                </div>
-              </Card>
-            ))}
+          <div className="prose prose-lg mx-auto text-charcoal-700 font-lato">
+            <p className="text-center mb-6">
+              I am most inspired by the pioneering work of female post-lineage yogis such as Vanda Scaravelli, Angela Farmer, Donna Fahri and Donna Martin (Psoma Yoga Therapy). The 2 year teacher training I undertook was led by a faculty of diverse, highly experienced practitioners: Chloe Freemantle, Anne-Marie Zulkahari, Giovanni Felicioni, Pete Blackaby (Intelligent Yoga) & Lisa Mcrory. With respect and gratitude to all of the above.
+            </p>
+            <p className="text-center mb-6">
+              In a class you will be encouraged to work at your own pace and to cultivate a friendly curiosity towards the body as you explore different movements and poses.
+            </p>
+            <p className="text-center">
+              As Donna Fahri says, &ldquo;The teacher&apos;s role is to be the agent for guiding the student to their own perception, thoughts, feelings, kinesthesia and insights.&rdquo; My aim is for the class to offer you a space where you feel free to be yourself and to meet yourself exactly where you are.
+            </p>
           </div>
         </div>
       </section>

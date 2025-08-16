@@ -39,6 +39,7 @@ const navigationItems = [
   { label: 'Classes', href: '/classes' },
   { label: 'Membership', href: '/membership' },
   { label: 'Retreats', href: '/retreats' },
+  { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
   // Only show E2E test page link in development
   ...(process.env.NODE_ENV === 'development' || process.env.E2E_TEST === 'true' ? [

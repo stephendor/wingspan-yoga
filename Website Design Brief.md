@@ -11,31 +11,31 @@ wingspan-yoga.com
 
 ---
 
-## **Phase 1 – Discovery & Asset Collection**
+## **Phase 1 – Discovery & Asset Collection** ✅ COMPLETED
 
 ### Tasks
 
-1. **Content Audit**
+1. **Content Audit** ✅
 
    * Review supplied text excerpts.
    * Identify any missing descriptions for pages not explicitly covered.
    * Organise text into categories: About, Classes, Retreats, Private Sessions, Blog, Philosophy.
-2. **Image & Media Sourcing**
+2. **Image & Media Sourcing** ✅
 
    * Gather client photography.
    * Identify required nature imagery (forests, lakes, skies, waves).
    * List gaps for stock photo sourcing.
-3. **Brand Identity Finalisation**
+3. **Brand Identity Finalisation** ✅
 
    * Confirm soft pink, green, blue palette.
    * Select fonts (serif/sans-serif pairing).
-4. **Repo Audit**
+4. **Repo Audit** ✅
 
    * Check existing repo for extra pages/features not listed in the brief.
-5. **Functional Requirements Confirmation**
+5. **Functional Requirements Confirmation** ✅
 
    * Confirm bookings, members area, gated video library.
-6. **Quote Text Mapping**
+6. **Quote Text Mapping** ✅
 
    * Create a working document with headings for each page and paste quoted text in correct positions:
 
@@ -46,75 +46,75 @@ wingspan-yoga.com
      * **Vanda Scaravelli Section** → *\[PLACE SUPPLIED Vanda Scaravelli QUOTE HERE]*
      * **Blog Section** → *\[PLACE SUPPLIED BLOG QUOTES HERE]*
 
-**Milestone:** Asset pack complete (all text + media ready).
+**Milestone:** Asset pack complete (all text + media ready). ✅
 
 ---
 
-## **Phase 2 – Design & Branding Setup**
+## **Phase 2 – Design & Branding Setup** ✅ COMPLETED
 
 ### Tasks
 
-1. **Wireframes**
+1. **Wireframes** ✅
 
    * Build mobile-first wireframes for Home, Class Pages, Retreats, Blog, Contact, Members Area.
-2. **Moodboard**
+2. **Moodboard** ✅
 
    * Use soft natural colours, rounded corners, subtle gradients.
    * Include example imagery from nature.
-3. **Typography & UI Kit**
+3. **Typography & UI Kit** ✅
 
    * Select headings/body fonts.
    * Create button, form, and card styles.
-4. **Accessibility Check**
+4. **Accessibility Check** ✅
 
    * Ensure colour contrast meets WCAG AA.
 
-**Milestone:** Approved design system & page wireframes.
+**Milestone:** Approved design system & page wireframes. ✅
 
 ---
 
-## **Phase 3 – Technical Infrastructure Setup**
+## **Phase 3 – Technical Infrastructure Setup** ✅ COMPLETED
 
 ### Tasks
 
-1. **CMS Setup**
+1. **CMS Setup** ✅
 
-   * Install & configure chosen CMS (WordPress/Webflow).
+   * Install & configure chosen CMS (Next.js/Prisma/PostgreSQL).
    * Set up SSL certificate & domain connection.
-2. **Hosting Configuration**
+2. **Hosting Configuration** ✅
 
    * Optimise for speed & security.
-3. **Plugin/App Selection**
+3. **Plugin/App Selection** ✅
 
-   * Booking system (Stripe or PayPal).
-   * Member login & gated content plugin.
-   * Video hosting integration (Vimeo/YouTube private).
+   * Booking system (Stripe).
+   * Member login & gated content system.
+   * Video hosting integration (Mux private streaming).
    * SEO optimisation tools.
-4. **GDPR Compliance Setup**
+4. **GDPR Compliance Setup** ✅
 
    * Cookie consent banner.
    * Privacy policy template.
 
-**Milestone:** CMS running with basic structure.
+**Milestone:** CMS running with basic structure. ✅
 
 ---
 
-## **Phase 4 – Front-End Build**
+## **Phase 4 – Front-End Build** 🔄 IN PROGRESS (Task 24)
 
 ### Tasks
 
-1. **Template Development**
+1. **Template Development** ✅
 
    * Header/footer with navigation.
    * Reusable page templates for blog posts, retreats, classes.
-2. **Responsive Layout**
+2. **Responsive Layout** 🔄
 
    * Mobile-first, scaling up to tablet & desktop.
-3. **Animation & Visual Effects**
+3. **Animation & Visual Effects** 🔄
 
    * Smooth fade-ins, hover effects.
    * Gentle parallax on nature images.
-4. **Placeholder Quoted Text Integration**
+4. **Placeholder Quoted Text Integration** 🔄
 
    * Each placeholder from Phase 1 is now inserted into its page:
 
@@ -125,7 +125,7 @@ wingspan-yoga.com
        "Hello, I'm Anna! I attended my first yoga class in Osmington, Dorset in 1993..."
        ```
 
-**Milestone:** All core pages visually complete with placeholder text.
+**Milestone:** All core pages visually complete with placeholder text. 🔄
 
 ---
 
@@ -151,28 +151,28 @@ wingspan-yoga.com
 
 ---
 
-## **Phase 6 – Functional Integration**
+## **Phase 6 – Functional Integration** ✅ COMPLETED
 
 ### Tasks
 
-1. **Booking System**
+1. **Booking System** ✅
 
    * Add class/event booking interface.
    * Link payment processor.
    * Test user flow.
-2. **Members Area**
+2. **Members Area** ✅
 
    * Configure login, registration, password reset.
    * Restrict access to gated pages.
-3. **Video Library**
+3. **Video Library** ✅
 
-   * Embed videos from Vimeo/YouTube.
+   * Embed videos from Mux.
    * Apply member-only restrictions.
-4. **Admin Dashboard**
+4. **Admin Dashboard** ✅
 
    * Ensure easy content, booking, and member management.
 
-**Milestone:** All interactive features operational.
+**Milestone:** All interactive features operational. ✅
 
 ---
 

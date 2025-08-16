@@ -2,6 +2,8 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Hero, HeroContent, HeroTitle, HeroDescription, HeroActions } from '@/components/ui/hero'
+import { OptimizedImage } from '@/components/ui/optimized-image'
+import { offeringImages, retreatImages } from '@/lib/images'
 import Link from 'next/link'
 
 export default function HomePage() {
@@ -10,31 +12,31 @@ export default function HomePage() {
       title: 'North Wales Classes',
       description: 'In-person yoga classes in the beautiful landscapes of North Wales.',
       href: '/classes/north-wales',
-      image: '/images/north-wales-placeholder.jpg',
+      imageConfig: offeringImages.northWalesClasses,
     },
     {
       title: 'London Classes',
       description: 'Urban yoga sessions in the heart of London.',
       href: '/classes/london',
-      image: '/images/london-placeholder.jpg',
+      imageConfig: offeringImages.londonClasses,
     },
     {
       title: 'Online Classes',
       description: 'Join from anywhere with our live online yoga sessions.',
       href: '/classes/online',
-      image: '/images/online-placeholder.jpg',
+      imageConfig: offeringImages.onlineClasses,
     },
     {
       title: 'Private Sessions',
       description: 'Personalized one-on-one yoga sessions tailored to your needs.',
       href: '/private-sessions',
-      image: '/images/private-placeholder.jpg',
+      imageConfig: offeringImages.privateSessions,
     },
     {
       title: 'Retreats',
       description: 'Immersive yoga retreats in stunning natural locations.',
       href: '/retreats',
-      image: '/images/retreats-placeholder.jpg',
+      imageConfig: offeringImages.retreats,
     },
   ];
 
@@ -96,16 +98,19 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
             {featuredOfferings.map((offering) => (
               <Card key={offering.title} variant="organic" className="group hover:shadow-organic transition-shadow overflow-hidden">
-                <div className="bg-gradient-to-b from-softyellow-300 to-softblue-300">
+                <div className="bg-white">
                   <Link href={offering.href} className="block">
-                    <div className="aspect-square bg-white/20 flex items-center justify-center">
-                      <span className="text-white font-lato text-sm font-medium shadow-sm">Image Placeholder</span>
+                    <div className="aspect-square overflow-hidden">
+                      <OptimizedImage 
+                        config={offering.imageConfig}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
                     </div>
                     <CardContent className="p-4">
-                      <h3 className="text-lg font-playfair font-semibold text-white mb-2">
+                      <h3 className="text-lg font-playfair font-semibold text-gray-900 mb-2">
                         {offering.title}
                       </h3>
-                      <p className="text-white/90 text-sm font-lato leading-relaxed">
+                      <p className="text-gray-700 text-sm font-lato leading-relaxed">
                         {offering.description}
                       </p>
                     </CardContent>
@@ -140,16 +145,17 @@ export default function HomePage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card variant="organic" className="p-0 overflow-hidden">
-              <div className="p-8 bg-gradient-to-b from-softyellow-300 to-softblue-300">
-                <div className="aspect-video bg-white/20 rounded-natural mb-6">
-                  <span className="flex items-center justify-center h-full text-white font-lato">
-                    Snowdonia Retreat Image
-                  </span>
+              <div className="p-8 bg-white">
+                <div className="aspect-video overflow-hidden rounded-natural mb-6">
+                  <OptimizedImage 
+                    config={retreatImages.snowdonia}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <h3 className="text-2xl font-playfair font-semibold text-white mb-4">
+                <h3 className="text-2xl font-playfair font-semibold text-gray-900 mb-4">
                   Snowdonia Retreat
                 </h3>
-                <p className="text-white/90 font-lato mb-6">
+                <p className="text-gray-700 font-lato mb-6">
                   A weekend of yoga and mindfulness nestled in the heart of Snowdonia National Park.
                 </p>
                 <Button variant="primary" className="font-lato">
@@ -159,16 +165,17 @@ export default function HomePage() {
             </Card>
 
             <Card variant="organic" className="p-0 overflow-hidden">
-              <div className="p-8 bg-gradient-to-b from-softyellow-300 to-softblue-300">
-                <div className="aspect-video bg-white/20 rounded-natural mb-6">
-                  <span className="flex items-center justify-center h-full text-white font-lato">
-                    Worcestershire Retreat Image
-                  </span>
+              <div className="p-8 bg-white">
+                <div className="aspect-video overflow-hidden rounded-natural mb-6">
+                  <OptimizedImage 
+                    config={retreatImages.worcestershire}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <h3 className="text-2xl font-playfair font-semibold text-white mb-4">
+                <h3 className="text-2xl font-playfair font-semibold text-gray-900 mb-4">
                   Worcestershire Escape
                 </h3>
-                <p className="text-white/90 font-lato mb-6">
+                <p className="text-gray-700 font-lato mb-6">
                   Reconnect with nature and yourself in the peaceful countryside of Worcestershire.
                 </p>
                 <Button variant="primary" className="font-lato">

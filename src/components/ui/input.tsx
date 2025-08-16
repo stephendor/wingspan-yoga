@@ -4,6 +4,18 @@ import * as React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { clsx } from 'clsx'
 
+// Custom hook to handle SSR-safe IDs
+function useSSRSafeId(prefix: string = 'input') {
+  const [id, setId] = React.useState<string>('')
+  
+  React.useEffect(() => {
+    // Generate a stable ID only on the client
+    setId(`${prefix}_${Math.random().toString(36).substr(2, 9)}`)
+  }, [prefix])
+  
+  return id
+}
+
 const inputVariants = cva(
   "flex w-full rounded-soft border bg-white px-3 py-2 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-charcoal-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
   {
@@ -36,16 +48,16 @@ export interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, variant, size, label, helpText, errorMessage, type, ...props }, ref) => {
-    const inputId = React.useId()
-    const helpTextId = React.useId()
-    const errorId = React.useId()
+    const inputId = useSSRSafeId('input')
+    const helpTextId = useSSRSafeId('help')
+    const errorId = useSSRSafeId('error')
 
     // Auto-set variant based on error state
     const finalVariant = errorMessage ? 'error' : variant
 
     return (
       <div className="space-y-2">
-        {label && (
+        {label && inputId && (
           <label 
             htmlFor={inputId}
             className="text-sm font-medium text-charcoal-700"
@@ -54,7 +66,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </label>
         )}
         <input
-          id={inputId}
+          id={inputId || undefined}
           type={type}
           className={clsx(inputVariants({ variant: finalVariant, size, className }))}
           ref={ref}
@@ -64,15 +76,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               errorMessage && errorId
             ) || undefined
           }
-          aria-invalid={!!errorMessage}
+          aria-invalid={errorMessage ? 'true' : 'false'}
           {...props}
         />
-        {helpText && !errorMessage && (
+        {helpText && !errorMessage && helpTextId && (
           <p id={helpTextId} className="text-xs text-charcoal-500">
             {helpText}
           </p>
         )}
-        {errorMessage && (
+        {errorMessage && errorId && (
           <p id={errorId} className="text-xs text-red-600">
             {errorMessage}
           </p>
@@ -94,16 +106,16 @@ export interface TextAreaProps
 
 const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ({ className, variant, size, label, helpText, errorMessage, ...props }, ref) => {
-    const textareaId = React.useId()
-    const helpTextId = React.useId()
-    const errorId = React.useId()
+    const textareaId = useSSRSafeId('textarea')
+    const helpTextId = useSSRSafeId('help')
+    const errorId = useSSRSafeId('error')
 
     // Auto-set variant based on error state
     const finalVariant = errorMessage ? 'error' : variant
 
     return (
       <div className="space-y-2">
-        {label && (
+        {label && textareaId && (
           <label 
             htmlFor={textareaId}
             className="text-sm font-medium text-charcoal-700"
@@ -112,7 +124,7 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
           </label>
         )}
         <textarea
-          id={textareaId}
+          id={textareaId || undefined}
           className={clsx(inputVariants({ variant: finalVariant, size, className }), "min-h-[80px] resize-y")}
           ref={ref}
           aria-describedby={
@@ -121,15 +133,15 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
               errorMessage && errorId
             ) || undefined
           }
-          aria-invalid={!!errorMessage}
+          aria-invalid={errorMessage ? 'true' : 'false'}
           {...props}
         />
-        {helpText && !errorMessage && (
+        {helpText && !errorMessage && helpTextId && (
           <p id={helpTextId} className="text-xs text-charcoal-500">
             {helpText}
           </p>
         )}
-        {errorMessage && (
+        {errorMessage && errorId && (
           <p id={errorId} className="text-xs text-red-600">
             {errorMessage}
           </p>
